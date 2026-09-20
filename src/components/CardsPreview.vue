@@ -891,10 +891,15 @@ async function generate(shouldShowLoading = false) {
   const reusableProbe = document.createElement('div')
   reusableProbe.className = `content-html content-rich typography-${props.stylePreset} spacing-${props.spacingPreset}`
   reusableProbe.style.width = (contentW / props.scale) + 'px'
-  reusableProbe.style.height = (physicalContentH / props.scale) + 'px'
+  // 测量器必须使用自然高度。若这里设置固定卡片高度，scrollHeight
+  // 至少等于整张卡片的高度，分页算法会把尚有空间的段落误判为溢出。
+  reusableProbe.style.height = 'auto'
+  reusableProbe.style.minHeight = '0'
+  reusableProbe.style.maxHeight = 'none'
   reusableProbe.style.boxSizing = 'border-box'
   reusableProbe.style.padding = pad + 'px'
-  reusableProbe.style.overflow = 'hidden'
+  reusableProbe.style.overflow = 'visible'
+  reusableProbe.style.flex = 'none'
   reusableProbe.style.position = 'relative'
   reusableProbe.style.fontFamily = 'var(--font-family-base, "Microsoft YaHei", sans-serif)'
   reusableProbe.style.lineHeight = '1.6'
@@ -907,7 +912,7 @@ async function generate(shouldShowLoading = false) {
     temp.appendChild(reusableProbe)
     // 强制重排，获取准确的高度
     void reusableProbe.offsetHeight
-    return reusableProbe.scrollHeight * props.scale
+    return Math.max(reusableProbe.scrollHeight, reusableProbe.getBoundingClientRect().height) * props.scale
   }
 
   // 预热测量容器，避免首次测量的额外开销
