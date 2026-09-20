@@ -32,7 +32,8 @@ export default {
     spacing: 'Spacing',
     scale: 'Scale',
     exportMarkdown: 'Export MD',
-    importMarkdown: 'Import MD'
+    importMarkdown: 'Import MD',
+    exportProject: 'Export project'
   },
 
   // Document info (masthead metadata)
@@ -179,6 +180,8 @@ export default {
     exportMarkdownFailed: 'Markdown export failed, please try again',
     importMarkdownSuccess: 'Markdown file imported successfully',
     importMarkdownFailed: 'Markdown import failed, please try again',
+    projectExportSuccess: 'Project package exported',
+    projectExportFailed: 'Project package export failed. Please try again.',
     invalidMarkdownFile: 'Please select a valid Markdown file (.md)',
     imageUploadSuccess: 'Image uploaded successfully',
     imageUploadFailed: 'Image upload failed',
@@ -208,7 +211,7 @@ export default {
     copyright: '© 2025 GreenPlay Editor · Based on uni-editor',
     exportCredit: 'Created with GreenPlay Editor',
     ribbonCredit: 'GreenPlay Editor',
-    exportLink: 'https://github.com/flzyup/uni-editor',
+    exportLink: 'https://github.com/rockdna/greenplay-editor',
     wxLayoutCredit: 'Color inspiration WXLayoutSkill'
   },
 
@@ -461,7 +464,7 @@ export default {
 
 GreenPlay Editor is a modern Markdown editor designed specifically for **WeChat formatting** and **image platform publishing**.
 
-This project is based on the open-source [uni-editor](https://github.com/flzyup/uni-editor).
+This project is based on the open-source [uni-editor](https://github.com/flzyup/uni-editor) and maintained as the independent GreenPlay Editor project.
 
 ## Core Features
 
@@ -497,7 +500,7 @@ This project is based on the open-source [uni-editor](https://github.com/flzyup/
 
 ## Useful Links
 
-- **Open Source**: [GitHub Repository](https://github.com/flzyup/uni-editor)
+- **Open Source**: [GitHub Repository](https://github.com/rockdna/greenplay-editor)
 - **Original Project**: [uni-editor](https://github.com/flzyup/uni-editor)
 
 ## Usage Tips

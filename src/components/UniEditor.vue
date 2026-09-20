@@ -398,6 +398,7 @@ import LoadingOverlay from './LoadingOverlay.vue'
 import { planLayoutWithAI, validateLayoutPlan, applyLayoutPlan, resolveStyleLimits, deterministicFormat, testAIConnection } from '../utils/ai.js'
 import {
   saveImage,
+  getImageDataUrl,
   convertContentForEditor,
   convertContentForStorage,
   clearImageCache,
@@ -412,6 +413,7 @@ import {
   embeddedAssetFile,
   getRequiredAssetNames
 } from '../utils/socialPackage.js'
+import { projectAssetFromDataUrl } from '../utils/projectPackage.js'
 
 const props = defineProps({
   pageTheme: { type: String, default: 'theme-dark' },
@@ -2037,6 +2039,33 @@ async function exportMarkdownFromDocument(docId) {
   }
 }
 
+async function getProjectExportData() {
+  const doc = getActiveDocument()
+  if (!doc) throw new Error('No active document')
+
+  const assets = []
+  for (const id of extractImageIdsFromContent(doc.content || '')) {
+    const dataUrl = await getImageDataUrl(id)
+    if (!dataUrl) continue
+    const mime = dataUrl.match(/^data:([^;,]+)/)?.[1] || 'image/png'
+    const extension = mime.split('/')[1]?.replace('jpeg', 'jpg') || 'bin'
+    const asset = projectAssetFromDataUrl(`assets/${id}.${extension}`, dataUrl)
+    if (asset) assets.push({ id, path: asset.name, data: asset.data })
+  }
+
+  return {
+    document: {
+      id: doc.id,
+      title: doc.title,
+      mode: doc.mode,
+      content: doc.content,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt
+    },
+    assets
+  }
+}
+
 // 针对特定文档的导入功能
 async function importMarkdownToDocument(docId) {
   const input = document.createElement('input')
@@ -2854,6 +2883,7 @@ onBeforeUnmount(() => {
 // 暴露方法给父组件
 defineExpose({
   getHTML,
+  getProjectExportData,
   createNewDocument,
   openDocument,
   closeTab,

@@ -32,7 +32,8 @@ export default {
     spacing: '间距',
     scale: '缩放',
     exportMarkdown: '导出MD',
-    importMarkdown: '导入MD'
+    importMarkdown: '导入MD',
+    exportProject: '导出项目包'
   },
 
   // 文档信息（报头元数据）
@@ -179,6 +180,8 @@ export default {
     exportMarkdownFailed: 'Markdown导出失败，请重试',
     importMarkdownSuccess: 'Markdown文件导入成功',
     importMarkdownFailed: 'Markdown导入失败，请重试',
+    projectExportSuccess: '项目包导出成功',
+    projectExportFailed: '项目包导出失败，请重试',
     invalidMarkdownFile: '请选择有效的Markdown文件（.md）',
     imageUploadSuccess: '图片上传成功',
     imageUploadFailed: '图片上传失败',
@@ -208,7 +211,7 @@ export default {
     copyright: '© 2025 绿玩编辑器 · 基于 uni-editor 二次开发',
     exportCredit: '使用绿玩编辑器制造',
     ribbonCredit: '绿玩编辑器',
-    exportLink: 'https://github.com/flzyup/uni-editor',
+    exportLink: 'https://github.com/rockdna/greenplay-editor',
     wxLayoutCredit: '配色灵感 WXLayoutSkill'
   },
 
@@ -461,7 +464,7 @@ export default {
 
 绿玩编辑器是一个现代化的 Markdown 编辑器，专为**公众号排版**和**图片类平台发布**设计。
 
-本项目基于开源项目 [uni-editor](https://github.com/flzyup/uni-editor) 二次开发。
+本项目基于开源项目 [uni-editor](https://github.com/flzyup/uni-editor) 二次开发，当前版本由绿玩编辑器独立维护。
 
 ## 核心特性
 
@@ -497,7 +500,7 @@ export default {
 
 ## 常用链接
 
-- **开源地址**：[GitHub仓库](https://github.com/flzyup/uni-editor)
+- **开源地址**：[GitHub仓库](https://github.com/rockdna/greenplay-editor)
 - **原项目**：[uni-editor](https://github.com/flzyup/uni-editor)
 
 ## 使用技巧

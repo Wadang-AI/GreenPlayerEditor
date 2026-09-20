@@ -1,7 +1,7 @@
 <template>
   <div class="container" :class="[appThemeClass, globalColorThemeClass]">
     <header class="banner">
-      <a href="https://github.com/flzyup/uni-editor" target="_blank" class="logo" :title="$t('about.logoTitle')">
+      <a href="https://github.com/rockdna/greenplay-editor" target="_blank" class="logo" :title="$t('about.logoTitle')">
         <div class="logo-mark">
           <svg viewBox="0 0 32 32" width="26" height="26" fill="none" aria-hidden="true">
             <path d="M 16 5.6 C 22.5 5 26.7 9.4 26.2 15.8 C 25.7 22.1 21 26.8 15.3 26.4 C 9.7 26 5.5 21.3 6.1 15.6 C 6.6 10.4 10.9 6.3 16 5.6" fill="none" stroke="var(--logo-stroke)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -71,6 +71,9 @@
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               <span class="small-text">{{ $t('main.styleDock') }}</span>
+            </button>
+            <button class="btn btn-sm" @click="exportProjectPackage">
+              {{ $t('main.exportProject') }}
             </button>
             <div v-if="previewMode === 'cards'" class="scale-control-inline">
               <label class="muted small-text">{{ $t('main.scale') }}</label>
@@ -273,7 +276,7 @@
           <div class="modal-body">
             <p>{{ $t('about.description') }}</p>
             <p class="warning-text">{{ $t('about.basedOnPrefix') }}
-              <a href="https://github.com/flzyup/uni-editor" target="_blank" class="footer-link">uni-editor</a>{{ $t('about.basedOnMid') }}
+              <a href="https://github.com/rockdna/greenplay-editor" target="_blank" class="footer-link">绿玩编辑器</a>{{ $t('about.basedOnMid') }}
               <a href="https://github.com/TanShilongMario/WXLayoutSkill" target="_blank" class="footer-link">WXLayoutSkill</a>{{ $t('about.basedOnSuffix') }}
             </p>
           </div>
@@ -293,6 +296,7 @@ import CardsPreview from './components/CardsPreview.vue'
 import ArticlePreview from './components/ArticlePreview.vue'
 import LanguageSwitch from './components/LanguageSwitch.vue'
 import { copyToWechat } from './utils/copy.js'
+import { createZipBlob, downloadBlob } from './utils/projectPackage.js'
 import { useI18n } from 'vue-i18n'
 import { useToast } from './composables/useToast'
 
@@ -574,6 +578,49 @@ async function saveArticle() {
   } catch (err) {
     console.error('Export article failed:', err)
     error($t('messages.exportFailed'))
+  }
+}
+
+async function exportProjectPackage() {
+  try {
+    const payload = await uniEditorRef.value?.getProjectExportData?.()
+    if (!payload?.document) throw new Error('No active document')
+
+    const project = {
+      schemaVersion: 1,
+      kind: 'greenplay-editor-project',
+      app: '绿玩编辑器',
+      basedOn: 'uni-editor',
+      exportedAt: new Date().toISOString(),
+      document: {
+        title: payload.document.title,
+        mode: payload.document.mode,
+        contentPath: 'content.md',
+        createdAt: payload.document.createdAt,
+        updatedAt: payload.document.updatedAt
+      },
+      layout: {
+        colorTheme: globalColorTheme.value,
+        stylePreset: resolvedStylePreset.value,
+        spacingPreset: spacingPreset.value,
+        previewMode: previewMode.value,
+        docMeta: docMeta.value
+      },
+      assets: payload.assets.map(({ id, path }) => ({ id, path }))
+    }
+
+    const files = [
+      { name: 'project.json', data: new TextEncoder().encode(JSON.stringify(project, null, 2)) },
+      { name: 'content.md', data: new TextEncoder().encode(payload.document.content || '') },
+      ...payload.assets.map(({ path, data }) => ({ name: path, data }))
+    ]
+    const safeTitle = String(payload.document.title || 'greenplay-project')
+      .replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80)
+    downloadBlob(createZipBlob(files), `${safeTitle || 'greenplay-project'}.zip`)
+    success($t('messages.projectExportSuccess'))
+  } catch (err) {
+    console.error('Project package export failed:', err)
+    error($t('messages.projectExportFailed'))
   }
 }
 

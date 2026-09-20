@@ -118,7 +118,7 @@ export function editorApiPlugin() {
         if (path === '/health' && method === 'GET') {
           sendJson(res, 200, {
             ok: true,
-            name: 'uni-editor-v2',
+            name: 'greenplay-editor-api',
             version,
             capabilities: ['styles', 'render_url', 'layout', 'export'],
             renderUrlHint: `${localBaseUrl(req)}/?text=<url-encoded-markdown>&style=<preset>&theme=<theme>&spacing=<spacing>&mode=<article|cards>`
