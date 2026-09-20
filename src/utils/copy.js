@@ -333,6 +333,15 @@ function sanitizeForWechat(container) {
     }
   })
 
+  // 微信粘贴有时会丢失主题 CSS 或只保留标签的默认样式。
+  // 把编辑器的语义强调显式写成内联样式，保证粗体和斜体跨粘贴链路稳定。
+  container.querySelectorAll('strong, b').forEach((el) => {
+    el.style.setProperty('font-weight', '700')
+  })
+  container.querySelectorAll('em, i').forEach((el) => {
+    el.style.setProperty('font-style', 'italic')
+  })
+
   return degraded
 }
 
