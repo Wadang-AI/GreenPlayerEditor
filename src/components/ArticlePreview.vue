@@ -1,6 +1,16 @@
 <template>
   <div ref="containerRef" class="article-preview-container" :class="[pageTheme, 'card-theme', theme]">
-    <div ref="articleContentRef" class="article-content content-rich" v-html="highlightedHtml"></div>
+    <div ref="articleContentRef" class="article-content content-rich" :class="[`typography-${stylePreset}`, `spacing-${spacingPreset}`]">
+      <div v-if="hasMasthead" class="masthead">
+        <div class="masthead-main">
+          <span class="masthead-name">{{ docMeta.masthead }}</span>
+          <span class="masthead-meta" v-if="docMeta.issue || docMeta.date">{{ [docMeta.issue, docMeta.date].filter(Boolean).join(' · ') }}</span>
+        </div>
+        <div class="masthead-kicker" v-if="docMeta.kicker">{{ docMeta.kicker }}</div>
+        <div class="masthead-author" v-if="docMeta.author">{{ t('article.byline', { author: docMeta.author }) }}</div>
+      </div>
+      <div class="article-inner" v-html="highlightedHtml"></div>
+    </div>
     <LoadingOverlay
       :show="isExporting"
       :text="loadingText"
@@ -14,6 +24,7 @@
 import { computed, ref, onBeforeUnmount } from 'vue'
 import * as htmlToImage from 'html-to-image'
 import { highlightCodeBlocks } from '../utils/highlight.js'
+import { replaceImageSrcWithDataUrls } from '../utils/imageStore.js'
 import { useToast } from '../composables/useToast.js'
 import { useI18n } from 'vue-i18n'
 import LoadingOverlay from './LoadingOverlay.vue'
@@ -22,6 +33,14 @@ const props = defineProps({
   html: { type: String, default: '' },
   theme: { type: String, default: 'classic' },
   pageTheme: { type: String, default: 'theme-dark' }, // 'theme-light' | 'theme-dark'
+  stylePreset: { type: String, default: 'classic' },
+  spacingPreset: { type: String, default: 'standard' },
+  docMeta: { type: Object, default: () => ({}) },
+})
+
+const hasMasthead = computed(() => {
+  const m = props.docMeta || {}
+  return !!(m.masthead || m.issue || m.date || m.kicker || m.author)
 })
 
 const { t } = useI18n()
@@ -48,13 +67,20 @@ const highlightedHtml = computed(() => {
   processedHtml = processedHtml.replace(/<p[^>]*>\s*✂️\s*[^<]*分页符[^<]*\s*<\/p>/g, '')
   processedHtml = processedHtml.replace(/<p[^>]*>\s*✂️\s*[^<]*Page Break[^<]*\s*<\/p>/g, '')
 
+  // H2 章节序号装置：01 / 02 / …（渲染层注入真实 DOM，复制到公众号后保留）
+  let sectionIndex = 0
+  processedHtml = processedHtml.replace(/<h2(\s[^>]*)?>/g, (match, attrs) => {
+    sectionIndex += 1
+    return `<h2${attrs || ''}><span class="sec-no">${String(sectionIndex).padStart(2, '0')}</span>`
+  })
+
   return processedHtml
 })
 
 // Export article as image
 async function exportArticle() {
   if (!articleContentRef.value || !props.html) {
-    error(t('messages.emptyContent') || '无法找到长文内容')
+    error(t('messages.emptyContent'))
     return
   }
 
@@ -77,6 +103,7 @@ async function exportArticle() {
     let allElements = []
     let elementStyles = []
     let listItemData = []
+    let imageSources = []
 
     loadingText.value = t('loading.articleAdjusting')
 
@@ -167,64 +194,26 @@ async function exportArticle() {
 
     loadingText.value = t('loading.articleGenerating')
 
+    // IndexedDB 图片在编辑器里通常是 blob/uni-image URL，导出 canvas 前必须内联为 data URL。
+    // 否则 html-to-image 会因图片无法读取或 canvas 被污染而直接失败。
+    const exportImages = Array.from(articleContentRef.value.querySelectorAll('img'))
+    imageSources = exportImages.map((img) => ({
+      element: img,
+      src: img.getAttribute('src') || ''
+    }))
+    await replaceImageSrcWithDataUrls(articleContentRef.value)
+
     // 获取当前主题的颜色值
     const computedStyle = window.getComputedStyle(articleContentRef.value)
     const cardBgColor = computedStyle.getPropertyValue('background-color') || '#ffffff'
-    const cardTextColor = computedStyle.getPropertyValue('color') || '#333333'
-
-    // 获取主题色（从容器的CSS变量中获取）
-    const containerStyle = window.getComputedStyle(articleContentRef.value.parentElement)
-    const accentColor = containerStyle.getPropertyValue('--card-accent') || '#3b82f6'
-
-    // 创建宣传 footer 元素
-    const footer = document.createElement('div')
-    footer.className = 'export-footer'
-    footer.innerHTML = `
-      <div class="footer-divider"></div>
-      <div class="footer-content">
-        <span class="footer-text">${t('footer.exportCredit')}</span>
-        <span class="footer-link">${t('footer.exportLink')}</span>
-      </div>
-    `
-    footer.style.cssText = `
-      margin-top: 40px;
-      padding: 20px 0;
-      text-align: center;
-      font-size: 12px;
-      color: ${cardTextColor};
-      opacity: 0.6;
-    `
-    footer.querySelector('.footer-divider').style.cssText = `
-      width: 60px;
-      height: 1px;
-      background: ${accentColor};
-      margin: 0 auto 12px;
-      opacity: 0.3;
-    `
-    footer.querySelector('.footer-content').style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    `
-    footer.querySelector('.footer-text').style.cssText = `
-      font-weight: 500;
-    `
-    footer.querySelector('.footer-link').style.cssText = `
-      font-family: 'Courier New', monospace;
-      font-weight: 400;
-      opacity: 0.8;
-    `
-
-    // 临时添加 footer
-    articleContentRef.value.appendChild(footer)
 
     // 使用更保守的配置来避免渲染问题
     const dataUrl = await htmlToImage.toPng(articleContentRef.value, {
       quality: 1,
       pixelRatio: 1,  // 降低像素比例避免渲染问题
       backgroundColor: cardBgColor,
+      useCORS: true,
+      allowTaint: false,
       cacheBust: true,  // 避免缓存问题
       imagePlaceholder: undefined,
       skipAutoScale: true,
@@ -244,24 +233,17 @@ async function exportArticle() {
       }
     })
 
-    // 移除临时 footer
-    articleContentRef.value.removeChild(footer)
-
-    // 清理有序列表的临时数字元素
-    const exportNumbers = articleContentRef.value.querySelectorAll('.export-list-number')
-    exportNumbers.forEach(span => span.remove())
-
     loadingText.value = t('loading.articleSaving')
 
     // 创建下载链接
     const link = document.createElement('a')
-    link.download = `长文_${new Date().toISOString().slice(0, 10)}.png`
+    link.download = `${t('article.exportPrefix')}${new Date().toISOString().slice(0, 10)}.png`
     link.href = dataUrl
     link.click()
 
     success(t('loading.articleSuccess'))
   } catch (err) {
-    console.error('导出长文失败:', err)
+    console.error('Export article failed:', err)
     error(t('messages.exportFailed') || '导出长文失败，请重试')
   } finally {
     // 无论成功还是失败，都要恢复样式
@@ -286,6 +268,14 @@ async function exportArticle() {
             el.style.bottom = elementStyles[index].bottom || ''
           }
         })
+
+        imageSources.forEach(({ element, src }) => {
+          if (element && element.isConnected) {
+            element.setAttribute('src', src)
+          }
+        })
+
+        articleContentRef.value.querySelectorAll('.export-list-number').forEach((span) => span.remove())
 
         // 恢复原始样式，如果原始样式为空，则移除内联样式让CSS类样式生效
         if (original.borderRadius) {
@@ -331,7 +321,7 @@ async function exportArticle() {
         }
       }
     } catch (styleError) {
-      console.error('恢复样式时出错:', styleError)
+      console.error('Error restoring styles:', styleError)
       // 备用方案：强制重新应用CSS类样式
       if (articleContentRef.value) {
         // 移除所有内联样式，让CSS类样式重新生效
@@ -409,5 +399,73 @@ defineExpose({
   border-radius: @panel-border-radius;
   box-shadow: 0 2px 8px color-mix(in srgb, var(--card-accent) 20%, transparent);
   transition: all 0.2s ease;
+}
+
+.masthead {
+  border-bottom: 1px solid color-mix(in srgb, var(--card-text) 14%, transparent);
+  padding-bottom: 14px;
+  margin-bottom: 22px;
+}
+
+.masthead-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.masthead-name {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+}
+
+.masthead-meta {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--card-text) 55%, transparent);
+  white-space: nowrap;
+}
+
+.masthead-kicker {
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--card-accent-deep, var(--card-accent));
+}
+
+.masthead-author {
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--card-text) 55%, transparent);
+}
+
+// H2 章节序号装置：01 — 标题（杂志感 section 装置，纯文本+纯色，微信安全）
+.article-inner :deep(h2 .sec-no) {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--card-accent-deep, var(--card-accent));
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+
+  &::after {
+    content: '—';
+    margin-left: 8px;
+    opacity: 0.4;
+  }
+}
+
+// The DOM-injected .sec-no is the source of truth in article mode.
+// Cards mode keeps its own CSS counter.
+.article-inner :deep(h2)::before {
+  content: none !important;
+}
+
+.article-inner :deep(p:last-child) {
+  margin-bottom: 0;
 }
 </style>

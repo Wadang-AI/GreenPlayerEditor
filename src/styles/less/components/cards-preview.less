@@ -26,7 +26,7 @@
   gap: 4px;
   padding: 8px;
   margin: 4px 8px;
-  border-radius: @content-border-radius + 2;
+  border-radius: @r12;
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   font-size: @font-size-xs;
@@ -114,6 +114,7 @@
 }
 
 .cover-preview-section {
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
@@ -123,6 +124,37 @@
   min-height: 0;
   min-width: 0; // 防止撑宽父容器
   overflow: hidden; // 防止内容溢出
+}
+
+.cover-settings-toggle {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  color: var(--muted);
+  font-size: @font-size-xs;
+  font-weight: 600;
+  box-shadow: 0 4px 14px color-mix(in srgb, #000 8%, transparent);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  .focus-ring();
+
+  &:hover,
+  &.active {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+    background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
 }
 
 .preview-container {
@@ -140,7 +172,7 @@
 
 // 封面预览不需要交互态：禁用悬浮位移/放大
 .card.cover-preview { cursor: default; transition: none; }
-.card.cover-preview:hover { transform: none; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1); }
+.card.cover-preview:hover { transform: none; box-shadow: 0 @r12 48px color-mix(in srgb, #000 15%, transparent), 0 4px 16px color-mix(in srgb, #000 10%, transparent); }
 
 .cover-preview {
   // 适当缩小尺寸为布局按钮留出空间
@@ -148,7 +180,7 @@
   height: auto;
   max-height: calc(100vh - 300px); // 增加底部空间给布局按钮
   aspect-ratio: @card-width / @card-height; // 保持宽高比
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 @r12 48px color-mix(in srgb, #000 15%, transparent), 0 4px 16px color-mix(in srgb, #000 10%, transparent);
 
   // 在较小屏幕上进一步缩小
   @media (max-width: 1200px) {
@@ -186,9 +218,10 @@
   width: auto;
   background: var(--panel);
   border-left: 1px solid var(--border);
-  padding: 24px;
+  padding: 18px;
   overflow-y: auto;
   flex-shrink: 1; // 允许根据可用空间收缩
+  min-width: 280px;
 }
 
 // 提升选择器特异性，确保封面页布局选择区的按钮样式生效
@@ -246,7 +279,7 @@
     width: 100%;
     overflow-x: auto; // 如果空间不足，允许水平滚动
     padding: 6px 8px;
-    border-radius: (@content-border-radius + 4);
+    border-radius: @r12;
     border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
     background:
       linear-gradient(
@@ -330,7 +363,7 @@
       color-mix(in srgb, var(--card-bg) 88%, color-mix(in srgb, var(--card-accent) 18%, transparent)) 0%,
       color-mix(in srgb, var(--card-bg) 78%, color-mix(in srgb, var(--card-accent) 24%, transparent)) 100%
     );
-  border-radius: 6px;
+  border-radius: @r12;
   flex-shrink: 0;
   margin-bottom: 4px;
   color: color-mix(in srgb, var(--card-text) 94%, white);
@@ -412,7 +445,7 @@
 .form-input,
 .form-textarea {
   padding: 10px 14px;
-  border-radius: (@content-border-radius + 4);
+  border-radius: @r12;
   border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
   background:
     linear-gradient(
@@ -560,7 +593,7 @@
   padding: 0;
   min-width: 34px;
   min-height: 34px;
-  border-radius: 10px;
+  border-radius: @r12;
   color: color-mix(in srgb, var(--text) 70%, var(--muted));
   margin-left: 8px;
 
@@ -573,7 +606,7 @@
 .image-upload-area {
   .upload-zone {
     border: 2px dashed var(--border);
-    border-radius: @content-border-radius;
+    border-radius: @r12;
     padding: 3px;
     text-align: center;
     cursor: pointer;
@@ -588,7 +621,7 @@
 
   .current-image {
     position: relative;
-    border-radius: 6px;
+    border-radius: @r12;
     overflow: hidden;
 
     img {
@@ -601,7 +634,7 @@
     .image-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: color-mix(in srgb, #000 70%, transparent);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -716,6 +749,27 @@
   .full-height();
   position: relative;
   padding: 0 !important; // 覆盖inner的padding
+
+  // 标题/摘要基础排版规则——放在 .cover 内部提升特异性 (0,2,0)，
+  // 使其优先于各布局外部独立定义的规则，
+  // 同时各布局可通过更具体的子规则覆盖
+  .title {
+    font: 700 22px/1.5 @font-family-base;
+    margin-bottom: 8px;
+    color: var(--card-text);
+    text-shadow: none;
+    white-space: pre-line;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .summary {
+    font-size: @font-size-md;
+    color: color-mix(in srgb, var(--card-text) 78%, var(--card-muted));
+    line-height: 1.5;
+    text-shadow: none;
+  }
 }
 
 // 封面布局选择器样式
@@ -723,21 +777,21 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: @content-border-radius;
+  background: color-mix(in srgb, #000 85%, transparent);
+  border: 1px solid color-mix(in srgb, #fff 10%, transparent);
+  border-radius: @r12;
   padding: 8px;
   z-index: 10;
   backdrop-filter: blur(12px);
   min-width: 200px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px color-mix(in srgb, #000 30%, transparent);
   transition: all 0.3s ease;
   max-height: 150px;
   overflow-y: auto;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.9);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, #000 90%, transparent);
+    border-color: color-mix(in srgb, #fff 20%, transparent);
   }
 
   .layout-selector-title {
@@ -763,7 +817,7 @@
   flex-direction: column;
   align-items: center;
   padding: 6px;
-  border-radius: 8px;
+  border-radius: @r12;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   border: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent);
@@ -872,14 +926,14 @@
 // 高对比度模式支持
 @media (prefers-contrast: high) {
   .cover-layout-selector {
-    background: rgba(0, 0, 0, 0.95);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: color-mix(in srgb, #000 95%, transparent);
+    border-color: color-mix(in srgb, #fff 30%, transparent);
   }
 
   .layout-option {
     &:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.4);
+      background: color-mix(in srgb, #fff 20%, transparent);
+      border-color: color-mix(in srgb, #fff 40%, transparent);
     }
 
     &.active {
@@ -896,38 +950,53 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  
+  // 无封面图时：纸张/纹理质感底（替代"纯色渐变"）
+  background: var(--card-bg);
+
+  // 做旧纸张噪点纹理
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.6;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  // 微做旧：边缘轻微暗角
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 50%, transparent 60%, color-mix(in srgb, var(--card-accent) 8%, transparent) 100%);
+    pointer-events: none;
+  }
+
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
-  // When no image, render the next card content as blurred background
+  // 弃用：文章内容作为模糊背景
   .bg-html {
-    position: absolute;
-    inset: 0;
-    padding: @card-content-padding;
-    overflow: hidden;
-    filter: blur(4px);
-    transform: scale(1.05);
-    opacity: .55;
-    pointer-events: none;
+    display: none;
   }
 }
 
+
+// 遮罩不再“整体染色”，改为由各布局决定：
+// 全屏图布局仅在底部做文字可读性渐变，无图布局保持透明
 .cover-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  // 使用主题高亮色进行着色，统一风格
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--card-accent) 28%, transparent) 0%,
-    color-mix(in srgb, var(--card-accent) 60%, transparent) 100%
-  );
+  pointer-events: none;
+  background: transparent;
 }
 
 .cover-content {
@@ -935,7 +1004,51 @@
   z-index: 2;
   .flex-column();
   .full-height();
-  // padding: @card-content-padding;
+}
+
+// 报头条（刊物名 / 栏目 / 期号·日期），绝对定位于封面顶部，不干扰标题布局
+.cover-masthead {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 20px 24px 0;
+  color: var(--card-text);
+  opacity: 0.88;
+
+  .cover-masthead-name {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+  }
+
+  .cover-masthead-kicker {
+    color: var(--card-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 11px;
+  }
+
+  .cover-masthead-meta {
+    margin-left: auto;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+}
+
+// 文字浮在图上的全屏布局（magazine/bold/film 有图时）：报头条改白色保证可读
+// （center 已改为流式文字区布局，masthead 跟随文字色，不在此列）
+.cover.has-image.cover-layout-magazine .cover-masthead,
+.cover.has-image.cover-layout-bold .cover-masthead,
+.cover.has-image.cover-layout-film .cover-masthead {
+  color: #fff;
 }
 
 // 不同布局的样式
@@ -957,16 +1070,7 @@
 
   .title, .summary {
     transition: all 0.3s ease;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9);
-  }
-
-  .meta {
-    transition: all 0.4s ease,
-                opacity 0.4s ease,
-                visibility 0.4s ease,
-                position 0.4s ease,
-                background 0.4s ease,
-                color 0.4s ease;
+    text-shadow: none;
   }
 
   // 编辑状态样式
@@ -976,7 +1080,7 @@
       position: relative;
 
       &:hover {
-        text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.3);
+        text-shadow: none;
       }
     }
 
@@ -996,7 +1100,7 @@
         color: white;
         font-size: @font-size-sm;
         font-weight: 500;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        text-shadow: 0 2px 4px color-mix(in srgb, #000 80%, transparent);
         opacity: 0;
         transition: opacity 0.2s ease;
         pointer-events: none;
@@ -1014,41 +1118,79 @@
   }
 }
 
-// 1. 极简布局
+// ============================================================
+// 封面布局族 v3（2026-09-19）：对标小红书爆款审美
+// A. 无图范式：纸张/做旧质感底（全局纹理）+ 超大衬线/楷体标题 + 大留白 + 克制装饰（细线/英文斜体/引号/序号）
+// B. 有图范式：清晰大图（禁止模糊、滤镜、整体染色），仅在图底用卡片底色做白色渐变过渡到文字区
+// 统一 meta：底部小字 + 发丝细线，彻底移除压图黑条/黑胶囊
+// ============================================================
+
+// 1. 极简留白：纸张底 + 超大宋体标题 + 发丝细线 + 杂志封面式留白
 .cover-layout-minimal {
-  .bg-html {
-    filter: blur(8px) brightness(0.7);
-    opacity: 0.6;
-  }
-
-  .cover-overlay {
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--card-accent) 35%, transparent) 0%,
-      color-mix(in srgb, var(--card-accent) 65%, transparent) 100%
-    );
-  }
-
   .cover-content {
     justify-content: center;
-    align-items: center;
-    // 为极简模式的标题添加微妙的模糊背景
-    backdrop-filter: blur(2px);
-    transition: all 0.4s ease, backdrop-filter 0.4s ease;
+    align-items: stretch;
+    padding: 56px 36px 28px;
+  }
+
+  .cover-masthead {
+    position: relative;
+    padding: 0 0 30px;
+    opacity: 1;
+    color: var(--card-text);
+
+    &::before {
+      content: '';
+      display: block;
+      width: 26px;
+      height: 2px;
+      background: var(--card-accent);
+      margin-bottom: 16px;
+      opacity: 0.9;
+    }
+
+    .cover-masthead-name {
+      font-size: 12px;
+      letter-spacing: 0.28em;
+      font-weight: 500;
+    }
+
+    .cover-masthead-kicker,
+    .cover-masthead-meta {
+      display: none;
+    }
   }
 
   .title-overlay {
     background: none;
     backdrop-filter: none;
-    padding: 0 24px; // 左右保留合理间距
-    text-align: center;
+    padding: 0;
+    text-align: left;
+    align-items: stretch;
+    flex: none;
   }
 
   .title {
-    font-size: 32px; // 仅标题模式标题更大
-    font-weight: 900;
-    letter-spacing: 0.25em; // 1/4字体宽度间距
-    text-transform: uppercase;
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+    font-size: 42px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.26;
+    color: var(--card-text);
+    text-align: left;
+  }
+
+  // 英文斜体装饰副标题
+  .title-overlay::after {
+    content: 'Less is more';
+    display: block;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--card-accent);
+    letter-spacing: 0.16em;
+    opacity: 0.75;
+    margin-top: 18px;
   }
 
   .summary {
@@ -1059,183 +1201,377 @@
     padding: 0;
   }
 
-  .meta {
-    // 在极简布局中，meta条仍然可以通过showMeta控制显示/隐藏
-    // 但使用较小的样式以保持极简的设计感
-    font-size: 10px;
-    opacity: 0.8;
-    background: rgba(0,0,0,0.3);
-    padding: 8px (@card-content-padding) 8px (@card-content-padding + 8px);
-  }
+  // 有图：图清晰铺上 50%（收窄给文字区留足空间），白色渐变过渡，下方文字区
+  &.has-image {
+    .cover-background {
+      position: relative;
+      order: 1;
+      height: 50%;
+      img {
+        filter: none;
+        opacity: 1;
+      }
+    }
 
+    .cover-overlay {
+      display: block;
+      position: absolute;
+      top: auto;
+      bottom: -1px;
+      height: 72px;
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--card-bg) 0%, transparent),
+        var(--card-bg) 100%);
+    }
+
+    .cover-content {
+      position: relative;
+      order: 2;
+      flex: 1;
+      justify-content: flex-start;
+      padding: 30px 36px 24px;
+      background: var(--card-bg);
+    }
+
+    .title {
+      font-size: 30px;
+    }
+
+    .title-overlay::after {
+      margin-top: 12px;
+    }
+  }
 }
 
-// 2. 居中布局
+// 2. 治愈文字：暖纸纹理 + 超大宋体标题 + 半透明白卡摘要（参考"治愈文字"爆款）
 .cover-layout-center {
-  .bg-html {
-    filter: blur(6px) brightness(0.8);
-    opacity: 0.7;
+  .cover-content {
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 54px 32px 26px;
   }
 
-  .cover-content {
-    justify-content: center;
-    align-items: center;
-    // 为居中布局也添加backdrop-filter，与极简模式保持一致
-    backdrop-filter: blur(3px);
-    transition: all 0.4s ease, backdrop-filter 0.4s ease;
+  .cover-masthead {
+    position: relative;
+    padding: 0 0 24px;
+    opacity: 1;
+    color: var(--card-accent);
+
+    .cover-masthead-name {
+      font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+      font-size: 13px;
+      letter-spacing: 0.3em;
+      font-weight: 400;
+    }
+
+    .cover-masthead-kicker {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: color-mix(in srgb, var(--card-muted) 80%, var(--card-text));
+      text-transform: none;
+    }
+
+    .cover-masthead-meta {
+      display: none;
+    }
   }
 
   .title-overlay {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .summary {
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-    margin-top: @card-title-summary-gap;
-  }
-
-  .meta {
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-    // 确保meta组件在最顶层，防止被背景图片遵挡
-    z-index: 10;
+    background: none;
+    backdrop-filter: none;
+    padding: 0;
+    text-align: left;
+    align-items: stretch;
+    flex: none;
     position: relative;
   }
 
-  .cover-overlay {
+  // 超大衬线标题：治愈感的核心
+  .title {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: 0.04em;
+    color: var(--card-text);
+    text-align: left;
+    position: relative;
+  }
+
+  // 英文斜体装饰副标题
+  .title-overlay::after {
+    content: 'Aesthetic Notes';
+    display: block;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--card-accent);
+    opacity: 0.75;
+    margin-top: 14px;
+  }
+
+  // 细横线分隔（替代旧竖线）
+  .title-overlay::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: color-mix(in srgb, var(--card-text) 12%, transparent);
+    margin: 20px 0 0;
+  }
+
+  // 摘要正文：半透明白色卡片 + 左侧装饰竖线 + 行数限制
+  .summary {
+    margin-top: 18px;
+    padding: 18px 20px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: color-mix(in srgb, var(--card-text) 88%, var(--card-accent));
+    background: color-mix(in srgb, var(--card-bg) 74%, #fff);
+    border: 1px solid color-mix(in srgb, var(--card-accent) 14%, transparent);
+    border-left: 3px solid var(--card-accent);
+    border-radius: 6px;
+    text-align: left;
+    position: relative;
+    backdrop-filter: none;
     opacity: 1;
     visibility: visible;
+    height: auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // 有图：图清晰铺上 46%（压缩，给文字区留空间），白色渐变过渡，下方文字区
+  &.has-image {
+    .cover-background {
+      position: relative;
+      order: 1;
+      height: 46%;
+      img {
+        filter: none;
+        opacity: 1;
+      }
+    }
+
+    .cover-overlay {
+      display: block;
+      position: absolute;
+      top: auto;
+      bottom: -1px;
+      height: 72px;
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--card-bg) 0%, transparent),
+        var(--card-bg) 100%);
+    }
+
+    .cover-content {
+      position: relative;
+      order: 2;
+      flex: 1;
+      justify-content: flex-start;
+      padding: 26px 32px 20px;
+      background: var(--card-bg);
+    }
+
+    .title {
+      font-size: 30px;
+    }
+
+    // 有图时压缩摘要，防止文字区溢出并与 meta 重叠
+    .summary {
+      -webkit-line-clamp: 2;
+      margin-top: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .title-overlay::before {
+      margin: 14px 0 0;
+    }
   }
 }
 
-// 3. 图上布局
+// 3. 清新图文：上清晰大图 + 白色渐变衔接 + 下部楷体标题（参考"春日薄荷"）
 .cover-layout-image-top {
   .flex-column();
 
   .cover-background {
-    height: 50%;
     position: relative;
-    order: 1; // 图片在上方
-    transition: all 0.4s ease, height 0.4s ease, order 0.4s ease;
+    order: 1;
+    height: 58%;
+    background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
 
-    img, .bg-html {
+    // 有图：图清晰占满上半区，绝不模糊
+    img {
+      width: 100%;
       height: 100%;
       object-fit: cover;
       filter: none;
-      transition: filter 0.4s ease;
+      opacity: 1;
     }
   }
 
-  .cover-content {
-    height: 50%; // 恢复为50%，不需要为meta留空间
-    justify-content: center;
+  // 有图时收窄图区、压缩标题，避免文字区溢出卡片底部
+  &.has-image {
+    .cover-background {
+      height: 52%;
+    }
+
+    .title {
+      font-size: 28px;
+    }
+
+    .summary {
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  // 无图版：大引号占 58% 高度，文字区更小，摘要也收紧为 2 行防溢出
+  &:not(.has-image) .summary {
+    -webkit-line-clamp: 2;
+  }
+
+  // 无图：上部色带内放一枚大引号装饰，避免空洞
+  &:not(.has-image) .cover-background::after {
+    content: '“';
+    display: flex;
     align-items: center;
-    background: color-mix(in srgb, var(--card-accent) 5%, var(--card-bg)); // 使用主题色混合背景
+    justify-content: center;
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-size: 110px;
+    line-height: 1;
+    color: color-mix(in srgb, var(--card-accent) 30%, transparent);
+    padding-top: 20px;
+  }
+
+  // 图与文字区之间的白色渐变过渡（替代硬切）
+  .cover-overlay {
+    display: block;
+    position: absolute;
+    top: auto;
+    bottom: -1px;
+    height: 72px;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--card-bg) 0%, transparent),
+      var(--card-bg) 100%);
+  }
+
+  .cover-content {
     position: relative;
-    z-index: 1; // 降低z-index，让meta显示在上层
-    order: 2; // 内容在下方
-    transition: all 0.4s ease, height 0.4s ease, order 0.4s ease, background 0.4s ease;
+    order: 2;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 30px 34px 26px;
+    background: var(--card-bg);
+  }
+
+  .cover-masthead {
+    position: relative;
+    padding: 0 0 14px;
+    opacity: 0.9;
+    color: var(--card-text);
+
+    .cover-masthead-name {
+      font-size: 12px;
+      letter-spacing: 0.26em;
+      font-weight: 500;
+    }
+
+    .cover-masthead-kicker {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+    }
+
+    .cover-masthead-meta {
+      display: none;
+    }
   }
 
   .title-overlay {
+    height: auto;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    align-items: stretch;
     background: none;
     backdrop-filter: none;
-    color: var(--card-text);
-    transition: all 0.3s ease, background 0.4s ease, backdrop-filter 0.4s ease;
+    flex: none;
   }
 
-  
-  .title, .summary {
+  // 楷体大标题
+  .title {
+    font-family: 'Noto Serif SC', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.3;
     color: var(--card-text);
-    text-shadow: none;
-    transition: all 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    text-align: left;
   }
 
-  .cover-overlay {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
+  // 英文点缀
+  .title-overlay::after {
+    content: 'Breeze Flow';
+    display: block;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--card-accent);
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-top: 10px;
   }
 
   .summary {
+    position: static;
+    height: auto;
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.7;
     opacity: 1;
     visibility: visible;
-    height: auto;
-    position: static; // 重置杂志布局的绝对定位
-    top: auto;
-    left: auto;
-    right: auto;
-    margin-top: @card-title-summary-gap;
-    margin-bottom: @card-title-summary-gap; // 重置杂志布局的margin-top
-    text-align: center; // 重置杂志布局的左对齐
+    color: color-mix(in srgb, var(--card-text) 80%, var(--card-muted));
+    text-align: left;
+    display: -webkit-box;
+-webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .cover-overlay {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-  }
-
-  // 图上布局的meta条定位在卡片底部
-  .meta {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    font-size: @font-size-sm;
-    padding: 12px (@card-content-padding) 12px (@card-content-padding + 8px);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: @card-border-radius;
-    border-bottom-right-radius: @card-border-radius;
-    backdrop-filter: blur(4px);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-    .flex-start();
-    gap: 8px;
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-  }
 }
 
-// 4. 图下布局
+// 4. 图下文上：上部文字区（白底大字）+ 下部装饰引号/清晰大图
 .cover-layout-image-bottom {
   .flex-column();
 
   .cover-content {
-    height: 50%; // 恢复为50%，不需要为meta留空间
-    justify-content: center;
-    align-items: center;
-    background: color-mix(in srgb, var(--card-accent) 5%, var(--card-bg)); // 使用主题色混合背景
-    position: relative;
-    z-index: 1; // 降低z-index，让meta显示在上层
-    order: 1; // 内容在上方
-    transition: all 0.4s ease, height 0.4s ease, order 0.4s ease, background 0.4s ease;
+    order: 1;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 36px 34px 26px;
+    background: var(--card-bg);
   }
 
-  .cover-background {
-    height: 50%;
+  .cover-masthead {
     position: relative;
-    order: 2; // 图片在下方
-    transition: all 0.4s ease, height 0.4s ease, order 0.4s ease;
-    
-    img, .bg-html {
-      height: 100%;
-      object-fit: cover;
-      filter: none;
-      transition: filter 0.4s ease;
-      border-bottom-left-radius: @card-border-radius;
-      border-bottom-right-radius: @card-border-radius;
+    padding: 0 0 14px;
+    opacity: 0.9;
+    color: var(--card-text);
+
+    .cover-masthead-name {
+      font-size: 12px;
+      letter-spacing: 0.26em;
+      font-weight: 500;
+    }
+
+    .cover-masthead-kicker,
+    .cover-masthead-meta {
+      display: none;
     }
   }
 
@@ -1243,137 +1579,529 @@
     background: none;
     backdrop-filter: none;
     color: var(--card-text);
-    height: auto; // 重置杂志布局的固定高度
-    margin-bottom: 0; // 重置杂志布局的底部边距
-    transition: all 0.3s ease, background 0.4s ease, backdrop-filter 0.4s ease, height 0.4s ease, margin-bottom 0.4s ease;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    align-items: stretch;
+    flex: none;
   }
 
-  .title, .summary {
+  .title,
+  .summary {
     color: var(--card-text);
     text-shadow: none;
-    transition: all 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
   }
 
-  .cover-overlay {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
+  .title {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .title-overlay::after {
+    content: 'Daily Journal';
+    display: block;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--card-accent);
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-top: 10px;
   }
 
   .summary {
     opacity: 1;
     visibility: visible;
     height: auto;
-    position: static; // 重置杂志布局的绝对定位
+    position: static;
     top: auto;
     left: auto;
     right: auto;
-    margin-top: @card-title-summary-gap; // 重置杂志布局的margin-top
-    text-align: center; // 重置杂志布局的左对齐
+    margin-top: 14px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--card-text) 78%, var(--card-muted));
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cover-background {
+    order: 2;
+    height: 40%;
+    position: relative;
+    background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: none;
+    }
+  }
+
+  // 无图：底部色带放一段收束引号装饰，替代空白
+  &:not(.has-image) .cover-background::after {
+    content: '✦';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    color: color-mix(in srgb, var(--card-accent) 45%, transparent);
   }
 
   .cover-overlay {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-  }
-
-  // 图下布局的meta条定位在卡片底部
-  .meta {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    font-size: @font-size-sm;
-    padding: 12px (@card-content-padding) 12px (@card-content-padding + 8px);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: @card-border-radius;
-    border-bottom-right-radius: @card-border-radius;
-    backdrop-filter: blur(4px);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-    .flex-start();
-    gap: 8px;
-    opacity: 1;
-    visibility: visible;
-    height: auto;
+    display: none;
   }
 }
 
-// 5. 杂志布局
-.cover-layout-magazine {
-  .bg-html {
-    filter: blur(4px) brightness(0.9);
+// 5. 杂志：眉线刊头 + 大标题 + 细部装饰（无图=杂志内页；有图=满版大图 + 底部杂志版面 + 白字）
+// 注意：.cover.cover-layout-magazine 提升特异性，防止全局 .cover .title (0,2,0)
+// 规则（定义更靠后）把大标题压成 22px
+.cover.cover-layout-magazine {
+  // 顶部眉线（刊头视觉锚点）
+  .cover-background::before {
+    opacity: 0.9;
   }
 
   .cover-content {
     height: 100%;
-    display: flex;
-    flex-direction: column;
     justify-content: flex-start;
+    align-items: stretch;
+    padding: 34px 34px 26px;
+  }
+
+  .cover-masthead {
     position: relative;
+    padding: 0 0 16px;
+    color: var(--card-accent);
+
+    .cover-masthead-name {
+      font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+    }
+
+    .cover-masthead-kicker {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+    }
+
+    .cover-masthead-meta {
+      display: none;
+    }
   }
 
   .title-overlay {
-    height: 25%; // 占据上方1/4空间
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    align-items: stretch;
+    text-align: left;
     background: none;
     backdrop-filter: none;
-    padding: 16px;
-    margin-bottom: 80%; // 与摘要间距1/4卡片高度
-    transition: height 0.4s ease, margin-bottom 0.4s ease, background 0.4s ease, backdrop-filter 0.4s ease;
-  }
-
-  .title {
-    font-size: 24px;
-    font-weight: 900;
-    line-height: 1.2;
-    text-align: center;
-    margin: 0;
-  }
-
-  .summary {
-    position: absolute;
-    top: 50%; // 距离顶部1/2位置开始
-    left: 16px;
-    right: 30%;
-    font-size: @font-size-sm;
-    text-align: left; // 左对齐
-    line-height: 1.4;
-    margin-top: 30%;
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-    transition: position 0.4s ease, top 0.4s ease, left 0.4s ease, right 0.4s ease, margin-top 0.4s ease, text-align 0.4s ease;
-  }
-
-  .meta {
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-    // 确保meta组件在最顶层，防止被背景图片遵挡
-    z-index: 10;
+    color: var(--card-text);
+    flex: none;
     position: relative;
   }
 
-  .cover-overlay {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--card-accent) 55%, transparent) 0%,
-      color-mix(in srgb, var(--card-accent) 25%, transparent) 100%
-    );
+  // 刊头分隔细线
+  .title-overlay::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: color-mix(in srgb, var(--card-accent) 35%, transparent);
+    margin-bottom: 22px;
+  }
+
+  .title {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.28;
+    text-align: left;
+    color: var(--card-text);
+    text-shadow: none;
+  }
+
+  // 期号式英文点缀
+  .title-overlay::after {
+    content: 'ISSUE NO·01';
+    display: block;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.24em;
+    font-size: 10px;
+    color: var(--card-accent);
+    margin-top: 14px;
+    opacity: 0.7;
+  }
+
+  .summary {
+    position: static;
+    left: auto;
+    right: auto;
+    margin-top: 16px;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.7;
     opacity: 1;
     visibility: visible;
+    height: auto;
+    color: color-mix(in srgb, var(--card-text) 78%, var(--card-muted));
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // 有图：大图铺满全底（清晰）+ 上下暗色控底渐变 + 白字报头与标题（避免白字落白色渐变上）
+  &.has-image {
+    .cover-background {
+      position: absolute;
+      img {
+        filter: none;
+        opacity: 1;
+      }
+    }
+
+    .cover-overlay {
+      display: block;
+      background: linear-gradient(180deg,
+        color-mix(in srgb, #000 38%, transparent) 0%,
+        transparent 14%,
+        transparent 42%,
+        color-mix(in srgb, #000 45%, transparent) 62%,
+        color-mix(in srgb, #000 80%, transparent) 100%);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cover-content {
+      justify-content: flex-end;
+      padding: 24px 30px 26px;
+    }
+
+    .cover-masthead,
+    .cover-masthead .cover-masthead-name,
+    .cover-masthead .cover-masthead-kicker {
+      color: #fff;
+      text-shadow: 0 1px 8px color-mix(in srgb, #000 30%, transparent);
+    }
+
+    .title-overlay::before {
+      background: color-mix(in srgb, #fff 45%, transparent);
+    }
+
+    .title {
+      color: #fff;
+      text-shadow: 0 1px 10px color-mix(in srgb, #000 35%, transparent);
+    }
+
+    .title-overlay::after {
+      color: color-mix(in srgb, #fff 78%, transparent);
+      opacity: 0.9;
+    }
+
+    .summary {
+      color: color-mix(in srgb, #fff 92%, transparent);
+      text-shadow: 0 1px 6px color-mix(in srgb, #000 30%, transparent);
+    }
+  }
+}
+
+// 6. 大字报：主题色实底/大图深色控底 + 纯白超大标题（修复旧版深底深字对比度问题）
+// 注意：选择器用 .cover.cover-layout-bold 提升特异性，防止全局 .cover .title 的
+// (0,2,0) 规则（定义更靠后）把白字标题覆盖回深灰
+.cover.cover-layout-bold {
+  .cover-background {
+    background: var(--card-accent);
+
+    &::before {
+      opacity: 0.18;
+    }
+
+    &::after {
+      opacity: 0;
+    }
+
+    img {
+      opacity: 1;
+      filter: none;
+    }
+  }
+
+  .cover-overlay {
+    display: none;
+  }
+
+  .cover-content {
+    justify-content: center;
+    align-items: center;
+    padding: 34px 34px 28px;
+  }
+
+  .cover-masthead {
+    position: relative;
+    padding: 0 0 18px;
+    color: color-mix(in srgb, #fff 82%, transparent);
+
+    .cover-masthead-name {
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      font-weight: 400;
+    }
+
+    .cover-masthead-kicker,
+    .cover-masthead-meta {
+      display: none;
+    }
+  }
+
+  .title-overlay {
+    background: none;
+    backdrop-filter: none;
+    padding: 0;
+    text-align: center;
+    align-items: center;
+    flex: none;
+  }
+
+  .title {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    color: #fff;
+    text-shadow: none;
+  }
+
+  // 上下装饰线 + 英文点缀（均为纯白系）
+  .title-overlay::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 2px;
+    background: color-mix(in srgb, #fff 72%, transparent);
+    margin-bottom: 22px;
+    opacity: 0.9;
+  }
+
+  .title-overlay::after {
+    content: 'WORDS WITH POWER';
+    display: block;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.26em;
+    color: color-mix(in srgb, #fff 70%, transparent);
+    margin-top: 16px;
+  }
+
+  .summary {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  // 有图：图清晰铺底 + 顶部/底部主题色控底（保报头与标题可读），无模糊
+  &.has-image {
+    .cover-overlay {
+      display: block;
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--card-accent) 62%, transparent) 0%,
+        color-mix(in srgb, var(--card-accent) 18%, transparent) 20%,
+        color-mix(in srgb, var(--card-accent) 8%, transparent) 40%,
+        color-mix(in srgb, var(--card-accent) 62%, transparent) 100%);
+    }
+  }
+}
+
+// 7. 胶片：上下打孔带 + (有图) 底部剧照字幕条；(无图) 纸上杂志感 + 深色小字幕条
+.cover-layout-film {
+  .flex-column();
+
+  .cover-background {
+    height: 100%;
+    position: relative;
+    order: 1;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: none;
+    }
+
+    // 上横幅打孔带
+    &::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background-image: repeating-linear-gradient(
+        to right,
+        transparent 0,
+        transparent 14px,
+        color-mix(in srgb, #000 55%, transparent) 14px,
+        color-mix(in srgb, #000 55%, transparent) 22px
+      );
+      z-index: 5;
+    }
+
+    // 下横幅打孔带
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background-image: repeating-linear-gradient(
+        to right,
+        transparent 0,
+        transparent 14px,
+        color-mix(in srgb, #000 55%, transparent) 14px,
+        color-mix(in srgb, #000 55%, transparent) 22px
+      );
+      z-index: 5;
+    }
+  }
+
+  .cover-content {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    justify-content: flex-start;
+    align-items: stretch;
+    z-index: 3;
+    order: 2;
+    padding: 30px 30px 26px;
+  }
+
+  .cover-masthead {
+    position: relative;
+    padding: 0 0 12px;
+    color: var(--card-accent);
+
+    .cover-masthead-name {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+    }
+
+    .cover-masthead-kicker,
+    .cover-masthead-meta {
+      display: none;
+    }
+  }
+
+  .title-overlay {
+    background: none;
+    backdrop-filter: none;
+    padding: 0;
+    text-align: left;
+    border-radius: 0;
+    flex: none;
+  }
+
+  .title {
+    color: var(--card-text);
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+    font-size: 32px;
+    font-weight: 700;
+    text-shadow: none;
+    text-align: left;
+  }
+
+  .title-overlay::after {
+    content: 'SCENE·01';
+    display: block;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.24em;
+    font-size: 10px;
+    color: var(--card-accent);
+    opacity: 0.8;
+    margin-top: 10px;
+  }
+
+  .summary {
+    color: color-mix(in srgb, var(--card-text) 76%, var(--card-muted));
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.7;
+    margin-top: 14px;
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+    position: static;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // 有图：图清晰铺满 + 底部深色场记板浮层承载全部文字
+  // 深色面板+白字不依赖图片亮度，对比度绝对保证；顶部打孔带与 SCENE·01 保留胶片叙事
+  &.has-image {
+    .cover-overlay {
+      display: none;
+      visibility: hidden;
+    }
+
+    .cover-content {
+      justify-content: flex-end;
+      padding-bottom: 24px;
+    }
+
+    .cover-masthead {
+      color: #fff;
+      text-shadow: 0 1px 6px color-mix(in srgb, #000 55%, transparent);
+    }
+
+    .title-overlay {
+      flex: none;
+      width: 100%;
+      padding: 20px 24px 18px;
+      background: color-mix(in srgb, #0d100e 92%, transparent);
+      border: 1px solid color-mix(in srgb, #fff 10%, transparent);
+      border-top: 2px solid var(--card-accent);
+      border-radius: 10px;
+      backdrop-filter: none;
+      text-align: left;
+    }
+
+    .title {
+      color: #fff;
+      text-shadow: none;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .title-overlay::after {
+      color: var(--card-accent);
+      opacity: 0.9;
+      margin-top: 8px;
+    }
+
+    .summary {
+      color: color-mix(in srgb, #fff 90%, transparent);
+      text-shadow: none;
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -1384,51 +2112,14 @@
   justify-content: center;
   text-align: center;
   padding: @card-content-padding;
-  background: color-mix(in srgb, var(--card-accent) 15%, transparent);
-  border-radius: 12px;
-  backdrop-filter: blur(4px);
+  // 默认不再叠加半透明染色背板与模糊（原“糊一层”问题来源），由各布局自行决定文字底色策略
+  background: none;
+  border-radius: 0;
+  backdrop-filter: none;
   transition: all 0.3s ease;
 }
 
-.cover .title {
-  font: 700 22px/1.5 @font-family-base; // 增加行间距从1.3到1.5
-  margin-bottom: 8px;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9);
-  // 支持多行显示
-  white-space: pre-line;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-.cover .summary {
-  font-size: @font-size-md;
-  color: rgba(255,255,255,0.95);
-  line-height: 1.5;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.8);
-}
-
-.cover .meta {
-  margin-top: auto;
-  .flex-start();
-  gap: 8px;
-  color: white;
-  font-size: @font-size-sm;
-  line-height: 1.2; // 设置一致的行高确保垂直居中
-  // 左侧增加额外内边距，避免文字贴边
-  padding: 12px (@card-content-padding) 12px (@card-content-padding + 8px);
-  // 使用更暗的背景色替代backdrop-filter，避免圆角问题
-  background: rgba(0,0,0,0.75);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-left-radius: @card-border-radius;
-  border-bottom-right-radius: @card-border-radius;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-  // 确保在卡片容器内
-  box-sizing: border-box;
-  // 移除所有backdrop-filter相关属性，使用纯背景色
-}
+// .cover .title / .cover .summary moved into .cover {} block above for specificity (0,2,0)
 
 
 // .badge removed
@@ -1438,33 +2129,10 @@
   border: none;
   border-radius: 0;
 
-  // 移除卡片四个角的圆角，重置所有内部圆角
-  .cover .meta {
-    // 重置meta的所有圆角为0，因为卡片本身已无圆角
-    border-radius: 0 !important;
-    // 强制确保导出时文字垂直居中
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    line-height: 1.2 !important; // 统一行高
-    min-height: 44px !important; // 确保足够高度
-    padding: 10px (@card-content-padding) 10px (@card-content-padding + 8px) !important; // 减少上下padding确保居中
-  }
 
-  // 为了兼容html-to-image，添加backup效果
+  // 新版封面不再依赖 backdrop-filter，无需备用黑色压暗层
   .cover-content {
-    // 保持原有backdrop-filter，同时添加备用的半透明背景
-    background: rgba(0, 0, 0, 0.1);
-  }
-
-  .cover-layout-minimal .cover-content {
-    // 极简布局更微妙的背景
-    background: rgba(0, 0, 0, 0.05);
-  }
-
-  .cover-layout-center .cover-content {
-    // 居中布局适中的背景
-    background: rgba(0, 0, 0, 0.08);
+    background: transparent;
   }
 
   // 确保bg-html的filter效果在导出时可见
@@ -1473,14 +2141,6 @@
     filter: inherit;
   }
 
-  // 针对所有封面布局重置meta的圆角
-  .cover-layout-minimal .meta,
-  .cover-layout-center .meta,
-  .cover-layout-image-top .meta,
-  .cover-layout-image-bottom .meta,
-  .cover-layout-magazine .meta {
-    border-radius: 0;
-  }
 
   // 重置封面背景和内容区域的圆角
   .cover-background,
@@ -1514,7 +2174,7 @@
   min-width: 32px;
   min-height: 32px;
   padding: 0;
-  border-radius: 10px;
+  border-radius: @r12;
   font-size: @font-size-md;
 
   &:disabled {

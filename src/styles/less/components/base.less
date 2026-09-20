@@ -15,19 +15,57 @@
   --warning: #fbbf24;
   --danger: #ef4444;
 
-  // 全局色彩主题变量
-  --global-accent-classic: #7c5cff;
-  --global-accent-minimal: #3cc8a6;
+  // 全局色彩主题变量（墨绿·杂志工作室 低饱和配色）
+  --global-accent-classic: #2f6b45;
+  --global-accent-minimal: #7a9e7e;
   --global-accent-paper: #0f766e;
-  --global-accent-ocean: #60a5fa;
-  --global-accent-forest: #22c55e;
-  --global-accent-sunset: #fb7185;
-  --global-accent-grape: #a78bfa;
-  --global-accent-slate: #7dd3fc;
-  --global-accent-sand: #fbbf24;
+  --global-accent-ocean: #6b8fa6;
+  --global-accent-forest: #6b8a6b;
+  --global-accent-sunset: #c47e6c;
+  --global-accent-grape: #9585a5;
+  --global-accent-slate: #5a7080;
+  --global-accent-sand: #b87d4b;
+
+  // 微信安全色主题（WXLayoutSkill wechat-safe-palette）
+  --global-accent-parchment: #D4C4A8;
+  --global-accent-rose: #C4A0A0;
+  --global-accent-sage: #8A9470;
+  --global-accent-lavender: #9890AD;
+  --global-accent-warmNeutral: #5C5348;
+
+  // 微信安全色 · 强调色 H1(暖琥珀) / H2(板岩青)
+  --highlight-warm: #B8A078;
+  --highlight-cool: #8AADA4;
+  --highlight-warm-deep: #6E6248;
+  --highlight-cool-deep: #4A635C;
+  --highlight-warm-tint: #F0E8D8;
+  --highlight-cool-tint: #E4EDEA;
+
+  // 微信安全色 · 文字色系（与背景色解耦）
+  // 浅底文字色系 N(中性) / B(蓝灰)
+  --text-on-light-n1: #383838;
+  --text-on-light-n2: #525252;
+  --text-on-light-n3: #666666;
+  --text-on-light-n4: #888888;
+  --text-on-light-b1: #2F3840;
+  --text-on-light-b2: #4A5258;
+  --text-on-light-b3: #5C6570;
+  --text-on-light-b4: #7A8490;
+  // 深底文字色系 W(暖) / C(冷)
+  --text-on-dark-w1: #F4ECD7;
+  --text-on-dark-w2: #EDE4CF;
+  --text-on-dark-w3: #D4DCE3;
+  --text-on-dark-w4: #B8C4CC;
+  --text-on-dark-c1: #F0F2F4;
+  --text-on-dark-c2: #D4DCE3;
+  --text-on-dark-c3: #A8B8C4;
+  --text-on-dark-c4: #8A9AA8;
 
   // 默认 accent（classic主题），会被 global-theme-* 类覆盖
   --accent: var(--global-accent-classic);
+
+  // 品牌 logo 描边色（深色面板上使用亮绿保证可辨识）
+  --logo-stroke: #86cfa4;
 }
 
 // 浅色主题覆盖
@@ -46,6 +84,9 @@
   --warning: #f59e0b;
   --danger: #dc2626;
   // accent 将由 global-theme-* 类提供，不在这里覆盖
+
+  // 品牌 logo 描边色：浅色面板上使用品牌墨绿
+  --logo-stroke: #2b6b49;
 }
 
 // 全局重置
@@ -81,14 +122,14 @@ body {
   background: var(--bg);
 }
 
-// 主内容区域
+// 主内容区域：无内边距，编辑器/预览两大模块直接铺到页面背景上
 .main {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 0;
-  padding: @panel-padding;
+  padding: 0;
   min-height: 0;
-  height: calc(100vh - @header-height - @footer-height - 8px);
+  height: calc(100vh - @header-height - @footer-height);
   overflow: hidden;
 
   @media (max-width: @tablet-max) {
@@ -97,11 +138,14 @@ body {
   }
 }
 
-// 面板基础样式
+// 面板基础样式：无盒子感，背景与页面背景一致（"嵌"在背景上）
 .panel {
-  .panel-base();
   .flex-column();
   .full-height();
+  background: var(--bg);
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
 }
 
 // 编辑器特殊样式

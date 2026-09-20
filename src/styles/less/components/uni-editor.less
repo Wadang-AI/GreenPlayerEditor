@@ -5,222 +5,247 @@
 @import '../mixins/common.less';
 
 .uni-editor {
-  .flex-column();
+  .flex-row();
   .full-height();
+  position: relative;
   overflow: hidden;
 }
 
-.vditor-toolbar {
-  background-color: transparent;
-}
-
-
-.document-tabs {
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
-  padding: 2px 0 0 0; // 只保留顶部padding为hover效果预留空间，去掉底部padding避免断裂
-}
-
-.tabs-container {
+// ============================================================
+// 文档库侧栏（历史文章列表，占位式：展开时挤压编辑器宽度，
+// 收起时只留一条 40px 图标触发条）
+// ============================================================
+.doc-sidebar {
   .flex-column();
-  height: 36px; // 增加2px高度来配合document-tabs的增加的顶部padding
-  padding: 0 @general-content-padding;
-  position: relative;
-}
+  position: absolute;
+  z-index: 20;
+  inset: 0 auto 0 0;
+  width: 280px;
+  height: 100%;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 14px 0 32px color-mix(in srgb, #000 12%, transparent);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 
-.tabs-main {
-  .flex-start();
-  flex: 1;
-  min-height: 0;
-  position: relative;
-}
-
-.tabs-scroll {
-  .flex-start();
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: visible; // 保持visible以避免切割hover效果
-  gap: 4px;
-  padding: 2px @general-content-padding 0 0; // 增加顶部padding为hover效果预留空间
-
-  // 隐藏原生滚动条
-  scrollbar-width: none; // Firefox
-  -ms-overflow-style: none; // Internet Explorer 10+
-
-  &::-webkit-scrollbar {
-    display: none; // Safari and Chrome
+  // 折叠态不再参与布局，只通过悬浮按钮呼出
+  &.collapsed {
+    transform: translateX(-102%);
+    box-shadow: none;
+    pointer-events: none;
   }
 }
 
-// 底部小滚动条指示器
-.tabs-scrollbar {
-  height: 2px;
-  background: transparent;
-  margin: 0 @general-content-padding;
-  border-radius: 1px;
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.tabs-container:hover .tabs-scrollbar {
-  opacity: 1;
-}
-
-.tabs-scrollbar-thumb {
-  height: 100%;
-  background-color: var(--border);
-  border-radius: 1px;
-  transition: background-color 0.2s ease;
-}
-
-.tabs-container:hover .tabs-scrollbar-thumb {
-  background-color: var(--muted);
-}
-
-.tab {
-  .button-base();
+.doc-sidebar-fab {
+  position: absolute;
+  z-index: 21;
+  top: 6px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-width: 96px;
-  max-width: 180px;
-  height: 34px;
-  padding: 6px 16px;
-  border-radius: (@content-border-radius + 2) (@content-border-radius + 2) 0 0;
-  border-bottom: 1px solid transparent;
-  position: relative;
-  flex-shrink: 0;
-
-  &.active {
-    background:
-      linear-gradient(
-        134deg,
-        color-mix(in srgb, var(--accent) 36%, var(--panel)) 0%,
-        color-mix(in srgb, var(--accent) 52%, transparent) 100%
-      );
-    border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
-    border-bottom-color: transparent;
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, 0.75) 24%, transparent),
-      0 10px 18px -12px color-mix(in srgb, var(--accent) 32%, transparent);
-    color: color-mix(in srgb, var(--text) 96%, white);
-    z-index: 1;
-  }
-}
-
-.tab-content {
-  .flex-start();
-  padding: 0 @general-content-padding;
-  width: 100%;
-  min-width: 0;
-}
-
-
-.tab-title {
-  flex: 1;
-  font-size: @font-size-sm;
-  font-weight: @font-weight-medium;
-  color: var(--text);
-  .text-truncate();
-}
-
-.tab-close {
-  .flex-center();
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
   color: var(--muted);
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  box-shadow: 0 4px 12px color-mix(in srgb, #000 10%, transparent);
+  cursor: pointer;
+  .focus-ring();
 
   &:hover {
-    background: color-mix(in srgb, var(--accent) 20%, transparent);
     color: var(--accent);
+    border-color: var(--accent);
+    background: var(--panel);
   }
 }
 
-.tabs-actions {
-  display: flex;
-  align-items: center; // 垂直居中
-  justify-content: flex-start;
-  gap: 4px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 3;
-  margin-left: 4px;
-  padding-left: @general-content-padding;
-  border-left: 1px solid var(--border);
-  height: 100%; // 占满容器高度以实现真正的垂直居中
-}
-
-.action-btn {
-  .button-base();
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  padding: 0;
-  gap: 0;
-  border-radius: @content-border-radius + 4;
-}
-
-// 文档管理器样式
-.document-manager {
-  .flex-column();
-  flex-shrink: 0;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  max-height: 300px;
-  overflow: hidden; // 防止整体滚动
-}
-
-.manager-header {
+.sidebar-header {
   .flex-between();
   align-items: center;
-  padding: 12px @panel-padding;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--border);
-  flex-shrink: 0; // 固定头部，不参与滚动
-  background: var(--panel);
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 2; // 确保头部在内容上方
+  flex-shrink: 0;
+  gap: 6px;
 }
 
-.header-title {
+.sidebar-title {
   .flex-start();
-  align-items: center;
-  gap: 8px;
+  align-items: baseline;
+  gap: 6px;
   min-width: 0;
   flex: 1;
-
-  h3 {
-    margin: 0;
-    font-size: @font-size-md;
-    font-weight: @font-weight-semibold;
-    color: var(--text);
-  }
+  overflow: hidden;
 }
 
-.document-count {
+.sidebar-title-text {
   font-size: @font-size-sm;
+  font-weight: @font-weight-semibold;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.sidebar-count {
+  font-size: @font-size-xs;
   color: var(--muted);
   white-space: nowrap;
 }
 
-.header-search {
-  position: relative;
-  min-width: 140px;
-  max-width: 200px;
+.sidebar-actions {
+  .flex-start();
+  align-items: center;
+  gap: 2px;
   flex-shrink: 0;
 }
 
+.sidebar-search {
+  position: relative;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding: 8px 6px;
+}
+
+.action-btn {
+  .button-base();
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  gap: 0;
+  border-radius: @content-border-radius + 2;
+}
+
+.vditor-toolbar {
+  background-color: transparent;
+  border-bottom: 1px solid var(--border);
+  padding: 4px 8px 4px 48px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  gap: 2px 0;
+  align-items: center;
+
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  // 工具栏按钮基础间距
+  // 只针对直接子元素 button，避免覆盖 headings dropdown 等面板内的按钮
+  .vditor-toolbar__item {
+    padding: 1px;
+
+    > button {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--muted);
+      transition: all 0.15s ease;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent) 12%, transparent);
+        color: var(--text);
+      }
+
+      &.vditor-toolbar__item--current {
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
+        color: var(--accent);
+      }
+    }
+  }
+
+  // 分隔线样式
+  .vditor-toolbar__divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border);
+    margin: 0 3px;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  // 窄屏工具栏优化
+  @media (max-width: @tablet-max) {
+    padding: 3px 4px;
+    gap: 1px 0;
+
+    .vditor-toolbar__item {
+      padding: 1px;
+
+      > button {
+        width: 26px;
+        height: 26px;
+
+        svg {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+
+    .vditor-toolbar__divider {
+      margin: 0 2px;
+      height: 16px;
+    }
+  }
+
+  @media (max-width: @mobile-max) {
+    padding: 2px 4px;
+
+    .vditor-toolbar__item {
+      > button {
+        width: 24px;
+        height: 24px;
+
+        svg {
+          width: 13px;
+          height: 13px;
+        }
+      }
+    }
+
+    .vditor-toolbar__divider {
+      margin: 0 1px;
+      height: 14px;
+    }
+  }
+}
+
+// 增强 Vditor tooltip 显示
+.vditor-tip {
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+// 文档库搜索框
 .search-input {
   width: 100%;
-  padding: 6px 14px;
-  padding-right: 32px;
+  padding: 6px 30px 6px 10px;
   background: color-mix(in srgb, var(--panel) 92%, color-mix(in srgb, var(--accent) 6%, transparent));
   border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-radius: (@content-border-radius + 2);
@@ -269,18 +294,8 @@
   }
 }
 
-.manager-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: @general-content-padding;
-  min-height: 0; // 确保flex子元素能够正确收缩
-
-  // 使用全局滚动条样式，保持与其他区域一致
-}
-
 .load-more-container {
-  padding: @general-content-padding 0;
+  padding: 10px 0;
   text-align: center;
 }
 
@@ -289,79 +304,64 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 18px;
-  font-size: @font-size-sm;
+  padding: 6px 14px;
+  font-size: @font-size-xs;
   margin: 0 auto;
 }
 
 .document-list {
   .flex-column();
-  gap: 4px;
+  gap: 2px;
 }
 
 .document-item {
   .flex-between();
-  padding: @general-content-padding 12px;
-  border-radius: @content-border-radius + 2;
+  align-items: center;
+  padding: 8px 8px 8px 10px;
+  border-radius: (@content-border-radius + 2);
   cursor: pointer;
   position: relative;
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  background:
-    linear-gradient(
-      136deg,
-      color-mix(in srgb, var(--panel) 96%, color-mix(in srgb, var(--accent) 4%, transparent)) 0%,
-      color-mix(in srgb, var(--panel) 88%, color-mix(in srgb, var(--accent) 8%, transparent)) 100%
-    );
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, 0.5) 14%, transparent),
-    0 1px 2px color-mix(in srgb, var(--border) 55%, transparent);
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  gap: 6px;
 
   &:hover {
-    border-color: color-mix(in srgb, var(--accent) 32%, var(--border));
-    background:
-      linear-gradient(
-        136deg,
-        color-mix(in srgb, var(--panel) 97%, color-mix(in srgb, var(--accent) 10%, transparent)) 0%,
-        color-mix(in srgb, var(--panel) 84%, color-mix(in srgb, var(--accent) 18%, transparent)) 100%
-      );
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, 0.6) 18%, transparent),
-      0 6px 12px -8px color-mix(in srgb, var(--accent) 28%, transparent);
-    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--accent) 6%, var(--panel));
+
+    .document-actions {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
   }
 
   &.active {
-    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-    background:
-      linear-gradient(
-        134deg,
-        color-mix(in srgb, var(--accent) 34%, var(--panel)) 0%,
-        color-mix(in srgb, var(--accent) 50%, transparent) 100%
-      );
-    color: color-mix(in srgb, var(--text) 96%, white);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--accent);
+    }
   }
 
   &.selected {
-    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-    background:
-      linear-gradient(
-        134deg,
-        color-mix(in srgb, var(--accent) 28%, var(--panel)) 0%,
-        color-mix(in srgb, var(--accent) 42%, transparent) 100%
-      );
-    color: color-mix(in srgb, var(--text) 94%, white);
+    background: color-mix(in srgb, var(--accent) 8%, var(--panel));
   }
 
   &.closed {
-    border-style: dashed;
-
     .document-info {
-      opacity: 0.6; // 只对文档信息部分应用透明度
+      opacity: 0.65;
     }
-
   }
-
 }
 
 .document-info {
@@ -370,22 +370,20 @@
 }
 
 .document-title {
-  .flex-start();
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-
 .title-text {
-  flex: 1;
-  font-size: @font-size-md;
+  display: block;
+  font-size: @font-size-sm;
   font-weight: @font-weight-medium;
   color: var(--text);
   .text-truncate();
 }
 
-
 .document-meta {
-  .flex-start();
+  display: flex;
+  align-items: center;
   gap: 8px;
   font-size: @font-size-xs;
   color: var(--muted);
@@ -395,11 +393,21 @@
   .text-truncate();
 }
 
+// 操作按钮：hover 时滑入显示
 .document-actions {
-  .flex-start();
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.document-item:hover .document-actions {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .doc-action-btn {
@@ -408,16 +416,16 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
   border-radius: (@button-border-radius + 2);
-  color: color-mix(in srgb, var(--text) 94%, white);
+  color: color-mix(in srgb, var(--text) 88%, white);
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     pointer-events: none;
   }
 
@@ -425,14 +433,9 @@
     color: #f87171;
 
     &:hover {
-      background:
-        linear-gradient(
-          140deg,
-          color-mix(in srgb, #ef4444 45%, var(--panel)) 0%,
-          color-mix(in srgb, #ef4444 25%, var(--panel)) 100%
-        );
-      border-color: color-mix(in srgb, #ef4444 70%, var(--border));
-      color: #ffffff;
+      background: color-mix(in srgb, #ef4444 12%, var(--panel));
+      border-color: color-mix(in srgb, #ef4444 60%, transparent);
+      color: #ef4444;
     }
   }
 }
@@ -442,6 +445,104 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  position: relative;
+}
+
+.image-resize-menu {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: auto;
+  
+  .resize-menu-content {
+    position: absolute;
+    bottom: 10px;
+    right: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px color-mix(in srgb, rgba(0, 0, 0, 0.2) 20%, transparent);
+    padding: 8px;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: fadeIn 0.2s ease;
+    
+    .resize-title {
+      font-size: 12px;
+      color: var(--fg-secondary);
+      margin-bottom: 4px;
+      padding-left: 2px;
+    }
+    
+    .resize-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      
+      button {
+        padding: 4px 8px;
+        font-size: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-hover);
+        border-radius: 4px;
+        color: var(--fg);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: var(--accent);
+          color: white;
+          border-color: var(--accent);
+        }
+        
+        &.active {
+          background: var(--accent);
+          color: white;
+          border-color: var(--accent);
+        }
+      }
+    }
+  }
+}
+
+.image-resize-menu .resize-custom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.image-resize-menu .resize-input {
+  width: 56px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--fg);
+}
+.image-resize-menu .resize-percent {
+  font-size: 12px;
+  color: var(--fg-secondary);
+}
+.image-resize-menu .resize-apply {
+  padding: 3px 8px;
+  font-size: 12px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.image-resize-menu .resize-apply:hover {
+  filter: brightness(1.08);
+}
+.image-resize-menu .resize-options.align {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .vditor-host {
@@ -599,49 +700,6 @@
 
 // 响应式设计
 .mobile({
-  .document-tabs {
-    padding: 2px 0 0 0; // 移动端也只保留顶部padding，避免断裂
-  }
-
-  .tabs-container {
-    padding: 0 4px;
-    height: 30px; // 对应调整移动端高度
-  }
-
-  .tab {
-    min-width: 80px;
-    max-width: 120px;
-    height: 28px;
-  }
-
-  .tab-content {
-    padding: 0 6px;
-  }
-
-  .tab-title {
-    font-size: @font-size-xs;
-  }
-
-  .tabs-actions {
-    gap: 2px;
-    padding-left: 6px;
-  }
-
-  .action-btn {
-    width: 26px;
-    min-width: 26px;
-    height: 26px;
-    min-height: 26px;
-  }
-
-  .document-manager {
-    max-height: 250px;
-  }
-
-  .manager-header {
-    padding: 8px 12px;
-  }
-
   .document-item {
     padding: 6px 8px;
   }

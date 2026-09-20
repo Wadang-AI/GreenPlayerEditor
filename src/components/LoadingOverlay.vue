@@ -18,14 +18,14 @@ import { computed } from 'vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
-  text: { type: String, default: '处理中...' },
+  text: { type: String, default: '' },
   theme: { type: String, default: 'classic' },
   pageTheme: { type: String, default: 'theme-dark' }
 })
 
 // 主题色映射
 const themeColors = {
-  classic: '#3b82f6',
+  classic: '#2f6b45',
   minimal: '#6b7280',
   paper: '#8b5cf6',
   ocean: '#0ea5e9',

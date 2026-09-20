@@ -12,38 +12,43 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: @font-family-base;
     font-weight: @font-weight-bold;
-    color: var(--card-accent);
+    color: var(--card-accent-deep, var(--card-accent));
     margin: 0;
   }
 
-  h1 { font-size: @font-size-h1; }
-  h2 { font-size: @font-size-h2; }
-  h3 { font-size: @font-size-h3; }
-  h4 { font-size: @font-size-h4; }
+  h1 { font-size: @font-size-h1; margin: 0.8em 0 0.4em; }
+  h2 { font-size: @font-size-h2; margin: 0.6em 0 0.3em; }
+  h3 { font-size: @font-size-h3; margin: 0.5em 0 0.2em; }
+  h4 { font-size: @font-size-h4; margin: 0.4em 0 0.15em; }
   h5 { font-size: @font-size-h5; }
   h6 { font-size: @font-size-h6; }
 
+  // 加粗着重：深色文字 + 底部发丝滑线（杂志感；纯色+实线，微信零降级）
   strong {
-    color: var(--card-accent);
+    color: var(--card-accent-deep, var(--card-accent));
     font-weight: 700;
-    background: linear-gradient(
-      45deg,
-      color-mix(in srgb, var(--card-accent) 15%, transparent),
-      color-mix(in srgb, var(--card-accent) 8%, transparent)
-    );
-    padding: 1px 3px;
-    border-radius: 3px;
-    box-shadow: 0 1px 3px color-mix(in srgb, var(--card-accent) 20%, transparent);
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 55%, transparent);
   }
 
   p {
     margin: 0.3em 0;
     text-align: justify;
     line-height: 1.7;
+
+    // 空段落占位 —— 确保空行在预览中可见
+    &:empty::before {
+      content: '\00a0';
+      line-height: 1;
+      visibility: hidden;
+    }
   }
 
   a {
-    color: var(--card-accent);
+    color: var(--card-accent-deep, var(--card-accent));
     text-decoration: none;
     border-bottom: 2px solid transparent;
     background: linear-gradient(
@@ -69,73 +74,78 @@
 
   blockquote {
     position: relative;
-    border-left: 4px solid var(--card-accent);
-    border-right: 4px solid var(--card-accent);
-    background: color-mix(in srgb, var(--card-accent) 8%, transparent);
-    color: color-mix(in srgb, var(--card-text) 85%, var(--card-accent));
-    padding: 16px 24px 16px 24px;
-    margin: @general-content-padding 0;
-    border-radius: 8px;
+    border-left: 3px solid var(--card-accent);
+    border-right: none;
+    background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
+    color: color-mix(in srgb, var(--card-text) 90%, var(--card-accent));
+    padding: @inner-padding;
+    margin: @paragraph-gap 0;
+    border-radius: @r12;
     font-size: @font-size-md;
     font-style: italic;
     line-height: 1.6;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--card-accent) 10%, transparent);
 
     // 左引用符号
     &::before {
+      /* 修复：左双引号 U+201C（"） */
       content: '"';
       position: absolute;
       top: 8px;
       left: 8px;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
       color: var(--card-accent);
-      opacity: 0.6;
+      opacity: 0.3;
       font-family: Georgia, serif;
       line-height: 1;
     }
 
     // 右引用符号
     &::after {
-      content: '"';
+      content: '\201D';
       position: absolute;
-      bottom: 8px;
-      right: 8px;
-      font-size: 24px;
+      bottom: 2px;
+      right: 12px;
+      font-size: 28px;
       font-weight: bold;
       color: var(--card-accent);
-      opacity: 0.6;
+      opacity: 0.3;
       font-family: Georgia, serif;
       line-height: 1;
     }
 
     // 第一个段落的特殊样式
     p:first-child {
-      margin-top: 8px; // 为引用符号留出空间
+      margin-top: 4px;
     }
 
     p:last-child {
-      margin-bottom: 8px; // 为右下角引用符号留出空间
+      margin-bottom: 4px;
+    }
+
+    strong {
+      color: var(--card-accent-deep, var(--card-accent));
+      font-weight: 700;
+      font-style: normal;
     }
 
     // 嵌套引用
     blockquote {
-      margin: 12px 0;
-      padding: 8px 12px;
+      margin: 10px 0;
+      padding: 10px 12px;
       border-left-width: 2px;
-      border-right-width: 2px;
       font-size: 0.95em;
 
       &::before {
-        font-size: 18px;
+        font-size: 20px;
         top: 4px;
-        left: 4px;
+        left: 6px;
       }
 
       &::after {
-        font-size: 18px;
-        bottom: 4px;
-        right: 4px;
+        font-size: 20px;
+        bottom: 2px;
+        right: 8px;
       }
     }
   }
@@ -190,14 +200,13 @@
     background: color-mix(in srgb, var(--card-muted) 15%, var(--card-bg));
     color: var(--card-text);
     padding: 0;
-    border-radius: @content-border-radius;
+    border-radius: @r12;
     overflow-x: auto;
-    overflow-y: visible; // 确保垂直方向不被截断
+    overflow-y: visible;
     margin: 16px 0;
-    border: 1px solid color-mix(in srgb, var(--card-border) 50%, transparent);
+    border: 1px solid color-mix(in srgb, var(--card-bg) 70%, #000 30%);
     position: relative;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--card-accent) 10%, transparent);
-    min-height: 60px; // 确保最小高度
+    min-height: 60px;
 
     // Language label
     .code-language {
@@ -205,11 +214,11 @@
       top: 0;
       right: 0;
       background: var(--card-accent);
-      color: white;
+      color: var(--card-on-accent, #fff);
       padding: 4px 8px;
       font-size: 10px;
       font-weight: bold;
-      border-bottom-left-radius: 4px;
+      border-bottom-left-radius: 0;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-family: @font-family-mono;
@@ -263,15 +272,15 @@
   // Inline code
   code:not(pre code) {
     background: color-mix(in srgb, var(--card-muted) 12%, var(--card-bg));
-    color: color-mix(in srgb, var(--card-accent) 90%, var(--card-text));
+    color: var(--card-accent-deep, var(--card-accent));
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: @r12;
     font-family: @font-family-mono;
     white-space: pre-wrap;
     word-break: break-word;
     font-size: 0.9em;
     font-weight: 500;
-    border: 1px solid color-mix(in srgb, var(--card-accent) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--card-bg) 65%, #000 35%);
 
     &.hljs-inline {
       background: color-mix(in srgb, var(--card-accent) 15%, var(--card-bg));
@@ -411,7 +420,7 @@
       height: 16px;
       border-radius: 8px;
       background: var(--card-accent);
-      color: white;
+      color: var(--card-on-accent, #fff);
       font-size: 10px;
       font-weight: bold;
       display: flex;
@@ -428,36 +437,26 @@
   img {
     max-width: 100%;
     height: auto;
-    border-radius: @content-border-radius;
-    margin: 0;
+    border-radius: @r12;
+    margin: 4px;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--card-accent) 12%, transparent);
-    border: 2px solid color-mix(in srgb, var(--card-accent) 20%, transparent);
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px color-mix(in srgb, var(--card-accent) 20%, transparent);
-      border-color: color-mix(in srgb, var(--card-accent) 40%, transparent);
-    }
+    vertical-align: top;
+    /* 无白底、无阴影、无rgba（WXLayoutSkill安全规则） */
   }
 
   table {
     border-collapse: collapse;
     width: 100%;
     margin: 20px 0;
-    border: 2px solid var(--card-accent);
-    border-radius: @content-border-radius;
+    border: 2px solid color-mix(in srgb, var(--card-bg) 70%, #000 30%);
+    border-radius: @r12;
     overflow: hidden;
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--card-accent) 10%, transparent);
     background: var(--card-bg);
   }
 
   th, td {
     border: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 20%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--card-bg) 75%, #000 25%);
     padding: 12px 16px;
     text-align: left;
     transition: background-color 0.2s ease;
@@ -466,23 +465,23 @@
   th {
     background: var(--card-accent);
     font-weight: 600;
-    color: white;
+    color: var(--card-on-accent, #fff);
     font-size: 0.9em;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 80%, black);
+    border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 80%, #000);
 
     &:first-child {
-      border-top-left-radius: @content-border-radius;
+      border-top-left-radius: @r12;
     }
 
     &:last-child {
-      border-top-right-radius: @content-border-radius;
+      border-top-right-radius: @r12;
     }
   }
 
   td {
-    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 15%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--card-bg) 80%, #000 20%);
     color: var(--card-text);
   }
 
@@ -556,7 +555,7 @@
       font-weight: 600;
       padding: 2px 8px;
       border: 1px solid color-mix(in srgb, var(--card-accent) 30%, transparent);
-      border-radius: 10px;
+      border-radius: @r-pill;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       white-space: nowrap;
@@ -567,7 +566,7 @@
       margin: 16px 0;
       padding: 8px 0;
       border: 1px dashed color-mix(in srgb, var(--card-accent) 40%, transparent);
-      border-radius: 6px;
+      border-radius: @r12;
       background: color-mix(in srgb, var(--card-accent) 5%, transparent);
 
       .page-break-line {

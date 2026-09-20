@@ -3,10 +3,20 @@
 @footer-height: 44px;
 @panel-padding: 16px;
 @panel-gap: 16px;
-@panel-border-radius: 14px;
-@card-border-radius: 14px;
-@button-border-radius: 8px;
-@content-border-radius: 8px;
+@panel-border-radius: 6px;
+@card-border-radius: 12px;  // r12: 微信安全圆角（WXLayoutSkill）
+@button-border-radius: 5px;
+@content-border-radius: 12px;  // r12: 微信安全圆角（WXLayoutSkill）
+
+// 微信安全布局Token（WXLayoutSkill wechat-layout-tokens）
+@r12: 12px;  // 外卡/内嵌块/代码框/图片槽统一12px
+@r-pill: 980px;  // 仅pill标签例外
+@canvas-padding: 20px 16px 28px;
+@card-padding: 32px 22px;
+@card-gap: 18px;
+@section-divider-top: 28px;
+@paragraph-gap: 18px;
+@inner-padding: 14px 16px;
 
 // 断点
 @mobile-max: 768px;
@@ -18,15 +28,12 @@
 @z-overlay: 10;
 @z-modal: 100;
 
-// 字体 - 使用系统字体，避免网络请求
-@font-family-base: "Microsoft YaHei", "PingFang SC", "Source Han Sans SC",
-                  "Noto Sans CJK SC", "Hiragino Sans GB", sans-serif;
-@font-family-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", serif;
-@font-family-mono: "SF Mono", "Monaco", "Cascadia Code", "Roboto Mono", "Consolas", "Fira Code", monospace;
+// 字体族定义已统一至 variables/typography.less，此处不再重复定义
+// 避免双重 @font-family-base 冲突
 
 // 卡片尺寸
 @card-width: 324px;
-@card-height: 540px;
+@card-height: 432px;
 @card-content-padding: 16px;
 @card-title-summary-gap: 24px;
 

@@ -26,12 +26,28 @@
       <!-- 封面预览和布局选择区域 -->
       <div class="cover-left-section">
         <div class="cover-preview-section">
+          <button
+            class="cover-settings-toggle"
+            type="button"
+            @click="showCoverEditor = !showCoverEditor"
+            :class="{ active: showCoverEditor }"
+            :aria-expanded="showCoverEditor"
+            :aria-label="showCoverEditor ? t('common.collapse') : t('common.expand')"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16"/>
+              <circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/>
+              <circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+              <circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"/>
+            </svg>
+            <span>{{ showCoverEditor ? t('cardsPreview.closeEditor') : t('cardsPreview.editCover') }}</span>
+          </button>
           <div class="preview-container">
-            <div class="card card-theme cover-preview" :class="[pageTheme, cardTheme, `cover-layout-${currentCoverLayout}`]">
-              <div class="inner cover">
+            <div class="card card-theme cover-preview" :class="[pageTheme, cardTheme, `cover-layout-${currentCoverLayout}`, { 'has-image': !!cover.coverImage }]">
+              <div class="inner cover" :class="[`cover-layout-${currentCoverLayout}`, { 'has-image': !!cover.coverImage }]">
                 <div class="cover-background">
                   <template v-if="cover.coverImage">
-                    <img :src="cover.coverImage" alt="封面图片" :style="coverImageStyle" />
+                    <img :src="cover.coverImage" :alt="t('cardsPreview.coverImage')" :style="coverImageStyle" />
                   </template>
                   <template v-else-if="coverBgHtml">
                     <div
@@ -53,6 +69,11 @@
                   <div class="cover-overlay"></div>
                 </div>
                 <div class="cover-content">
+                  <div v-if="showDocInfo && (docMeta.masthead || docMeta.kicker || docMeta.issue || docMeta.date || docMeta.author)" class="cover-masthead">
+                    <span class="cover-masthead-name">{{ docMeta.masthead }}</span>
+                    <span v-if="docMeta.kicker" class="cover-masthead-kicker">{{ docMeta.kicker }}</span>
+                    <span v-if="docMeta.issue || docMeta.date || docMeta.author" class="cover-masthead-meta">{{ [docMeta.issue, docMeta.date, docMeta.author].filter(Boolean).join(' · ') }}</span>
+                  </div>
                   <div class="title-overlay">
                     <div class="title">{{ cover.title }}</div>
                     <div
@@ -60,10 +81,6 @@
                       class="summary"
                     >{{ truncatedSummary }}</div>
                   </div>
-                </div>
-                <div v-if="showMeta" class="meta">
-                  <span>{{ t('cardsPreview.wordCount', { count: cover.wordCount }) }}</span>
-                  <span>{{ t('cardsPreview.readingTime', { minutes: cover.minutes }) }}</span>
                 </div>
               </div>
             </div>
@@ -90,7 +107,7 @@
       </div>
 
       <!-- 内容编辑面板 -->
-      <div class="cover-edit-panel">
+      <div v-if="showCoverEditor" class="cover-edit-panel">
     <div class="edit-section">
       <div class="content-edit-form">
         <div class="form-group">
@@ -105,7 +122,7 @@
               </svg>
             </button>
           </div>
-          <textarea v-model="cover.title" class="form-textarea" rows="2" :placeholder="t('cardsPreview.titlePlaceholder')"></textarea>
+          <textarea v-model="cover.title" class="form-textarea" rows="2" :placeholder="t('cardsPreview.titlePlaceholder')" @input="markCoverFieldEdited('title')"></textarea>
         </div>
         <div class="form-group">
           <div class="form-label-with-sync">
@@ -119,7 +136,7 @@
               </svg>
             </button>
           </div>
-          <textarea v-model="cover.summary" class="form-textarea" rows="6" :placeholder="t('cardsPreview.summaryPlaceholder')"></textarea>
+          <textarea v-model="cover.summary" class="form-textarea" rows="6" :placeholder="t('cardsPreview.summaryPlaceholder')" @input="markCoverFieldEdited('summary')"></textarea>
         </div>
       </div>
     </div>
@@ -141,7 +158,7 @@
           <input type="file" ref="imageInput" @change="handleImageUpload" accept="image/*" style="display: none;">
           <div class="upload-zone" @click="$refs.imageInput?.click()">
             <div v-if="cover.coverImage" class="current-image">
-              <img :src="cover.coverImage" alt="当前图片">
+              <img :src="cover.coverImage" :alt="t('cardsPreview.currentImage')">
               <div class="image-overlay">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -188,14 +205,14 @@
           </div>
 
           <div class="form-group">
-            <label>{{ t('cardsPreview.showMeta') }}</label>
+            <label>{{ t('cardsPreview.showDocInfo') }}</label>
             <div class="radio-group">
               <label class="radio-option">
-                <input type="radio" :value="true" v-model="showMeta" @change="persistShowMeta" />
+                <input type="radio" :value="true" v-model="showDocInfo" @change="persistShowDocInfo" />
                 <span>{{ t('cardsPreview.show') }}</span>
               </label>
               <label class="radio-option">
-                <input type="radio" :value="false" v-model="showMeta" @change="persistShowMeta" />
+                <input type="radio" :value="false" v-model="showDocInfo" @change="persistShowDocInfo" />
                 <span>{{ t('cardsPreview.hide') }}</span>
               </label>
             </div>
@@ -227,10 +244,10 @@
           @click="scrollToCard(idx)"
         >
           <template v-if="c.type === 'cover'">
-            <div class="inner cover" :class="`cover-layout-${currentCoverLayout}`">
+            <div class="inner cover" :class="[`cover-layout-${currentCoverLayout}`, { 'has-image': !!cover.coverImage }]">
               <div class="cover-background">
                 <template v-if="cover.coverImage">
-                  <img :src="cover.coverImage" alt="封面图片" :style="coverImageStyle" />
+                  <img :src="cover.coverImage" :alt="t('cardsPreview.coverImage')" :style="coverImageStyle" />
                 </template>
                 <template v-else-if="coverBgHtml">
                   <div
@@ -252,14 +269,15 @@
                 <div class="cover-overlay"></div>
               </div>
               <div class="cover-content">
+                <div v-if="showDocInfo && (docMeta.masthead || docMeta.kicker || docMeta.issue || docMeta.date || docMeta.author)" class="cover-masthead">
+                  <span class="cover-masthead-name">{{ docMeta.masthead }}</span>
+                  <span v-if="docMeta.kicker" class="cover-masthead-kicker">{{ docMeta.kicker }}</span>
+                  <span v-if="docMeta.issue || docMeta.date || docMeta.author" class="cover-masthead-meta">{{ [docMeta.issue, docMeta.date, docMeta.author].filter(Boolean).join(' · ') }}</span>
+                </div>
                 <div class="title-overlay">
                   <div class="title">{{ cover.title }}</div>
                   <div v-if="currentCoverLayout !== 'minimal'" class="summary">{{ truncatedSummary }}</div>
                 </div>
-              </div>
-              <div v-if="showMeta" class="meta">
-                <span>{{ t('cardsPreview.wordCount', { count: cover.wordCount }) }}</span>
-                <span>{{ t('cardsPreview.readingTime', { minutes: cover.minutes }) }}</span>
               </div>
             </div>
           </template>
@@ -267,6 +285,7 @@
             <div class="inner" style="position: relative;">
               <div
                 class="content-html content-rich scaled-content"
+                :class="[`typography-${stylePreset}`, `spacing-${spacingPreset}`]"
                 v-html="c.html"
                 :style="{
                   transform: `scale(${props.scale})`,
@@ -342,6 +361,7 @@ import * as htmlToImage from 'html-to-image'
 import { useI18n } from 'vue-i18n'
 import { useToast } from '../composables/useToast'
 import { highlightCodeBlocks } from '../utils/highlight.js'
+import { replaceImageSrcWithDataUrls } from '../utils/imageStore.js'
 import LoadingOverlay from './LoadingOverlay.vue'
 
 const { t } = useI18n()
@@ -353,11 +373,16 @@ const props = defineProps({
   pageTheme: { type: String, default: 'theme-dark' }, // 'theme-light' | 'theme-dark'
   scale: { type: Number, default: 0.75 }, // 缩放比例 0.5-1.0
   showLoading: { type: Boolean, default: false },
+  stylePreset: { type: String, default: 'classic' },
+  spacingPreset: { type: String, default: 'standard' },
+  docMeta: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['generated'])
 
 const CARD_CONTENT_PADDING = 16
+const EXPORT_BASE_WIDTH = 1080
+const EXPORT_MAX_SCALE = 6
 
 // pageTheme 通过 CSS 继承从父组件获取，无需再次应用类名
 
@@ -381,11 +406,14 @@ const cover = ref({
   derivedSummary: '',
   coverImage: null,
   derivedCoverImage: null,
-  wordCount: 0,
-  minutes: 1,
   originalSummary: '',
   imageFit: 'cover', // 'cover' | 'contain'
   imagePosition: 'center center',
+})
+// 区分“还没填”和“用户明确删空”。空字符串也是有效的手动设置。
+const coverOverrides = ref({
+  title: false,
+  summary: false,
 })
 const coverBgHtml = ref('')
 
@@ -395,9 +423,13 @@ const highlightedCoverBgHtml = computed(() => {
 })
 const imageInput = ref(null)
 
-// Meta显示控制
-const showMeta = ref(true) // 默认显示
-const META_SHOW_KEY = 'uni.showMeta'
+const showDocInfo = ref(true) // 卡片封面默认显示文档信息（报头）
+// 封面编辑仍然是卡片模式的主操作区；浮动按钮只负责临时收起/展开。
+const showCoverEditor = ref(true)
+const DOCINFO_SHOW_KEY = 'uni.showDocInfo'
+function persistShowDocInfo() {
+  try { localStorage.setItem(DOCINFO_SHOW_KEY, JSON.stringify(showDocInfo.value)) } catch {}
+}
 
 // 计算摘要截断
 const truncatedSummary = computed(() => {
@@ -458,7 +490,7 @@ const coverImageStyle = computed(() => ({
 
 // Loading spinner 样式（与LoadingOverlay保持一致）
 const themeColors = {
-  'card-theme-classic': '#3b82f6',
+  'card-theme-classic': '#2f6b45',
   'card-theme-minimal': '#6b7280',
   'card-theme-paper': '#8b5cf6',
   'card-theme-ocean': '#0ea5e9',
@@ -466,7 +498,13 @@ const themeColors = {
   'card-theme-sunset': '#f59e0b',
   'card-theme-grape': '#a855f7',
   'card-theme-slate': '#64748b',
-  'card-theme-sand': '#d97706'
+  'card-theme-sand': '#d97706',
+  // 微信安全色主题
+  'card-theme-parchment': '#D4C4A8',
+  'card-theme-rose': '#C4A0A0',
+  'card-theme-sage': '#8A9470',
+  'card-theme-lavender': '#9890AD',
+  'card-theme-warmNeutral': '#5C5348'
 }
 
 const accentColor = computed(() => {
@@ -498,7 +536,7 @@ const CURRENT_TAB_KEY = 'uni.currentTab'
 const currentCoverLayout = ref('center')
 const currentTab = ref('cover') // 'cover' | 'cards'
 
-// 6种封面布局配置
+// 7种封面布局配置
 const coverLayouts = computed(() => [
   {
     id: 'minimal',
@@ -529,6 +567,18 @@ const coverLayouts = computed(() => [
     name: t('coverLayouts.magazine'),
     description: t('coverLayouts.magazineDesc'),
     icon: '<div style="background: #4f46e5; border-radius: 2px; width: 16px; height: 6px; margin: 2px auto 1px;"></div><div style="background: #9ca3af; border-radius: 1px; width: 10px; height: 4px; margin: 1px 0;"></div>'
+  },
+  {
+    id: 'bold',
+    name: t('coverLayouts.bold'),
+    description: t('coverLayouts.boldDesc'),
+    icon: '<div style="background: #4f46e5; border-radius: 1px; width: 22px; height: 10px; margin: 4px auto;"></div>'
+  },
+  {
+    id: 'film',
+    name: t('coverLayouts.film'),
+    description: t('coverLayouts.filmDesc'),
+    icon: '<div style="background: #94a3b8; border-radius: 1px; width: 20px; height: 6px; margin: 2px auto; border: 2px solid #4f46e5;"></div><div style="background: #9ca3af; border-radius: 1px; width: 14px; height: 3px; margin: 2px auto;"></div>'
   }
 ])
 
@@ -557,7 +607,6 @@ onMounted(async () => {
   restoreCoverLayout()
   restoreCoverData()
   restoreCurrentTab()
-  restoreShowMeta()
 
   // 如果挂载时已经有 HTML 内容，立即生成卡片
   if (props.html && props.html.trim()) {
@@ -570,18 +619,8 @@ function extractCoverData(root) {
   const extractedTitle = extractTitleFromContent(root) || t('cardsPreview.title')
   const extractedSummary = extractSummaryFromContent(root)
   const extractedCoverImage = extractCoverImageFromContent(root)
-  const { wordCount, minutes } = extractWordCountAndMinutes(root)
 
-  const previousDerivedTitle = cover.value.derivedTitle || ''
-  const previousDerivedSummary = cover.value.derivedSummary || cover.value.originalSummary || ''
   const previousDerivedImage = cover.value.derivedCoverImage
-
-  const hasCustomTitle = previousDerivedTitle
-    ? (cover.value.title && cover.value.title !== previousDerivedTitle)
-    : false
-  const hasCustomSummary = previousDerivedSummary
-    ? (cover.value.summary && cover.value.summary !== previousDerivedSummary)
-    : false
   let hasCustomImage = false
   if (previousDerivedImage === undefined) {
     hasCustomImage = false
@@ -591,19 +630,16 @@ function extractCoverData(root) {
     hasCustomImage = !!cover.value.coverImage && cover.value.coverImage !== previousDerivedImage
   }
 
-  cover.value.wordCount = wordCount
-  cover.value.minutes = minutes
-
   cover.value.derivedTitle = extractedTitle
   cover.value.derivedSummary = extractedSummary
   cover.value.originalSummary = extractedSummary
   cover.value.derivedCoverImage = extractedCoverImage
 
-  if (!hasCustomTitle || !cover.value.title) {
+  if (!coverOverrides.value.title) {
     cover.value.title = extractedTitle
   }
 
-  if (!hasCustomSummary || !cover.value.summary) {
+  if (!coverOverrides.value.summary) {
     cover.value.summary = extractedSummary
   }
 
@@ -828,9 +864,9 @@ async function generate(shouldShowLoading = false) {
   })
 
 
-  // Fixed card size (324x540), inner padding 16
+  // Fixed card size (324x432), inner padding 16
   const cardW = 324
-  const cardH = 540
+  const cardH = 432
   const pad = CARD_CONTENT_PADDING
   const contentW = cardW - pad * 2
   // 实际内容区域高度，需要与渲染时的设置保持一致
@@ -853,7 +889,7 @@ async function generate(shouldShowLoading = false) {
 
   // 优化的测量方法：复用probe元素，减少DOM创建
   const reusableProbe = document.createElement('div')
-  reusableProbe.className = 'content-html content-rich'
+  reusableProbe.className = `content-html content-rich typography-${props.stylePreset} spacing-${props.spacingPreset}`
   reusableProbe.style.width = (contentW / props.scale) + 'px'
   reusableProbe.style.height = (physicalContentH / props.scale) + 'px'
   reusableProbe.style.boxSizing = 'border-box'
@@ -951,7 +987,7 @@ async function generate(shouldShowLoading = false) {
   if (!cover.value.coverImage) {
     const second = generated[1]
     if (second && second.type === 'content' && second.html) {
-      coverBgHtml.value = `<div class=\"content-html content-rich\">${second.html}</div>`
+      coverBgHtml.value = `<div class=\"content-html content-rich typography-${props.stylePreset} spacing-${props.spacingPreset}\">${second.html}</div>`
     } else {
       coverBgHtml.value = ''
     }
@@ -971,7 +1007,7 @@ async function generate(shouldShowLoading = false) {
       .join('')
 
     if (fallbackHtml.trim()) {
-      generated.push({ type: 'content', html: `<div class="content-html content-rich">${fallbackHtml}</div>` })
+      generated.push({ type: 'content', html: `<div class="content-html content-rich typography-${props.stylePreset} spacing-${props.spacingPreset}">${fallbackHtml}</div>` })
     }
   }
 
@@ -1228,106 +1264,56 @@ async function doExportAllCards() {
   if (!stripRef.value) return
 
   exporting.value = true
-  loadingText.value = t('loading.cardsPreparing')
-  await nextTick()
+  try {
+    loadingText.value = t('loading.cardsPreparing')
+    await nextTick()
 
-  // 只导出卡片列表中的所有卡片（包括封面卡片）
-  const nodes = Array.from(stripRef.value.querySelectorAll('.card'))
-  loadingText.value = t('loading.cardsTotal', { count: nodes.length })
+    // 只导出卡片列表中的所有卡片（包括封面卡片）
+    const nodes = Array.from(stripRef.value.querySelectorAll('.card'))
+    if (!nodes.length) {
+      throw new Error('No cards to export')
+    }
+    loadingText.value = t('loading.cardsTotal', { count: nodes.length })
+    const coverExists = nodes.some(n => n.querySelector('.cover') || n.classList.contains('cover'))
 
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i]
-    const isCover = node.querySelector('.cover') || node.classList.contains('cover')
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i]
+      const isCover = Boolean(node.querySelector('.cover') || node.classList.contains('cover'))
 
-    // 统一的进度显示：第 X 张卡片 (当前序号/总数)
-    loadingText.value = t('loading.cardsExporting', { current: i + 1, total: nodes.length })
+      // 统一的进度显示：第 X 张卡片 (当前序号/总数)
+      loadingText.value = t('loading.cardsExporting', { current: i + 1, total: nodes.length })
 
-    let suffix
-    if (isCover) {
-      suffix = '00-封面'
-    } else {
-      // 内容卡片编号，需要考虑封面卡片的存在
-      const coverExists = nodes.some(n => n.querySelector('.cover') || n.classList.contains('cover'))
-      const contentIndex = coverExists ? i : i + 1 // 如果有封面，内容卡片从当前索引开始；否则从索引+1开始
-      suffix = String(contentIndex).padStart(2, '0')
+      let suffix
+      if (isCover) {
+        suffix = '00-' + t('cardsPreview.coverFileSuffix')
+      } else {
+        // 如果有封面，内容卡片从 01 开始。
+        const contentIndex = coverExists ? i : i + 1
+        suffix = String(contentIndex).padStart(2, '0')
+      }
+
+      await exportSingleCard(node, suffix, isCover, i === nodes.length - 1)
     }
 
-    await exportSingleCard(node, suffix, isCover, i === nodes.length - 1)
+    loadingText.value = t('loading.cardsComplete')
+    success(t('messages.exportSuccess'))
+  } catch (err) {
+    console.error('Export cards failed:', err)
+    throw err
+  } finally {
+    exporting.value = false
   }
-
-  loadingText.value = t('loading.cardsComplete')
-  success(t('messages.exportSuccess'))
-  exporting.value = false
 }
 
 async function exportSingleCard(node, suffix, isCover = false, isLastCard = false) {
   const cs = window.getComputedStyle(node)
   const bg = cs.backgroundColor || '#ffffff'
-
-  let footer = null
-  let originalPosition = ''
-
-  // 如果是最后一张卡片，添加宣传信息
-  if (isLastCard) {
-    const cardTextColor = cs.getPropertyValue('color') || '#333333'
-    const containerStyle = window.getComputedStyle(node.parentElement)
-    const accentColor = containerStyle.getPropertyValue('--card-accent') || '#3b82f6'
-
-    footer = document.createElement('div')
-    footer.className = 'export-footer'
-    footer.innerHTML = `
-      <div class="footer-divider"></div>
-      <div class="footer-content">
-        <span class="footer-text">${t('footer.exportCredit')}</span>
-        <span class="footer-link">${t('footer.exportLink')}</span>
-      </div>
-    `
-    footer.style.cssText = `
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      font-size: 10px;
-      color: ${cardTextColor};
-      opacity: 0.6;
-      width: 90%;
-      z-index: 1000;
-    `
-    footer.querySelector('.footer-divider').style.cssText = `
-      width: 40px;
-      height: 1px;
-      background: ${accentColor};
-      margin: 0 auto 8px;
-      opacity: 0.3;
-    `
-    footer.querySelector('.footer-content').style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    `
-    footer.querySelector('.footer-text').style.cssText = `
-      font-weight: 500;
-    `
-    footer.querySelector('.footer-link').style.cssText = `
-      font-family: 'Courier New', monospace;
-      font-weight: 400;
-      opacity: 0.8;
-      font-size: 9px;
-    `
-
-    // 确保卡片容器是相对定位
-    originalPosition = node.style.position
-    node.style.position = 'relative'
-
-    // 临时添加 footer
-    node.appendChild(footer)
-
-    // 等待DOM更新
-    await new Promise(resolve => setTimeout(resolve, 100))
-  }
+  const rect = node.getBoundingClientRect()
+  const sourceWidth = Math.max(1, Math.round(rect.width))
+  const sourceHeight = Math.max(1, Math.round(rect.height))
+  const exportScale = Math.min(EXPORT_MAX_SCALE, Math.max(1, EXPORT_BASE_WIDTH / sourceWidth))
+  const canvasWidth = Math.round(sourceWidth * exportScale)
+  const canvasHeight = Math.round(sourceHeight * exportScale)
 
   // 修复有序列表编号显示问题
   const orderedLists = node.querySelectorAll('ol')
@@ -1373,6 +1359,8 @@ async function exportSingleCard(node, suffix, isCover = false, isLastCard = fals
   const cleanupTasks = []
 
   try {
+    await replaceImageSrcWithDataUrls(node)
+
     // 在导出前强制应用所有计算的样式，包括blur效果
     // 为所有bg-html元素确保filter效果
     const bgElements = node.querySelectorAll('.bg-html')
@@ -1409,7 +1397,11 @@ async function exportSingleCard(node, suffix, isCover = false, isLastCard = fals
     await new Promise(resolve => setTimeout(resolve, 100))
 
     const dataUrl = await htmlToImage.toPng(node, {
-      pixelRatio: 2,
+      pixelRatio: 1,
+      width: sourceWidth,
+      height: sourceHeight,
+      canvasWidth,
+      canvasHeight,
       backgroundColor: bg,
       useCORS: true,
       allowTaint: true,
@@ -1439,12 +1431,6 @@ async function exportSingleCard(node, suffix, isCover = false, isLastCard = fals
       }
     })
 
-    // 移除临时 footer
-    if (footer && footer.parentNode) {
-      footer.parentNode.removeChild(footer)
-      node.style.position = originalPosition || ''
-    }
-
     // 清理有序列表的临时数字元素
     tempNumbers.forEach(span => {
       if (span.parentNode) {
@@ -1453,8 +1439,7 @@ async function exportSingleCard(node, suffix, isCover = false, isLastCard = fals
     })
 
     if (!dataUrl || !dataUrl.startsWith('data:image/')) {
-      console.warn('导出失败：无效的图片数据', { isLastCard, hasFooter: !!footer, dataUrlLength: dataUrl?.length })
-      return
+      throw new Error(`Failed to export card ${suffix}: invalid image data`)
     }
 
     // 使用标题名称作为文件名前缀
@@ -1469,26 +1454,21 @@ async function exportSingleCard(node, suffix, isCover = false, isLastCard = fals
     // 添加小延迟避免浏览器阻止多个下载
     await new Promise(resolve => setTimeout(resolve, 200))
   } catch (e) {
-    // 移除临时 footer（如果存在）
-    if (footer && footer.parentNode) {
-      footer.parentNode.removeChild(footer)
-      node.style.position = originalPosition || ''
-    }
-
     // 清理有序列表的临时数字元素
     tempNumbers.forEach(span => {
       if (span.parentNode) {
         span.parentNode.removeChild(span)
       }
     })
-    // 静默处理错误
+    console.error(`Export card ${suffix} failed:`, e)
+    throw e
   } finally {
     while (cleanupTasks.length) {
       const fn = cleanupTasks.pop()
       try {
         fn()
       } catch (err) {
-        console.warn('清理导出临时样式失败', err)
+        console.warn('Failed to clean up export temporary styles', err)
       }
     }
   }
@@ -1606,7 +1586,7 @@ function applyCoverBackdropFallback(node) {
         try {
           fn()
         } catch (err) {
-          console.warn('清理子元素临时样式失败', err)
+          console.warn('Failed to clean up child element temporary styles', err)
         }
       }
     })
@@ -1763,15 +1743,14 @@ function extractCoverImageFromContent(root) {
   return firstImg ? firstImg.src : null
 }
 
-function extractWordCountAndMinutes(root) {
-  // 字数与预计阅读时长（按非空白字符）
-  const fullText = root.textContent || ''
-  const wordCount = [...fullText].filter(ch => /\S/.test(ch)).length
-  const minutes = Math.max(1, Math.ceil(wordCount / 400))
-  return { wordCount, minutes }
+// 同步功能
+function markCoverFieldEdited(field) {
+  if (field === 'title' || field === 'summary') {
+    coverOverrides.value[field] = true
+    persistCoverData()
+  }
 }
 
-// 同步功能
 function syncTitle() {
   if (!props.html) {
     warning(t('cardsPreview.syncNoContent'))
@@ -1786,6 +1765,7 @@ function syncTitle() {
   if (title) {
     cover.value.title = title
     cover.value.derivedTitle = title
+    coverOverrides.value.title = false
     persistCoverData()
     success(t('cardsPreview.syncTitleSuccess'))
   } else {
@@ -1808,6 +1788,7 @@ function syncSummary() {
     cover.value.summary = summary
     cover.value.derivedSummary = summary
     cover.value.originalSummary = summary
+    coverOverrides.value.summary = false
     persistCoverData()
     success(t('cardsPreview.syncSummarySuccess'))
   } else {
@@ -1841,7 +1822,7 @@ function syncCoverImage() {
     if (cards.value && cards.value.length > 1) {
       const second = cards.value[1]
       if (second && second.type === 'content' && second.html) {
-        coverBgHtml.value = `<div class="content-html content-rich">${second.html}</div>`
+        coverBgHtml.value = `<div class="content-html content-rich typography-${props.stylePreset} spacing-${props.spacingPreset}">${second.html}</div>`
       } else {
         coverBgHtml.value = ''
       }
@@ -1937,7 +1918,7 @@ function handleImageUpload(event) {
   event.target.value = ''
 }
 
-function persistCoverData() {
+  function persistCoverData() {
   try {
     const coverData = {
       title: cover.value.title,
@@ -1947,9 +1928,9 @@ function persistCoverData() {
       derivedSummary: cover.value.derivedSummary,
       derivedCoverImage: cover.value.derivedCoverImage,
       coverImage: cover.value.coverImage,
-      layout: currentCoverLayout.value,
       imageFit: cover.value.imageFit,
       imagePosition: cover.value.imagePosition,
+      overrides: { ...coverOverrides.value },
     }
     localStorage.setItem('uni.coverData', JSON.stringify(coverData))
   } catch {
@@ -1957,12 +1938,36 @@ function persistCoverData() {
   }
 }
 
-function persistShowMeta() {
-  try {
-    localStorage.setItem(META_SHOW_KEY, JSON.stringify(showMeta.value))
-  } catch {
-    // localStorage 不可用时忽略错误
-  }
+async function applySocialPackage(payload) {
+  const pkg = payload?.package
+  if (!pkg) return
+
+  // 先完成正文分页，再写入审核过的封面字段，避免自动摘要反向覆盖标题。
+  await generate(true)
+
+  cover.value.title = pkg.post.title
+  cover.value.summary = pkg.post.subtitle
+  cover.value.originalSummary = pkg.post.subtitle
+  cover.value.derivedTitle = pkg.post.title
+  cover.value.derivedSummary = pkg.post.subtitle
+  coverOverrides.value.title = true
+  coverOverrides.value.summary = true
+  cover.value.coverImage = payload.coverImage || cover.value.coverImage
+  cover.value.derivedCoverImage = payload.coverImage || cover.value.derivedCoverImage
+  cover.value.imageFit = 'contain'
+  cover.value.imagePosition = 'center bottom'
+  coverBgHtml.value = ''
+
+  currentCoverLayout.value = pkg.layout.coverLayout || loadCoverLayout()
+  currentTab.value = 'cards'
+  showDocInfo.value = true
+
+  persistCoverLayout()
+  persistCurrentTab()
+  persistShowDocInfo()
+  persistCoverData()
+
+  await nextTick()
 }
 
 // 监听封面数据变化
@@ -1982,7 +1987,15 @@ function restoreCoverData() {
       if (Object.prototype.hasOwnProperty.call(coverData, 'derivedSummary')) cover.value.derivedSummary = coverData.derivedSummary
       if (Object.prototype.hasOwnProperty.call(coverData, 'derivedCoverImage')) cover.value.derivedCoverImage = coverData.derivedCoverImage
       if (Object.prototype.hasOwnProperty.call(coverData, 'coverImage')) cover.value.coverImage = coverData.coverImage
-      if (coverData.layout) currentCoverLayout.value = coverData.layout
+      if (coverData.overrides && typeof coverData.overrides === 'object') {
+        coverOverrides.value.title = Boolean(coverData.overrides.title)
+        coverOverrides.value.summary = Boolean(coverData.overrides.summary)
+      } else {
+        // 兼容旧数据：保存过的字段（包括空字符串）视为用户选择。
+        coverOverrides.value.title = Object.prototype.hasOwnProperty.call(coverData, 'title')
+        coverOverrides.value.summary = Object.prototype.hasOwnProperty.call(coverData, 'summary')
+      }
+      // layout 由 uni.coverLayout 专用键管理，不在 coverData 中恢复
       if (coverData.imageFit) cover.value.imageFit = coverData.imageFit
       if (coverData.imagePosition) cover.value.imagePosition = coverData.imagePosition
     }
@@ -1993,16 +2006,16 @@ function restoreCoverData() {
 
 function restoreShowMeta() {
   try {
-    const saved = localStorage.getItem(META_SHOW_KEY)
-    if (saved !== null) {
-      showMeta.value = JSON.parse(saved)
+    const savedDocInfo = localStorage.getItem(DOCINFO_SHOW_KEY)
+    if (savedDocInfo !== null) {
+      showDocInfo.value = JSON.parse(savedDocInfo)
     }
   } catch {
     // localStorage 不可用时忽略错误
   }
 }
 
-defineExpose({ exportAll, setActiveCardByRatio })
+defineExpose({ exportAll, setActiveCardByRatio, applySocialPackage })
 </script>
 
 <style lang="less" scoped>

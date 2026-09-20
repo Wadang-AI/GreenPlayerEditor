@@ -12,7 +12,7 @@ export function textMetrics(text) {
 
 export function firstHeadingAndSummary(doc){
   const h = doc.querySelector('h1, h2, h3')
-  const title = h?.textContent?.trim() || '无标题'
+  const title = h?.textContent?.trim() || 'Untitled'
   let summary = ''
   const ps = Array.from(doc.querySelectorAll('p')).map(p=>p.textContent?.trim()).filter(Boolean)
   if (ps.length) {
@@ -31,7 +31,7 @@ export function blocksFromHtml(html){
     const tag = el.tagName
     const outer = el.outerHTML
     let char = 0
-    if (tag === 'IMG' || tag === 'TABLE' || tag === 'PRE') char = 160
+    if (tag === 'IMG' || tag === 'TABLE' || tag === 'PRE') char = 60
     else char = (el.textContent || '').trim().length
     result.push({ type: tag.toLowerCase(), char, html: outer })
   }

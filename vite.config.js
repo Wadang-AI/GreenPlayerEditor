@@ -1,9 +1,88 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { readmeTodosPlugin } from './vite-plugin-readme-todos.js'
+import { editorApiPlugin } from './vite-plugin-editor-api.js'
+
+function aiCorsProxyPlugin() {
+  return {
+    name: 'ai-cors-proxy',
+    configureServer(server) {
+      server.middlewares.use('/cors-proxy', async (req, res, next) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405
+          res.setHeader('Content-Type', 'application/json; charset=utf-8')
+          res.end(JSON.stringify({ error: { message: 'Method Not Allowed' } }))
+          return
+        }
+
+        try {
+          let raw = ''
+          req.on('data', chunk => {
+            raw += chunk
+          })
+          await new Promise((resolve, reject) => {
+            req.on('end', resolve)
+            req.on('error', reject)
+          })
+
+          const payload = JSON.parse(raw || '{}')
+          const { targetUrl, apiKey, model, messages, temperature, stream, max_tokens } = payload
+
+          if (!targetUrl || !apiKey || !model || !Array.isArray(messages)) {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'application/json; charset=utf-8')
+            res.end(JSON.stringify({ error: { message: 'Invalid proxy payload' } }))
+            return
+          }
+
+          const requestPayload = { model, messages, temperature }
+          if (stream !== undefined) requestPayload.stream = stream
+          if (max_tokens !== undefined) requestPayload.max_tokens = max_tokens
+
+          const upstream = await fetch(targetUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(requestPayload)
+          })
+
+          res.statusCode = upstream.status
+          res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json; charset=utf-8')
+
+          // 流式透传：SSE / chunked 响应边收边转发，避免中间件缓冲破坏 AI 流式排版
+          if (upstream.body) {
+            const reader = upstream.body.getReader()
+            try {
+              while (true) {
+                const { done, value } = await reader.read()
+                if (done) break
+                res.write(Buffer.from(value))
+              }
+            } finally {
+              res.end()
+            }
+          } else {
+            const text = await upstream.text()
+            res.end(text)
+          }
+        } catch (err) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json; charset=utf-8')
+          res.end(JSON.stringify({ error: { message: err?.message || 'Proxy Failed' } }))
+        }
+      })
+    }
+  }
+}
 
 export default defineConfig({
-  plugins: [vue(), readmeTodosPlugin()],
+  server: {
+    host: true, // or '0.0.0.0'
+    port: 5173
+  },
+  plugins: [vue(), readmeTodosPlugin(), aiCorsProxyPlugin(), editorApiPlugin()],
   build: {
     // 分包策略
     rollupOptions: {
@@ -89,4 +168,3 @@ export default defineConfig({
     // PostCSS将使用外部配置文件
   }
 })
-

@@ -8,34 +8,50 @@
 }
 
 // Card theme CSS variable maps (translated from themes.css)
-// Light mode variables
+// Light mode variables (杂志感低饱和配色)
 .theme-light {
   .card-theme {
-    &.classic { --card-bg:#ffffff; --card-text:#1f2937; --card-muted:#6b7280; --card-accent:#7c5cff; --card-border:#e5e7eb; --card-overlay:linear-gradient(180deg, rgba(255,255,255,.0), rgba(0,0,0,.1)); }
-    &.minimal { --card-bg:#f9fafb; --card-text:#111827; --card-muted:#374151; --card-accent:#059669; --card-border:#e5e7eb; }
-    &.ocean   { --card-bg:#f0f9ff; --card-text:#0f172a; --card-muted:#334155; --card-accent:#0284c7; --card-border:#e5e7eb; }
-    &.forest  { --card-bg:#f0fdf4; --card-text:#052e16; --card-muted:#166534; --card-accent:#16a34a; --card-border:#e5e7eb; }
-    &.sunset  { --card-bg:#fef2f2; --card-text:#111827; --card-muted:#6b7280; --card-accent:#dc2626; --card-border:#e5e7eb; }
-    &.grape   { --card-bg:#faf5ff; --card-text:#111827; --card-muted:#6b7280; --card-accent:#7c3aed; --card-border:#e5e7eb; }
-    &.slate   { --card-bg:#f8fafc; --card-text:#0f172a; --card-muted:#334155; --card-accent:#0f172a; --card-border:#e5e7eb; }
-    &.sand    { --card-bg:#fffbeb; --card-text:#111827; --card-muted:#6b7280; --card-accent:#d97706; --card-border:#e5e7eb; }
-    &.paper   { --card-bg:#f7f7f2; --card-text:#1f2937; --card-muted:#374151; --card-accent:#0f766e; --card-border:#e5e7eb; }
+    &.classic { --card-bg:#FAFAFA; --card-text:#1f2937; --card-muted:#6b7280; --card-accent:#2f6b45; --card-accent-deep:#2f6b45; --card-border:#e5e7eb; --card-overlay:linear-gradient(180deg, rgba(250,250,250,.0), rgba(0,0,0,.1)); }
+    &.minimal { --card-bg:#f8f9f7; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#7a9e7e; --card-accent-deep:#4a6e4e; --card-border:#e5e7eb; }
+    &.ocean   { --card-bg:#f4f7fa; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#6b8fa6; --card-accent-deep:#3a5f76; --card-border:#e5e7eb; }
+    &.forest  { --card-bg:#f5f7f4; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#6b8a6b; --card-accent-deep:#3a5a3a; --card-border:#e5e7eb; }
+    &.sunset  { --card-bg:#faf6f4; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#bd7561; --card-accent-deep:#8a4e3c; --card-border:#e5e7eb; }
+    &.grape   { --card-bg:#f7f4f9; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#9585a5; --card-accent-deep:#5a4575; --card-border:#e5e7eb; }
+    &.slate   { --card-bg:#f5f6f8; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#5a7080; --card-accent-deep:#2a4050; --card-border:#e5e7eb; }
+    &.sand    { --card-bg:#faf7f2; --card-text:#1f2937; --card-muted:#4b5563; --card-accent:#a9784e; --card-accent-deep:#7a4d1b; --card-border:#e5e7eb; }
+    &.paper   { --card-bg:#f7f7f2; --card-text:#1f2937; --card-muted:#374151; --card-accent:#2a7d74; --card-accent-deep:#2a7d74; --card-border:#e5e7eb; }
+    // 微信安全色主题（浅色模式）
+    // --card-accent-deep: 标题/加粗等文字场景使用深色变体，确保浅底上的可读性
+    // --card-on-accent: accent 作背景色时其上文字的可读色（浅 accent 底上白字不可读）
+    &.parchment    { --card-bg:#FAF6EC; --card-text:#383838; --card-muted:#525252; --card-accent:#D4C4A8; --card-accent-deep:#7A6840; --card-border:#D9CEB0; --card-on-accent:#3A3228; }
+    &.rose         { --card-bg:#F5EAE8; --card-text:#383838; --card-muted:#525252; --card-accent:#C4A0A0; --card-accent-deep:#7A4E4E; --card-border:#D4B0B0; --card-on-accent:#4A2E2E; }
+    &.sage         { --card-bg:#E8EDD8; --card-text:#383838; --card-muted:#525252; --card-accent:#8A9470; --card-accent-deep:#4A5830; --card-border:#9FA882; --card-on-accent:#2E3820; }
+    &.lavender     { --card-bg:#E4DFEC; --card-text:#383838; --card-muted:#525252; --card-accent:#9890AD; --card-accent-deep:#5A4E78; --card-border:#B0A8C4; --card-on-accent:#2E2650; }
+    &.warmNeutral  { --card-bg:#F0EEEA; --card-text:#383838; --card-muted:#525252; --card-accent:#5C5348; --card-accent-deep:#3A3228; --card-border:#D1D1D6; }
   }
 }
 
-// Dark mode variables
+// Dark mode variables (杂志感低饱和配色)
 .theme-dark {
   .card-theme {
     // Common dark text/muted/border, theme-specific accents and bg
-    &.classic { --card-bg:#111318; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#7c5cff; --card-border:rgba(255,255,255,0.08); --card-overlay:linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.35)); }
-    &.minimal { --card-bg:#0f1116; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#3cc8a6; --card-border:rgba(255,255,255,0.08); }
-    &.ocean   { --card-bg:#0a1220; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#60a5fa; --card-border:rgba(255,255,255,0.08); }
-    &.forest  { --card-bg:#0e1612; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#22c55e; --card-border:rgba(255,255,255,0.08); }
-    &.sunset  { --card-bg:#1a1010; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#fb7185; --card-border:rgba(255,255,255,0.08); }
-    &.grape   { --card-bg:#130d1b; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#a78bfa; --card-border:rgba(255,255,255,0.08); }
-    &.slate   { --card-bg:#0f1316; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#7dd3fc; --card-border:rgba(255,255,255,0.08); }
-    &.sand    { --card-bg:#151310; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#fbbf24; --card-border:rgba(255,255,255,0.08); }
-    &.paper   { --card-bg:#0f1216; --card-text:#e8edf5; --card-muted:#aab0bb; --card-accent:#0f766e; --card-border:rgba(255,255,255,0.08); }
+    &.classic { --card-bg:#111318; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#2f6b45; --card-accent-deep:#2f6b45; --card-border:rgba(255,255,255,0.08); --card-overlay:linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.35)); }
+    &.minimal { --card-bg:#0f1116; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#8fbfa0; --card-accent-deep:#8fbfa0; --card-border:rgba(255,255,255,0.08); }
+    &.ocean   { --card-bg:#0a1220; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#8aacca; --card-accent-deep:#8aacca; --card-border:rgba(255,255,255,0.08); }
+    &.forest  { --card-bg:#0e1612; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#7fae7f; --card-accent-deep:#7fae7f; --card-border:rgba(255,255,255,0.08); }
+    &.sunset  { --card-bg:#1a1010; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#cf8a74; --card-accent-deep:#cf8a74; --card-border:rgba(255,255,255,0.08); }
+    &.grape   { --card-bg:#130d1b; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#b5a3c9; --card-accent-deep:#b5a3c9; --card-border:rgba(255,255,255,0.08); }
+    &.slate   { --card-bg:#0f1316; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#8aafc4; --card-accent-deep:#8aafc4; --card-border:rgba(255,255,255,0.08); }
+    &.sand    { --card-bg:#151310; --card-text:#eef1f5; --card-muted:#aab0bb; --card-accent:#cf9162; --card-accent-deep:#cf9162; --card-border:rgba(255,255,255,0.08); }
+    &.paper   { --card-bg:#0f1216; --card-text:#e8edf5; --card-muted:#aab0bb; --card-accent:#2a7d74; --card-accent-deep:#2a7d74; --card-border:rgba(255,255,255,0.08); }
+    // 微信安全色主题（深色模式）
+    // 深色模式下 accent-deep = accent（深底浅字已有足够对比度）
+    // on-accent 与浅色模式一致：问题出在 accent 底色上，与页面深浅无关
+    &.parchment    { --card-bg:#242018; --card-text:#F4ECD7; --card-muted:#D4DCE3; --card-accent:#D4C4A8; --card-accent-deep:#D4C4A8; --card-border:rgba(255,255,255,0.08); --card-on-accent:#3A3228; }
+    &.rose         { --card-bg:#201818; --card-text:#F4ECD7; --card-muted:#D4DCE3; --card-accent:#C4A0A0; --card-accent-deep:#C4A0A0; --card-border:rgba(255,255,255,0.08); --card-on-accent:#4A2E2E; }
+    &.sage         { --card-bg:#182018; --card-text:#F4ECD7; --card-muted:#D4DCE3; --card-accent:#8A9470; --card-accent-deep:#8A9470; --card-border:rgba(255,255,255,0.08); --card-on-accent:#2E3820; }
+    &.lavender     { --card-bg:#1c1824; --card-text:#F4ECD7; --card-muted:#D4DCE3; --card-accent:#9890AD; --card-accent-deep:#9890AD; --card-border:rgba(255,255,255,0.08); --card-on-accent:#2E2650; }
+    &.warmNeutral  { --card-bg:#1c1a18; --card-text:#F4ECD7; --card-muted:#D4DCE3; --card-accent:#5C5348; --card-accent-deep:#B8A898; --card-border:rgba(255,255,255,0.08); }
   }
 }
 

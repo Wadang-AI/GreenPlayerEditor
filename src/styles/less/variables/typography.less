@@ -15,15 +15,25 @@
 @font-size-3xl: 24px;     // 巨大字体 - 用于页面标题
 
 // 标题字体大小 (基于em单位，相对于基础字体)
-@font-size-h1: 1.5em;     // 24px (基于16px)
-@font-size-h2: 1.35em;    // 20px (基于16px)
-@font-size-h3: 1.1em;     // 17.6px (基于16px)
+@font-size-h1: 2em;       // 32px (基于16px) - 杂志感大标题
+@font-size-h2: 1.5em;     // 24px (基于16px)
+@font-size-h3: 1.2em;     // 19.2px (基于16px)
 @font-size-h4: 1em;       // 16px (基于16px)
 @font-size-h5: 0.875em;   // 14px (基于16px)
 @font-size-h6: 0.75em;    // 12px (基于16px)
 
-// 字体族
-@font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+// 字体族（统一定义，layout.less 不再重复）
+@font-face {
+  font-family: 'ZhuQueFangsong';
+  src: url('/fonts/zhuquefangsongceshiban.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-family-base: 'ZhuQueFangsong', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@font-family-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", serif;
+@font-family-brush: "Ma Shan Zheng", "STXingkai", "Xingkai SC", cursive;
 @font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
 
 // 行高

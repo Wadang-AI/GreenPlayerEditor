@@ -1,0 +1,1534 @@
+// ============================================================
+// 排版风格系统 (Typography Style Presets)
+// 四套完整的「整体排版风格」：不仅装饰局部元素，而是定义
+// 正文字体基准 / 标题层级阶梯 / 段落节奏 / 导语 / 缩进 / 引文 /
+// 列表 / 图片 / 分割线等整版版式参数。
+// 通过 CSS class: .typography-{preset-name} 应用到 .content-rich 容器
+// （长文预览与卡片预览同源复用）。
+// ============================================================
+
+// 预设（每套都有可一眼识别的「标题布局语言」，绝不雷同）：
+// 1. classic    - 经典书卷：仿宋宋体正文、首行缩进、【居中双线章回标题】、沉稳出版感
+// 2. elegant    - 杂志画报：无衬线大字黑、【封面眉线主标 + h2 章节编号 01】、左对齐社论、现代杂志感
+// 3. playful    - 社交轻快：圆角色块、【左侧圆角色条主标 + h2 短色条】、反色强调、平台分享感
+// 4. minimalist - 极简留白：【零装饰超大细字重标题（300）+ 大留白】、克制灰阶、现代简洁感
+// 5. journal    - 手账日志：楷体正文、【居中双线手账标题】、荧光笔高亮、圆润手账感
+// 6. report     - 商务报告：无衬线干练、【左对齐底部粗线主标 + h2 章目编号 1.】、理性数据感
+//
+// 密度（行距/段距）由 spacing-{compact|standard|loose} 独立控制，
+// 与风格正交组合，风格负责「版式性格」，间距负责「呼吸密度」。
+
+// ============================================================
+// 1. Classic 经典书卷 —— 纸质出版物
+// ============================================================
+.content-rich.typography-classic {
+  // —— 整体版式基调：宋系正文，书卷气息 ——
+  font-family: @font-family-serif;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+
+  // 标题：衬线粗体，章回编排（h1 居中 / h2 左侧线 / h3-h4 紧凑）
+  h1, h2, h3, h4, h5, h6 {
+    font-family: @font-family-serif;
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  h1 {
+    font-size: 2.1em;
+    text-align: center;
+    line-height: 1.5;
+    margin: 1em 0 0.7em;
+    border-bottom: 3px double color-mix(in srgb, var(--card-accent) 40%, transparent);
+    padding-bottom: 0.45em;
+  }
+
+  h2 {
+    font-size: 1.55em;
+    margin: 1em 0 0.5em;
+    padding-left: 0.55em;
+    border-left: 4px solid var(--card-accent);
+    line-height: 1.55;
+  }
+
+  h3 {
+    font-size: 1.28em;
+    margin: 0.9em 0 0.4em;
+  }
+
+  h4 { font-size: 1.12em; margin: 0.8em 0 0.35em; }
+  h5 { font-size: 1em; margin: 0.7em 0 0.3em; }
+  h6 { font-size: 0.88em; margin: 0.6em 0 0.25em; letter-spacing: 0.1em; }
+
+  // 段落：两端对齐 + 首行缩进两字（与传统书刊一致，段距由缩进表达）
+  p {
+    text-align: justify;
+    text-indent: 2em;
+    margin: 0.35em 0;
+
+    &:empty::before { content: '\00a0'; visibility: hidden; }
+  }
+
+  // 导语：主标题后的第一段不缩进，弱化色（引子）
+  > .article-inner > h1 + p,
+  > h1 + p,
+  > .article-inner > p:first-of-type,
+  > p:first-of-type {
+    text-indent: 0;
+    font-size: 1.05em;
+    line-height: 2;
+    color: color-mix(in srgb, var(--card-text) 80%, var(--card-muted));
+  }
+
+  // 强调：衬线加粗 + 细发丝滑线（书页下划线）
+  strong {
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 700;
+    font-family: @font-family-serif;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 60%, transparent);
+  }
+
+  // 引文：左右双竖线 + 宋体斜体，章节引语感
+  blockquote {
+    border-left: 3px solid var(--card-accent);
+    border-right: 3px solid var(--card-accent);
+    background: color-mix(in srgb, var(--card-accent) 6%, var(--card-bg));
+    font-family: @font-family-serif;
+    font-style: italic;
+    color: color-mix(in srgb, var(--card-text) 85%, var(--card-accent));
+  }
+
+  // 列表：宋体圆点 / 雅致序号
+  ul li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 0;
+    background: var(--card-accent);
+    top: 0.62em;
+  }
+
+  ul li::after { display: none; }
+
+  ol li::before {
+    content: counter(list-counter) '.';
+    background: none;
+    color: var(--card-accent-deep, var(--card-accent));
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 0.95em;
+    font-weight: 700;
+    box-shadow: none;
+    top: 0.05em;
+    transform: none;
+    left: 0;
+  }
+
+  // 图片：通栏直角，出版物切口感
+  img {
+    border-radius: 0;
+    width: 100%;
+    margin: 0.8em 0;
+  }
+
+  // 分割线：居中菱形章
+  hr {
+    height: auto;
+    background: none;
+    text-align: center;
+    margin: 30px 0;
+    border: none;
+
+    &::before {
+      content: '◆';
+      position: static;
+      width: auto;
+      height: auto;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: color-mix(in srgb, var(--card-accent) 55%, transparent);
+      font-size: 13px;
+      display: inline-block;
+    }
+  }
+
+  // 代码：终端风格（保留）
+  pre {
+    border-radius: @r12;
+    border: 1px solid color-mix(in srgb, var(--card-border) 60%, transparent);
+    box-shadow: none;
+  }
+
+  code:not(pre code) {
+    background: color-mix(in srgb, var(--card-muted) 10%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--card-border) 40%, transparent);
+    border-radius: 3px;
+  }
+
+  // 表格：细线 + 双线表头
+  table {
+    border: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent);
+    border-radius: 0;
+    box-shadow: none;
+
+    th {
+      background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
+      color: var(--card-accent-deep, var(--card-accent));
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      border-bottom: 2px solid var(--card-accent);
+      border-radius: 0;
+    }
+
+    td {
+      border-bottom: 1px solid color-mix(in srgb, var(--card-border) 50%, transparent);
+    }
+
+    tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--card-muted) 4%, var(--card-bg));
+    }
+  }
+}
+
+// ============================================================
+// 2. Elegant 杂志画报 —— 现代社论
+// ============================================================
+.content-rich.typography-elegant {
+  // —— 整体版式基调：无衬线大字黑，左对齐社论正文 ——
+  // 标题布局语言：封面式主标（顶部 4px 短眉线 + 通栏发丝线收束）
+  //              章节式副标（01 / 02 编号 + 发丝线），全篇左对齐
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  // h2 章节编号自 01 起（与 h1-h3 无关，独立计数）
+  counter-reset: editorial-section;
+
+  // 标题：粗黑字阶，全部左对齐（绝不居中）
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--card-accent-deep, var(--card-accent));
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  h1 {
+    font-size: 2.4em;
+    font-weight: 900;
+    margin: 1.2em 0 1em;
+    padding-top: 0.85em;
+    padding-bottom: 0.35em;
+    position: relative;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-text) 16%, transparent);
+
+    // 封面眉线：标题顶部 4px 短 accent 线（杂志封面主标的辨识点）
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 52px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--card-accent);
+    }
+  }
+
+  h2 {
+    font-size: 1.55em;
+    font-weight: 800;
+    margin: 1.5em 0 0.7em;
+    padding-bottom: 0.28em;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 28%, transparent);
+    counter-increment: editorial-section;
+
+    // 章节编号：卡片预览使用 CSS counter；长文预览会在 DOM 中注入 .sec-no。
+    &::before {
+      content: counter(editorial-section, decimal-leading-zero);
+      font-size: 0.6em;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--card-accent);
+      margin-right: 0.6em;
+      vertical-align: 0.1em;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  h3 {
+    font-size: 1.32em;
+    font-weight: 700;
+    margin: 1.2em 0 0.5em;
+  }
+
+  h4 { font-size: 1.14em; font-weight: 700; margin: 1em 0 0.4em; }
+  h5 { font-size: 1em; font-weight: 600; margin: 0.9em 0 0.35em; }
+  h6 {
+    font-size: 0.85em;
+    font-weight: 700;
+    margin: 0.8em 0 0.3em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--card-accent);
+  }
+
+  // 段落：左对齐（社论正文节奏），段距留白表达
+  p {
+    text-align: left;
+    margin: 0.8em 0;
+
+    &:empty::before { content: '\00a0'; visibility: hidden; }
+  }
+
+  // 导语 standfirst：放大 + 加重 + 发丝线收底（铅字引路段）
+  > .article-inner > h1 + p,
+  > h1 + p,
+  > .article-inner > p:first-of-type,
+  > p:first-of-type {
+    font-size: 1.18em;
+    font-weight: 500;
+    line-height: 1.9;
+    margin-bottom: 1.7em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-text) 12%, transparent);
+    color: var(--card-text);
+  }
+
+  // 强调：accent 色加粗 + 发丝滑线
+  strong {
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 700;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+    border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 50%, transparent);
+  }
+
+  // 引文 pull-quote：左侧粗 accent 条 + 超大大引号 + 宽松留白
+  blockquote {
+    border-left: 4px solid var(--card-accent);
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    background: color-mix(in srgb, var(--card-accent) 5%, var(--card-bg));
+    font-style: italic;
+    font-size: 1.08em;
+    line-height: 1.85;
+    margin: 1.6em 0;
+    padding: 1em 1.3em 1em 1.5em;
+
+    &::before {
+      content: '\201C';
+      font-size: 44px;
+      top: 6px;
+      left: 12px;
+      opacity: 0.32;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+
+  // 列表：菱形符号 / 粗体序数（杂志条目）
+  ul li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    transform: rotate(45deg);
+    background: var(--card-accent);
+    top: 0.55em;
+  }
+
+  ul li::after { display: none; }
+
+  ol li::before {
+    content: counter(list-counter) '.';
+    background: none;
+    color: var(--card-accent);
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 0.95em;
+    font-weight: 800;
+    box-shadow: none;
+    top: 0.02em;
+    transform: none;
+    left: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // 图片：直角细边、通栏（杂志图版）
+  img {
+    border-radius: 2px;
+    border: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
+    width: 100%;
+    margin: 1.4em 0;
+  }
+
+  // 分割线：居中句读符 ❧（杂志 endmark）
+  hr {
+    height: auto;
+    background: none;
+    text-align: center;
+    margin: 38px 0;
+    border: none;
+
+    &::before {
+      content: '❧';
+      position: static;
+      width: auto;
+      height: auto;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: color-mix(in srgb, var(--card-accent) 45%, transparent);
+      font-size: 20px;
+      display: inline-block;
+    }
+  }
+
+  // 代码：编辑框式 —— 左侧 accent 实线 + 浅底（报刊专栏感）
+  pre {
+    background: color-mix(in srgb, var(--card-accent) 5%, var(--card-bg));
+    border: none;
+    border-left: 3px solid var(--card-accent);
+    border-radius: 0 4px 4px 0;
+    box-shadow: none;
+  }
+
+  code:not(pre code) {
+    background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--card-accent) 22%, transparent);
+    border-radius: 3px;
+  }
+
+  // 表格：无外框，仅表头底线 + 数据发丝线（数据表达，不靠框线）
+  table {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    th {
+      background: none;
+      color: var(--card-accent-deep, var(--card-accent));
+      text-transform: none;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--card-accent);
+      border-radius: 0;
+      font-weight: 700;
+      font-size: 0.92em;
+    }
+
+    td {
+      border-bottom: 1px solid color-mix(in srgb, var(--card-border) 45%, transparent);
+    }
+
+    tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--card-accent) 2%, transparent);
+    }
+  }
+}
+
+// ============================================================
+// 3. Playful 社交轻快 —— 平台分享
+// ============================================================
+.content-rich.typography-playful {
+  // —— 整体版式基调：圆润轻松的社交排版 ——
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  letter-spacing: 0;
+
+  // 标题：粗圆深色 + 短 accent 横条点缀
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  h1 {
+    font-size: 1.9em;
+    margin: 0.85em 0 0.5em;
+    text-align: left;
+    position: relative;
+    padding-left: 0.6em;
+
+    // 左侧圆角色条：标签式主标（社交风格辨识点，区别于其他风格的顶部眉线/双线/纯细字）
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.14em;
+      bottom: 0.14em;
+      width: 8px;
+      border-radius: 4px;
+      background: var(--card-accent);
+    }
+  }
+
+  h2 {
+    font-size: 1.5em;
+    margin: 0.95em 0 0.45em;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 34px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--card-accent);
+      margin-top: 6px;
+    }
+  }
+
+  h3 {
+    font-size: 1.25em;
+    margin: 0.85em 0 0.4em;
+  }
+
+  h4 { font-size: 1.1em; font-weight: 700; margin: 0.75em 0 0.3em; }
+  h5 { font-size: 1em; font-weight: 700; margin: 0.65em 0 0.25em; }
+  h6 { font-size: 0.9em; font-weight: 700; margin: 0.6em 0 0.25em; letter-spacing: 0.08em; }
+
+  // 段落：左对齐、宽松段距，阅读更轻松
+  p {
+    text-align: left;
+    margin: 0.8em 0;
+
+    &:empty::before { content: '\00a0'; visibility: hidden; }
+  }
+
+  // 导语：accent 色引导
+  > .article-inner > h1 + p,
+  > h1 + p,
+  > .article-inner > p:first-of-type,
+  > p:first-of-type {
+    font-size: 1.12em;
+    font-weight: 500;
+    line-height: 1.95;
+    color: color-mix(in srgb, var(--card-text) 82%, var(--card-accent));
+  }
+
+  // 强调：反色 pill（纯色表达，无阴影不抢眼；底色深化一档保证白字对比沉稳）
+  strong {
+    color: var(--card-on-accent, #fff);
+    font-weight: 700;
+    background: color-mix(in srgb, var(--card-accent) 88%, #0b0b0d);
+    padding: 2px 7px;
+    border-radius: 5px;
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  // 引文：callout 圆角 + emoji
+  blockquote {
+    border-left: 6px solid var(--card-accent);
+    border-right: none;
+    background: color-mix(in srgb, var(--card-accent) 10%, var(--card-bg));
+    border-radius: 0 12px 12px 0;
+    font-style: normal;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--card-accent) 8%, transparent);
+
+    &::before {
+      content: '💡';
+      font-size: 18px;
+      top: 10px;
+      left: 10px;
+      opacity: 0.9;
+      font-family: inherit;
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+
+  // 列表：箭头 / 大号数字
+  ul li::before {
+    content: '→';
+    background: none;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--card-accent-deep, var(--card-accent));
+    top: 0.1em;
+    left: 0;
+  }
+
+  ul li::after { display: none; }
+
+  ol li::before {
+    content: counter(list-counter);
+    background: none;
+    color: var(--card-accent-deep, var(--card-accent));
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 1.55em;
+    font-weight: 900;
+    box-shadow: none;
+    top: -0.1em;
+    transform: none;
+    left: 0;
+    line-height: 1;
+  }
+
+  // 图片：大圆角
+  img {
+    border-radius: 12px;
+    width: 100%;
+    margin: 0.9em 0;
+  }
+
+  // 分割线：三星号 ⁂
+  hr {
+    height: auto;
+    background: none;
+    text-align: center;
+    margin: 32px 0;
+    border: none;
+
+    &::before {
+      content: '⁂';
+      position: static;
+      width: auto;
+      height: auto;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: color-mix(in srgb, var(--card-accent) 50%, transparent);
+      font-size: 20px;
+      display: inline-block;
+    }
+  }
+
+  // 代码：Mac 窗口（保留）
+  pre {
+    border-radius: @r12;
+    border: 1px solid color-mix(in srgb, var(--card-border) 60%, transparent);
+    padding-top: 28px;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--card-accent) 8%, transparent);
+  }
+
+  code:not(pre code) {
+    background: color-mix(in srgb, var(--card-accent) 15%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--card-accent) 30%, transparent);
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-weight: 600;
+  }
+
+  // 表格：圆角 + 彩色表头
+  table {
+    border: 1px solid color-mix(in srgb, var(--card-accent) 20%, transparent);
+    border-radius: 12px;
+    overflow: hidden;
+
+    th {
+      background: var(--card-accent);
+      color: var(--card-on-accent, #fff);
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: normal;
+      border-radius: 0;
+    }
+
+    tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--card-accent) 5%, transparent);
+    }
+  }
+}
+
+// ============================================================
+// 4. Minimalist 极简留白 —— 现代简洁
+// ============================================================
+.content-rich.typography-minimalist {
+  // —— 整体版式基调：无衬线细字重、大音留白、克制灰阶 ——
+  // 标题布局语言：全篇左对齐、超大细字重、零装饰零线，
+  // 辨识度来自【字重对比 + 字号级差 + 留白】，与其他风格的装饰线截然不同
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16.5px;
+  letter-spacing: 0.03em;
+
+  // 标题：细字重 + 大字号级差，无装饰
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--card-text);
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  h1 {
+    font-size: 2.35em;
+    font-weight: 300;
+    margin: 1.5em 0 0.8em;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+
+  h2 {
+    font-size: 1.6em;
+    font-weight: 400;
+    margin: 1.7em 0 0.6em;
+  }
+
+  h3 {
+    font-size: 1.3em;
+    font-weight: 500;
+    margin: 1.5em 0 0.5em;
+  }
+
+  h4 { font-size: 1.1em; font-weight: 500; margin: 1.3em 0 0.4em; }
+  h5 { font-size: 0.98em; font-weight: 500; margin: 1.1em 0 0.35em; }
+  h6 {
+    font-size: 0.85em;
+    font-weight: 500;
+    margin: 1em 0 0.3em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--card-text) 58%, var(--card-muted));
+  }
+
+  // 段落：左对齐 + 大段距，留白即结构
+  p {
+    text-align: left;
+    margin: 1.15em 0;
+
+    &:empty::before { content: '\00a0'; visibility: hidden; }
+  }
+
+  // 导语 standfirst：更浅更细，弱化为引子
+  > .article-inner > h1 + p,
+  > h1 + p,
+  > .article-inner > p:first-of-type,
+  > p:first-of-type {
+    font-size: 1.1em;
+    font-weight: 300;
+    color: color-mix(in srgb, var(--card-text) 68%, var(--card-muted));
+    margin-bottom: 2.2em;
+  }
+
+  // 强调：accent 深色 + 1px 发丝下划线（克制而精确）
+  strong {
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 600;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 40%, transparent);
+  }
+
+  // 引文：大左留白 + 细竖线 + 灰调，安静有力
+  blockquote {
+    border-left: 2px solid color-mix(in srgb, var(--card-text) 22%, transparent);
+    border-right: none;
+    background: none;
+    font-style: normal;
+    color: color-mix(in srgb, var(--card-text) 72%, var(--card-muted));
+    font-size: 1.02em;
+    line-height: 2;
+    margin: 2em 0;
+    padding: 0.2em 0 0.2em 1.5em;
+
+    &::before { display: none; }
+    &::after { display: none; }
+  }
+
+  // 列表：细短横 / 灰点序号（克制符号）
+  ul li::before {
+    content: '';
+    background: none;
+    width: 1.05em;
+    height: 1px;
+    border-radius: 0;
+    background: color-mix(in srgb, var(--card-accent) 60%, transparent);
+    top: 0.68em;
+    left: 0;
+  }
+
+  ul li::after { display: none; }
+
+  ol li::before {
+    content: counter(list-counter);
+    background: none;
+    color: color-mix(in srgb, var(--card-text) 52%, transparent);
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 0.95em;
+    font-weight: 400;
+    box-shadow: none;
+    top: 0.02em;
+    transform: none;
+    left: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // 图片：大圆角白皙无框（纯净影像）
+  img {
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--card-text) 8%, transparent);
+    width: 100%;
+    margin: 1.6em 0;
+  }
+
+  // 分割线：发丝实线
+  hr {
+    height: 0;
+    background: none;
+    border: none;
+    border-top: 1px solid color-mix(in srgb, var(--card-border) 40%, transparent);
+    margin: 3em 0;
+
+    &::before { display: none; }
+  }
+
+  // 代码：无边框大圆角浅底（柔和入场）
+  pre {
+    border: none;
+    background: color-mix(in srgb, var(--card-muted) 9%, var(--card-bg));
+    box-shadow: none;
+    border-radius: 14px;
+  }
+
+  code:not(pre code) {
+    background: color-mix(in srgb, var(--card-text) 7%, var(--card-bg));
+    border: none;
+    border-radius: 4px;
+    box-shadow: none;
+    font-weight: 400;
+    color: var(--card-accent-deep, var(--card-accent));
+  }
+
+  // 表格：仅底边线（信息不止于框线）
+  table {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    th {
+      background: none;
+      color: var(--card-text);
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--card-border);
+      border-radius: 0;
+      font-size: 0.9em;
+    }
+
+    td {
+      border-bottom: 1px solid color-mix(in srgb, var(--card-border) 30%, transparent);
+    }
+
+    tr:nth-child(even) td {
+      background: none;
+    }
+  }
+}
+
+// ============================================================
+// 5. Journal 手账日志 —— 便签贴纸感
+// ============================================================
+.content-rich.typography-journal {
+  // —— 整体版式基调：楷体正文，手账便签气质 ——
+  font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
+  font-size: 15.5px;
+  letter-spacing: 0.03em;
+
+  // 标题：楷体手写感 + 双线/色条强调
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 700;
+  }
+
+  h1 {
+    font-size: 2em;
+    line-height: 1.6;
+    margin: 1em 0 0.9em;
+    padding-bottom: 0.35em;
+    text-align: center;
+    border-bottom: 3px double color-mix(in srgb, var(--card-accent) 45%, transparent);
+  }
+
+  h2 {
+    font-size: 1.5em;
+    text-align: left;
+    margin: 1.1em 0 0.5em;
+    padding: 0.1em 0 0.1em 0.55em;
+    border-left: 5px solid var(--card-accent);
+    line-height: 1.6;
+  }
+
+  h3 {
+    font-size: 1.25em;
+    text-align: left;
+    margin: 1em 0 0.4em;
+    padding-bottom: 0.2em;
+    border-bottom: 2px dashed color-mix(in srgb, var(--card-accent) 40%, transparent);
+  }
+
+  h4 { font-size: 1.1em; text-align: left; margin: 0.85em 0 0.35em; }
+  h5 { font-size: 1em; text-align: left; margin: 0.75em 0 0.3em; }
+  h6 { font-size: 0.9em; text-align: left; margin: 0.65em 0 0.25em; letter-spacing: 0.08em; }
+
+  // 段落：行距舒展，段落间距用手账留白
+  p {
+    text-align: justify;
+    margin: 0.55em 0;
+    line-height: 1.9;
+
+    &:empty::before { content: '\00a0'; visibility: hidden; }
+  }
+
+  // 导语：首段轻微底色便签感
+  > .article-inner > h1 + p,
+  > h1 + p,
+  > .article-inner > p:first-of-type,
+  > p:first-of-type {
+    font-size: 1.02em;
+    color: color-mix(in srgb, var(--card-text) 85%, var(--card-accent));
+    padding: 0.4em 0.6em;
+    background: color-mix(in srgb, var(--card-accent) 7%, var(--card-bg));
+    border-radius: 6px;
+  }
+
+  // 强调：荧光笔划重点（柔和高亮底，无阴影无药丸）
+  strong {
+    font-weight: 700;
+    font-family: inherit;
+    color: inherit;
+    background: linear-gradient(
+      transparent 30%,
+      color-mix(in srgb, var(--card-accent) 30%, transparent) 30%
+    );
+    background-size: 100% 1.15em;
+    background-position: 0 0.1em;
+    background-repeat: no-repeat;
+    padding: 0 2px;
+    border-radius: 2px;
+    box-shadow: none;
+  }
+
+  // 引文：便签贴纸
+  blockquote {
+    position: relative;
+    border-left: 4px solid color-mix(in srgb, var(--card-accent) 45%, transparent);
+    background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
+    border-radius: 8px;
+    padding: 0.6em 0.9em 0.6em 1.1em;
+    margin: 0.9em 0;
+    color: color-mix(in srgb, var(--card-text) 88%, var(--card-accent));
+    font-family: inherit;
+
+    &::before {
+      content: '✎';
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      font-size: 14px;
+      line-height: 1;
+      color: var(--card-accent);
+      background: var(--card-bg);
+      border-radius: 4px;
+      padding: 1px 4px;
+    }
+  }
+
+  // 列表：圆点 + 序号圆底
+  ul li::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--card-accent);
+    top: 0.62em;
+    box-shadow: none;
+  }
+
+  ul li::after { display: none; }
+
+  ol li::before {
+    content: counter(list-counter) '';
+    background: color-mix(in srgb, var(--card-accent) 16%, var(--card-bg));
+    color: var(--card-accent-deep, var(--card-accent));
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    font-size: 0.82em;
+    font-weight: 700;
+    line-height: 1.9em;
+    text-align: center;
+    box-shadow: none;
+    top: 0.08em;
+    left: -0.4em;
+    transform: none;
+  }
+
+  // 图片：圆角贴纸感 + 极浅边框
+  img {
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--card-border) 45%, transparent);
+    width: 100%;
+    margin: 0.7em 0;
+    box-shadow: none;
+  }
+
+  // 分割线：虚线波浪感
+  hr {
+    border: none;
+    border-top: 2px dashed color-mix(in srgb, var(--card-accent) 40%, transparent);
+    margin: 26px 0;
+    height: 0;
+    background: none;
+    text-align: center;
+
+    &::before {
+      content: '🖌';
+      position: static;
+      width: auto;
+      height: auto;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: 14px;
+      color: var(--card-accent);
+      display: inline-block;
+      transform: translateY(-11px);
+      background-color: var(--card-bg);
+      padding: 0 8px;
+    }
+  }
+
+  // 代码：浅黄纸感
+  pre {
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--card-border) 50%, transparent);
+    box-shadow: none;
+  }
+
+  code:not(pre code) {
+    background: color-mix(in srgb, var(--card-accent) 10%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--card-border) 35%, transparent);
+    border-radius: 4px;
+  }
+
+  // 表格：浅色斑马纹 + 圆角表头
+  table {
+    border: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: none;
+
+    th {
+      background: color-mix(in srgb, var(--card-accent) 12%, var(--card-bg));
+      color: var(--card-accent-deep, var(--card-accent));
+      font-weight: 700;
+      border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 45%, transparent);
+      border-radius: 0;
+    }
+
+    td {
+      border-bottom: 1px solid color-mix(in srgb, var(--card-border) 40%, transparent);
+    }
+
+    tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--card-muted) 4%, var(--card-bg));
+    }
+  }
+}
+
+// ============================================================
+// 6. Report 商务报告 —— 理性数据感
+// ============================================================
+.content-rich.typography-report {
+  // —— 整体版式基调：无衬线正文，报告书式节制 ——
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  // h2 章节编号自 1 起（报告章目序号，与 elegant 的 01 杂志编号区分：report 为「1. 」行内序号）
+  counter-reset: report-section;
+
+  // 标题：大号加粗 + 细分隔线，报告章目感
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: left;
+  }
+
+  h1 {
+    font-size: 2em;
+    font-weight: 800;
+    margin: 1em 0 0.7em;
+    padding-bottom: 0.4em;
+    border-bottom: 3px solid color-mix(in srgb, var(--card-accent) 65%, transparent);
+    line-height: 1.45;
+  }
+
+  h2 {
+    font-size: 1.6em;
+    font-weight: 700;
+    margin: 1.1em 0 0.55em;
+    padding-left: 0.55em;
+    border-left: 6px solid var(--card-accent);
+    line-height: 1.5;
+    counter-increment: report-section;
+
+    // 章目序号 1. / 2. —— 报告编号感，与左侧段配合成「编号章节」
+    &::before {
+      content: counter(report-section) '.';
+      color: var(--card-accent);
+      font-weight: 800;
+      margin-right: 0.4em;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  h3 {
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 0.95em 0 0.45em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 30%, transparent);
+  }
+
+  h4 { font-size: 1.12em; font-weight: 700; margin: 0.85em 0 0.4em; }
+  h5 { font-size: 1em; font-weight: 600; margin: 0.75em 0 0.35em; }
+  h6 { font-size: 0.88em; font-weight: 600; margin: 0.65em 0 0.3em; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  // 段落：信息密度适中，两端对齐
+  p {
+    text-align: justify;
+    margin: 0.6em 0;
+    line-height: 1.78;
+
+    &:empty::before { content: '\00a0'; visibility: hidden; }
+  }
+
+  // 导语：同色系加深引路段
+  > .article-inner > h1 + p,
+  > h1 + p,
+  > .article-inner > p:first-of-type,
+  > p:first-of-type {
+    font-size: 1.04em;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--card-text) 82%, var(--card-accent));
+  }
+
+  // 强调：主题色加粗，无背景无阴影（最克制）
+  strong {
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--card-accent-deep, var(--card-accent));
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  // 引文：左侧粗实线 + 浅灰底（要点摘录）
+  blockquote {
+    border-left: 5px solid var(--card-accent);
+    background: color-mix(in srgb, var(--card-text) 4%, var(--card-bg));
+    padding: 0.55em 0.9em;
+    margin: 0.85em 0;
+    border-radius: 0 4px 4px 0;
+    color: color-mix(in srgb, var(--card-text) 85%, var(--card-muted));
+  }
+
+  // 列表：方形项目符号 / 编号加粗
+  ul li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 1px;
+    background: var(--card-accent);
+    top: 0.6em;
+    box-shadow: none;
+  }
+
+  ul li::after { display: none; }
+
+  ol li::before {
+    content: counter(list-counter) '.';
+    background: none;
+    color: var(--card-accent-deep, var(--card-accent));
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    font-size: 1em;
+    font-weight: 700;
+    box-shadow: none;
+    top: 0.02em;
+    transform: none;
+    left: 0;
+  }
+
+  // 图片：直角细边框，资料图感
+  img {
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
+    width: 100%;
+    margin: 0.75em 0;
+    box-shadow: none;
+  }
+
+  // 分割线：细实线
+  hr {
+    border: none;
+    border-top: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent);
+    margin: 24px 0;
+    height: 0;
+    background: none;
+
+    &::before {
+      content: '—';
+      position: static;
+      width: auto;
+      height: auto;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: color-mix(in srgb, var(--card-accent) 50%, transparent);
+      font-size: 12px;
+      display: inline-block;
+      transform: translateY(-1px);
+    }
+  }
+
+  // 代码：深底浅字 + 圆角
+  pre {
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
+    box-shadow: none;
+  }
+
+  code:not(pre code) {
+    background: color-mix(in srgb, var(--card-text) 8%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--card-border) 40%, transparent);
+    border-radius: 3px;
+  }
+
+  // 表格：表头深色底 + 双线 + 斑马纹（数据表感）
+  table {
+    border: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent);
+    border-radius: 0;
+    box-shadow: none;
+
+    th {
+      background: var(--card-accent-deep, var(--card-accent));
+      color: var(--card-on-accent, #fff);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 80%, transparent);
+      border-radius: 0;
+    }
+
+    td {
+      border-bottom: 1px solid color-mix(in srgb, var(--card-border) 45%, transparent);
+    }
+
+    tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--card-muted) 4%, var(--card-bg));
+    }
+  }
+}
+
+// ============================================================
+// Callout / 提示框样式
+// 用于 Markdown 中的 > [!INFO] / > [!TIP] / > [!WARNING] / > [!DANGER] 语法
+// 也可通过 HTML <div class="callout callout-info"> 使用
+// ============================================================
+.content-rich {
+  .callout {
+    border-radius: @r12;
+    padding: 12px 16px 12px 44px;
+    margin: 12px 0;
+    position: relative;
+    font-size: @font-size-md;
+    line-height: 1.6;
+
+    &::before {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    p { margin: 0.2em 0; }
+    p:first-child { margin-top: 0; }
+    p:last-child { margin-bottom: 0; }
+
+    // info - 蓝色
+    &-info {
+      background: color-mix(in srgb, #3b82f6 10%, var(--card-bg));
+      border-left: 4px solid #3b82f6;
+      &::before { content: 'ℹ️'; }
+    }
+
+    // tip - 绿色
+    &-tip {
+      background: color-mix(in srgb, #10b981 10%, var(--card-bg));
+      border-left: 4px solid #10b981;
+      &::before { content: '💡'; }
+    }
+
+    // warning - 黄色
+    &-warning {
+      background: color-mix(in srgb, #f59e0b 10%, var(--card-bg));
+      border-left: 4px solid #f59e0b;
+      &::before { content: '⚠️'; }
+    }
+
+    // danger - 红色
+    &-danger {
+      background: color-mix(in srgb, #ef4444 10%, var(--card-bg));
+      border-left: 4px solid #ef4444;
+      &::before { content: '🔴'; }
+    }
+  }
+}
+
+// ============================================================
+// 段间距/呼吸感预设（密度层，与风格正交叠加）
+// 通过 .spacing-{compact|standard|loose} 应用到 .content-rich
+// 说明：密度层只控制「行高」与「块级元素间距」；
+// 正文段落 p 的 margin 由各排版风格定义（段距是风格辨识度的一部分），
+// 避免密度层把风格特有的段落节奏（如经典的首行缩进+小段距）抹平。
+// ============================================================
+.content-rich.spacing-compact {
+  p { line-height: 1.5; }
+  blockquote { margin: 4px 0; padding: 8px 16px; }
+  pre { margin: 8px 0; }
+  hr { margin: 12px 0; }
+  ul, ol { margin: 4px 0; }
+  li { margin: 2px 0; }
+}
+
+.content-rich.spacing-standard {
+  p { line-height: 1.7; }
+  // 标题与段落使用各风格默认值
+}
+
+.content-rich.spacing-loose {
+  p { line-height: 1.9; }
+  blockquote { margin: 20px 0; padding: 20px 28px; }
+  pre { margin: 20px 0; }
+  hr { margin: 40px 0; }
+  ul, ol { margin: 16px 0; }
+  li { margin: 12px 6px; }
+}
+
+// ============================================================
+// 设置抽屉里的风格卡片迷你预览
+// 挂载在 .style-card-preview.typography-{preset} 上，仅用于
+// 「重新设计展示」，与上方各风格的真实版式特征一一呼应；
+// 不影响预览/导出（真实内容用的是 .content-rich.typography-*）。
+// ============================================================
+.style-card-preview.typography-classic {
+  font-family: @font-family-serif;
+
+  .style-pv-h {
+    font-family: @font-family-serif;
+    text-align: center;
+    border-bottom: 2px double color-mix(in srgb, var(--card-accent) 40%, transparent);
+    padding-bottom: 5px;
+  }
+
+  .style-pv-p {
+    text-align: justify;
+    text-indent: 1.6em;
+  }
+
+  .style-pv-bq {
+    border-left: 2px solid var(--card-accent);
+    border-right: 2px solid var(--card-accent);
+    background: color-mix(in srgb, var(--card-accent) 6%, var(--card-bg));
+    font-style: italic;
+  }
+}
+
+.style-card-preview.typography-elegant {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+
+  .style-pv-h {
+    font-weight: 900;
+    position: relative;
+    padding-top: 7px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-text) 16%, transparent);
+
+    // 封面眉线：呼应主标顶部 4px 短 accent 线
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 18px;
+      height: 3px;
+      border-radius: 1.5px;
+      background: var(--card-accent);
+    }
+  }
+
+  .style-pv-p {
+    font-weight: 500;
+    line-height: 1.7;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-text) 14%, transparent);
+    padding-bottom: 4px;
+  }
+
+  .style-pv-bq {
+    border-left: 3px solid var(--card-accent);
+    background: color-mix(in srgb, var(--card-accent) 5%, var(--card-bg));
+    font-style: italic;
+  }
+}
+
+.style-card-preview.typography-playful {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+
+  .style-pv-h {
+    font-weight: 800;
+    position: relative;
+    padding-left: 10px;
+
+    // 左侧圆角色条：呼应主标标签条
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 3px;
+      bottom: 3px;
+      width: 5px;
+      border-radius: 2.5px;
+      background: var(--card-accent);
+    }
+  }
+
+  .style-pv-p strong {
+    color: var(--card-on-accent, #fff);
+    background: var(--card-accent);
+    padding: 0 4px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .style-pv-bq {
+    border-left: 4px solid var(--card-accent);
+    border-radius: 0 8px 8px 0;
+    background: color-mix(in srgb, var(--card-accent) 10%, var(--card-bg));
+  }
+}
+
+.style-card-preview.typography-minimalist {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+
+  .style-pv-h {
+    font-weight: 300;
+    color: var(--card-text);
+  }
+
+  .style-pv-p {
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--card-text) 78%, var(--card-muted));
+  }
+
+  .style-pv-bq {
+    border-left: 2px solid color-mix(in srgb, var(--card-text) 30%, transparent);
+    color: color-mix(in srgb, var(--card-text) 78%, var(--card-muted));
+  }
+}
+
+.style-card-preview.typography-journal {
+  font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', '楷体', serif;
+
+  .style-pv-h {
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 2px double color-mix(in srgb, var(--card-accent) 45%, transparent);
+    padding-bottom: 4px;
+  }
+
+  .style-pv-p strong {
+    color: inherit;
+    background: linear-gradient(
+      transparent 30%,
+      color-mix(in srgb, var(--card-accent) 30%, transparent) 30%
+    );
+    background-size: 100% 1.15em;
+    background-position: 0 0.1em;
+    background-repeat: no-repeat;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  .style-pv-bq {
+    border-left: 4px solid color-mix(in srgb, var(--card-accent) 45%, transparent);
+    background: color-mix(in srgb, var(--card-accent) 8%, var(--card-bg));
+    border-radius: 8px;
+  }
+}
+
+.style-card-preview.typography-report {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+
+  .style-pv-h {
+    font-weight: 800;
+    border-left: 5px solid var(--card-accent);
+    padding-left: 7px;
+    color: var(--card-accent-deep, var(--card-accent));
+  }
+
+  .style-pv-p strong {
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 700;
+    background: none;
+    box-shadow: none;
+  }
+
+  .style-pv-bq {
+    border-left: 4px solid var(--card-accent);
+    background: color-mix(in srgb, var(--card-text) 4%, var(--card-bg));
+    border-radius: 0 4px 4px 0;
+  }
+}
+
+// auto（跟随主题）：无风格类，直接走基础排版示意
+.style-card-preview.typography-auto {
+  font-family: @font-family-base;
+
+  .style-pv-h {
+    font-weight: 700;
+    border-left: 3px solid var(--card-accent, var(--accent));
+    padding-left: 8px;
+    color: var(--card-accent-deep, var(--card-accent));
+  }
+
+  .style-pv-bq {
+    border-left: 3px solid var(--card-accent, var(--accent));
+    background: color-mix(in srgb, var(--card-accent, var(--accent)) 8%, var(--card-bg));
+  }
+}

@@ -1,102 +1,63 @@
 <template>
-  <div class="uni-editor">
-    <!-- 文档标签页 -->
-    <div class="document-tabs" v-if="openTabs.length > 0">
-      <div class="tabs-container">
-        <div class="tabs-main">
-          <div class="tabs-scroll" ref="tabsScrollRef">
-            <div
-              v-for="tab in openTabs"
-              :key="tab.id"
-              class="tab"
-              :class="{
-                active: tab.id === activeTabId,
-                modified: isDocumentModified(tab.id)
-              }"
-              @click="selectTab(tab.id)"
-            >
-              <div class="tab-content">
-                <div class="tab-title" :title="getDocument(tab.id)?.title">
-                  {{ getDocument(tab.id)?.title || t('documents.untitled') }}
-                </div>
-                <div
-                  class="tab-close"
-                  @click.stop="closeTab(tab.id)"
-                  v-if="openTabs.length > 1"
-                  :title="isDocumentModified(tab.id) ? t('documents.unsavedChangesTitle') : t('documents.closeTabTitle')"
-                >
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                    <path d="M9.5 3.5L8.5 2.5L6 5L3.5 2.5L2.5 3.5L5 6L2.5 8.5L3.5 9.5L6 7L8.5 9.5L9.5 8.5L7 6L9.5 3.5Z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tabs-actions">
-            <button class="action-btn" @click="toggleDocumentManager" :title="showDocumentManager ? t('documents.hideManager') : t('documents.showManager')">
-              <svg v-if="showDocumentManager" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M1 6.5A1.5 1.5 0 0 1 2.5 5h3.38a1.5 1.5 0 0 1 1.06.44L8.38 7H13.5A1.5 1.5 0 0 1 15 8.354l-.8 5.32A1.5 1.5 0 0 1 12.72 15H3.28a1.5 1.5 0 0 1-1.48-1.326L1 6.5Z"/>
-                <path d="M15 6.5H1V3.5A1.5 1.5 0 0 1 2.5 2h3.38a1.5 1.5 0 0 1 1.06.44L8.38 4H13.5A1.5 1.5 0 0 1 15 5.5v1Z"/>
-              </svg>
-              <svg v-else width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5v-9zM2.5 3a.5.5 0 0 0-.5.5V5h12V3.5a.5.5 0 0 0-.5-.5h-11zM14 6H2v6.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V6z"/>
-              </svg>
-            </button>
-            <button class="action-btn" @click="createNewDocument" :title="t('documents.newDocument')">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div class="tabs-scrollbar" v-show="showScrollbar">
-          <div
-            class="tabs-scrollbar-thumb"
-            :style="{
-              width: scrollbarThumbWidth + '%',
-              transform: `translateX(${scrollbarThumbPosition}px)`
-            }"
-          ></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 文档管理器 -->
-    <div class="document-manager" v-if="showDocumentManager">
-      <div class="manager-header">
-        <div class="header-title">
-          <h3>{{ t('documents.manager') }}</h3>
-          <span class="document-count">
+<div class="uni-editor">
+    <!-- 文档库侧栏：常驻历史文章列表（可折叠/搜索/新建/导入） -->
+    <aside class="doc-sidebar" :class="{ collapsed: docSidebarCollapsed }">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span class="sidebar-title-text" v-if="!docSidebarCollapsed">{{ t('documents.library') }}</span>
+          <span class="sidebar-count" v-if="!docSidebarCollapsed">
             <template v-if="searchQuery.trim()">
-              {{ t('documents.documentCount', { count: filteredDocumentsAll.length }) }}/{{ allDocuments.length }}
+              {{ filteredDocumentsAll.length }}/{{ allDocuments.length }}
             </template>
             <template v-else>
-              {{ t('documents.documentCount', { count: filteredDocuments.length }) }}
-              <span v-if="showLoadMore">
-                /{{ allDocuments.length }}
-              </span>
+              {{ filteredDocuments.length }}<span v-if="showLoadMore">/{{ allDocuments.length }}</span>
             </template>
           </span>
         </div>
-        <div class="header-search">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="search-input"
-            :placeholder="$t('common.search') || '搜索文档...'"
-            @input="handleSearch"
-          >
-          <svg v-if="!searchQuery" class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-          </svg>
-          <button v-else class="search-clear" @click="clearSearch" title="清除搜索">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+        <div class="sidebar-actions">
+          <button class="action-btn" @click="importApprovedSocialPackage" :title="t('documents.importApproved')">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 2.5h7l3 3v8H3z"/>
+              <path d="M10 2.5v3h3M5.2 9l1.7 1.7L10.8 7"/>
+            </svg>
+          </button>
+          <button class="action-btn" @click="createNewDocument" :title="t('documents.newDocument')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+            </svg>
+          </button>
+          <button class="action-btn" @click="toggleDocSidebar" :title="docSidebarCollapsed ? t('common.expand') : t('common.collapse')">
+            <svg v-if="docSidebarCollapsed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 3v18"/>
+              <path d="m14 9-3 3 3 3"/>
+            </svg>
+            <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M9 3v18"/>
+              <path d="m10 9 3 3-3 3"/>
             </svg>
           </button>
         </div>
       </div>
-      <div class="manager-content">
+      <div class="sidebar-search" v-if="!docSidebarCollapsed">
+        <input
+          v-model="searchQuery"
+          type="text"
+          class="search-input"
+          :placeholder="$t('common.search') || 'Search documents...'"
+          @input="handleSearch"
+        >
+        <svg v-if="!searchQuery" class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+        <button v-else class="search-clear" @click="clearSearch" :title="t('common.clearSearch')">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 5.854Z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="sidebar-list" v-if="!docSidebarCollapsed">
         <div class="document-list">
           <div
             v-for="doc in filteredDocuments"
@@ -188,19 +149,117 @@
         <!-- 加载更多按钮 -->
         <div v-if="showLoadMore" class="load-more-container">
           <button class="load-more-btn" @click="loadMoreDocuments">
-            <span>{{ $t('common.loadMore') || '加载更多' }}</span>
+            <span>{{ $t('common.loadMore') || 'Load more' }}</span>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
               <path d="M7.646 9.646a.5.5 0 0 1 .708 0L12 13.293V2.5a.5.5 0 0 1 1 0v10.793l3.646-3.647a.5.5 0 0 1 .708.708l-4.5 4.5a.5.5 0 0 1-.708 0l-4.5-4.5a.5.5 0 0 1 0-.708z"/>
             </svg>
           </button>
         </div>
       </div>
-    </div>
+    </aside>
+    <button
+      v-if="docSidebarCollapsed"
+      class="doc-sidebar-fab"
+      type="button"
+      @click="toggleDocSidebar"
+      :title="t('documents.library')"
+      :aria-label="t('documents.library')"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <path d="M8 4v16M12 8h5M12 12h5M12 16h3"/>
+      </svg>
+    </button>
 
     <!-- 编辑器 -->
     <div class="editor-container">
       <div ref="elRef" class="vditor-host"></div>
     </div>
+
+    <!-- 图片缩放菜单 (使用 Teleport 挂载到 body) -->
+    <Teleport to="body">
+      <div
+        v-if="showImageResizeHandle"
+        class="image-resize-menu"
+        :style="imageResizeHandleStyle"
+        @click.stop
+      >
+        <div class="resize-menu-content">
+          <div class="resize-title">{{ t('imageResize.title') }}</div>
+          <div class="resize-options">
+            <button @click="setImageSize(100)" :class="{ active: currentImageSize === 100 }">100%</button>
+            <button @click="setImageSize(75)" :class="{ active: currentImageSize === 75 }">75%</button>
+            <button @click="setImageSize(50)" :class="{ active: currentImageSize === 50 }">50%</button>
+            <button @click="setImageSize(25)" :class="{ active: currentImageSize === 25 }">25%</button>
+          </div>
+          <div class="resize-custom">
+            <input
+              type="number"
+              min="10"
+              max="100"
+              v-model.number="customSize"
+              @keyup.enter="applyCustomSize"
+              class="resize-input"
+              :aria-label="t('imageResize.customWidthAria')"
+            />
+            <span class="resize-percent">%</span>
+            <button @click="applyCustomSize" class="resize-apply">{{ t('imageResize.apply') }}</button>
+          </div>
+          <div class="resize-title">{{ t('imageResize.align') }}</div>
+          <div class="resize-options align">
+            <button @click="setImageAlign('left')" :class="{ active: currentImageAlign === 'left' }" :title="t('imageResize.leftTip')">{{ t('imageResize.left') }}</button>
+            <button @click="setImageAlign('center')" :class="{ active: currentImageAlign === 'center' }" :title="t('imageResize.centerTip')">{{ t('imageResize.center') }}</button>
+            <button @click="setImageAlign('right')" :class="{ active: currentImageAlign === 'right' }" :title="t('imageResize.rightTip')">{{ t('imageResize.right') }}</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- 「更多」工具栏浮层（低频 / 需选中文本的功能收纳） -->
+    <Teleport to="body">
+      <div
+        v-if="showMoreMenu"
+        class="more-toolbar-menu"
+        :style="moreMenuStyle"
+        @click.stop
+      >
+        <div class="more-menu-section">
+          <div class="more-menu-title">{{ t('moreMenu.insert') }}</div>
+          <div class="more-menu-grid">
+            <button class="more-menu-item" @click="triggerToolbarItem('quote')">
+              <span class="more-menu-icon" v-html="quoteIconSvg"></span>
+              <span class="more-menu-label">{{ t('moreMenu.quote') }} <em>{{ t('moreMenu.selectedText') }}</em></span>
+            </button>
+            <button class="more-menu-item" @click="triggerToolbarItem('code')">
+              <span class="more-menu-icon" v-html="codeIconSvg"></span>
+              <span class="more-menu-label">{{ t('moreMenu.code') }} <em>{{ t('moreMenu.selectedText') }}</em></span>
+            </button>
+            <button class="more-menu-item" @click="triggerToolbarItem('table')">
+              <span class="more-menu-icon" v-html="tableIconSvg"></span>
+              <span class="more-menu-label">{{ t('moreMenu.table') }} <em>{{ t('moreMenu.atCursor') }}</em></span>
+            </button>
+            <button class="more-menu-item" @click="triggerToolbarItem('link')">
+              <span class="more-menu-icon" v-html="linkIconSvg"></span>
+              <span class="more-menu-label">{{ t('moreMenu.link') }} <em>{{ t('moreMenu.selectedText') }}</em></span>
+            </button>
+          </div>
+        </div>
+        <div class="more-menu-divider"></div>
+        <div class="more-menu-section">
+          <div class="more-menu-title">{{ t('moreMenu.tools') }}</div>
+          <div class="more-menu-grid">
+            <button class="more-menu-item" @click="triggerToolbarItem('emoji')">
+              <span class="more-menu-icon" v-html="emojiIconSvg"></span>
+              <span class="more-menu-label">{{ t('moreMenu.emoji') }}</span>
+            </button>
+            <button class="more-menu-item" @click="triggerToolbarItem('ai-settings')">
+              <span class="more-menu-icon" v-html="aiSettingsIconSvg"></span>
+              <span class="more-menu-label">{{ t('moreMenu.aiSettings') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- 删除确认对话框 -->
     <div v-if="showDeleteConfirm" class="modal-overlay" @click="cancelDelete">
@@ -236,6 +295,94 @@
         </div>
       </div>
     </div>
+
+    <!-- AI 设置对话框 -->
+    <div v-if="showAISettings" class="modal-overlay" @click.self="closeAISettings">
+      <div class="modal-dialog" @click.stop>
+        <div class="modal-header">
+          <h3>{{ t('aiSettings.title') }}</h3>
+        </div>
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; margin-bottom: 4px; font-weight: 500;">{{ t('aiSettings.providerPreset') }}</label>
+            <select class="form-input" v-model="selectedAIPreset" @change="applyAIPreset" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+              <option v-for="item in aiPresetOptions" :key="item.value" :value="item.value">{{ item.label }}</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; margin-bottom: 4px; font-weight: 500;">API Key <span style="color: #ef4444;">*</span></label>
+            <input type="password" class="form-input" v-model="aiConfig.apiKey" placeholder="sk-..." style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);" />
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; margin-bottom: 4px; font-weight: 500;">{{ t('aiSettings.baseUrl') }}</label>
+            <input type="text" class="form-input" v-model="aiConfig.baseURL" @input="selectedAIPreset = 'custom'" placeholder="https://api.openai.com/v1" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);" />
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; margin-bottom: 4px; font-weight: 500;">{{ t('aiSettings.model') }}</label>
+            <input type="text" class="form-input" v-model="aiConfig.model" @input="selectedAIPreset = 'custom'" placeholder="gpt-4o-mini" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);" />
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; margin-bottom: 4px; font-weight: 500;">{{ t('aiSettings.stylePreset') }}</label>
+            <select class="form-input" v-model="aiConfig.stylePreset" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+              <option value="auto">{{ t('aiSettings.styleAuto') }}</option>
+              <option value="academic">{{ t('aiSettings.styleAcademic') }}</option>
+              <option value="lively">{{ t('aiSettings.styleLively') }}</option>
+              <option value="concise">{{ t('aiSettings.styleConcise') }}</option>
+              <option value="xiaohongshu">{{ t('aiSettings.styleXiaohongshu') }}</option>
+            </select>
+          </div>
+          <p class="muted small-text" style="margin-top: 12px; line-height: 1.4; color: var(--muted);">{{ t('aiSettings.compatHint') }}</p>
+          <div v-if="aiConnectionStatus || aiDiagnostics.message" class="ai-diagnostics-panel" style="margin-top: 14px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: color-mix(in srgb, var(--panel) 86%, transparent);">
+            <div v-if="aiConnectionStatus" class="small-text" :style="{ color: aiConnectionStatus.type === 'success' ? '#10b981' : aiConnectionStatus.type === 'error' ? '#ef4444' : 'var(--muted)' }">
+              {{ aiConnectionStatus.text }}
+            </div>
+            <div v-if="aiDiagnostics.message" style="margin-top: 8px;">
+              <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">{{ t('aiSettings.diagTitle') }}</div>
+              <div class="small-text" style="line-height: 1.6; white-space: pre-wrap; color: var(--text);">{{ aiDiagnostics.message }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-secondary" @click="closeAISettings">{{ t('common.cancel') }}</button>
+          <button class="btn btn-secondary" @click="handleAITest" :disabled="isAITesting">{{ isAITesting ? t('aiSettings.testing') : t('aiSettings.testConnection') }}</button>
+          <button class="btn btn-secondary" @click="saveAISettings">{{ t('aiSettings.saveOnly') }}</button>
+          <button class="btn btn-primary" @click="saveAndFormat">{{ t('aiSettings.saveAndFormat') }}</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- AI 排版结果预览（应用前确认，不直接改动文档） -->
+    <div v-if="showAIResultPreview" class="modal-overlay" @click.self="discardAIResult">
+      <div class="modal-dialog ai-result-dialog" @click.stop>
+        <div class="modal-header">
+          <h3>{{ t('aiResult.title') }}</h3>
+        </div>
+        <div class="modal-body ai-result-body">
+          <p class="muted small-text">{{ t('aiResult.description') }}</p>
+          <div class="ai-result-compare">
+            <div class="ai-result-pane">
+              <div class="ai-pane-label">{{ t('aiResult.original') }}</div>
+              <div ref="aiPreviewBeforeEl" class="ai-result-render"></div>
+            </div>
+            <div class="ai-result-pane">
+              <div class="ai-pane-label ai-pane-label-accent">{{ t('aiResult.formatted') }}</div>
+              <div ref="aiPreviewAfterEl" class="ai-result-render"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="discardAIResult">{{ t('aiResult.discard') }}</button>
+          <button class="btn btn-primary" @click="applyAIResult">{{ t('aiResult.apply') }}</button>
+        </div>
+      </div>
+    </div>
+
+    <LoadingOverlay
+      :show="isAILoading"
+      :text="aiLoadingText"
+      :theme="'classic'"
+      :pageTheme="props.pageTheme"
+    />
   </div>
 </template>
 
@@ -246,6 +393,9 @@ import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import zhMessages from '../locales/zh.js'
 import enMessages from '../locales/en.js'
+import { useToast } from '../composables/useToast'
+import LoadingOverlay from './LoadingOverlay.vue'
+import { planLayoutWithAI, validateLayoutPlan, applyLayoutPlan, resolveStyleLimits, deterministicFormat, testAIConnection } from '../utils/ai.js'
 import {
   saveImage,
   convertContentForEditor,
@@ -255,11 +405,20 @@ import {
   cleanupUnusedImages,
   hasIndexedDBSupport
 } from '../utils/imageStore.js'
+import {
+  normalizeSocialPackage,
+  buildSocialMarkdown,
+  createSocialDocumentTitle,
+  embeddedAssetFile,
+  getRequiredAssetNames
+} from '../utils/socialPackage.js'
 
 const props = defineProps({
-  pageTheme: { type: String, default: 'theme-dark' }
+  pageTheme: { type: String, default: 'theme-dark' },
+  // 渲染 URL 通道：外部传入的初始 Markdown（AI 工作台生成 ?text=... 打开即预览）
+  initialMarkdown: { type: String, default: '' }
 })
-const emit = defineEmits(['update:html', 'editorScroll'])
+const emit = defineEmits(['update:html', 'editorScroll', 'socialPackageImported'])
 
 const { locale, t } = useI18n()
 
@@ -268,23 +427,81 @@ let vd = null
 let isVditorReady = false
 const scrollCleanups = []
 let cleanupModeListener = null
+const showImageResizeHandle = ref(false)
+const imageResizeHandleStyle = ref({})
+const selectedImageEl = ref(null)
+const currentImageSize = ref(100)
+const currentImageAlign = ref('left')
+const customSize = ref(100)
+let imageResizeSyncTimer = null
+const imageSizeBySrc = new Map()
+const imageAlignBySrc = new Map()
 
 const CACHE_KEY = 'uni-editor-content'
 const MODE_CACHE_KEY = 'uni-editor-mode'
 const CACHE_VERSION_KEY = 'uni.cacheVersion'
 const CURRENT_CACHE_VERSION = 2 // v1: single document, v2: multi-document
+const AI_PRESET_KEY = 'uni.aiPreset'
 
 // 文档管理状态
 const allDocuments = ref([]) // 所有文档缓存
 const openTabs = ref([]) // 当前打开的标签页
 const activeTabId = ref('') // 当前活跃的标签
-const selectedDocumentId = ref('') // 在文档管理器中选中的文档
-const showDocumentManager = ref(false) // 是否显示文档管理器
+const selectedDocumentId = ref('') // 在文档列表中选中的文档
+const docSidebarCollapsed = ref(typeof window !== 'undefined' && window.innerWidth < 1024) // 文档库侧栏是否折叠，小屏默认折叠
 const showDeleteConfirm = ref(false) // 删除确认对话框
 const documentToDelete = ref('') // 待删除的文档ID
 const showImportConfirm = ref(false) // 导入确认对话框
 const importTargetDocId = ref('') // 导入目标文档ID
 const pendingImportFile = ref(null) // 待导入的文件
+
+const { success, error, warning } = useToast()
+
+// AI 配置状态
+const showAISettings = ref(false)
+const isAILoading = ref(false)
+
+// 「更多」工具栏浮层
+const showMoreMenu = ref(false)
+const moreMenuStyle = ref({ top: '0px', left: '0px' })
+
+// 「更多」浮层图标（描边风格，呼应杂志工作室的克制线条）
+const quoteIconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 5h4.2c1.2 0 2 .8 2 2.1v2.6c0 2.4-1.5 4.2-3.9 4.9-.4.1-.8.1-.8.1l-.7-.01c.9-.3 1.5-1 1.7-1.9.1-.4.1-.8.1-.8-.5 0-1.1-.1-1.6-.4-1-.5-1.6-1.4-1.6-2.7V6.5C5.3 5.6 5.9 5 6.9 5zM15.6 5h4.2c1.2 0 2 .8 2 2.1v2.6c0 2.4-1.5 4.2-3.9 4.9-.4.1-.8.1-.8.1l-.8-.01c.9-.3 1.5-1 1.7-1.9.1-.4.1-.8.1-.8-.5 0-1.1-.1-1.6-.4-1-.5-1.6-1.4-1.6-2.7V6.5c0-.9.6-1.5 1.7-1.5z"/></svg>'
+const codeIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8.5 7L4 12l4.5 5M15.5 7L20 12l-4.5 5M14 4l-4 16"/></svg>'
+const tableIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 10h16M4 15h16M10 10v9M15 10v9"/></svg>'
+const linkIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.5 14.5l3-3"/><path d="M8.5 13.5l-2.2 2.2a3 3 0 1 0 4.2 4.2l2.3-2.3"/><path d="M15.5 10.5l2.2-2.2a3 3 0 1 0-4.2-4.2l-2.3 2.3"/></svg>'
+const emojiIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c.9 1.3 2.1 2 3.5 2s2.6-.7 3.5-2"/><circle cx="9" cy="10" r="0.6" fill="currentColor"/><circle cx="15" cy="10" r="0.6" fill="currentColor"/></svg>'
+const aiSettingsIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 .99-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51.99H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+
+// AI 排版结果预览（应用前确认，不再直接覆盖文档）
+const pendingAIResult = ref('')
+const aiPreviewBefore = ref('')
+const showAIResultPreview = ref(false)
+const aiPreviewBeforeEl = ref(null)
+const aiPreviewAfterEl = ref(null)
+const aiStreamingChars = ref(0)
+
+const isAITesting = ref(false)
+const aiLoadingText = ref(t('ai.loadingDefault'))
+const selectedAIPreset = ref('custom')
+const aiConnectionStatus = ref(null)
+const aiDiagnostics = ref({ message: '' })
+let aiLoadingTimer = null
+let aiLoadingStartedAt = 0
+let aiLoadingStage = 'idle'
+const aiPresetOptions = computed(() => [
+  { value: 'custom', label: t('aiSettings.customPreset'), baseURL: '', model: '' },
+  { value: 'openai', label: 'OpenAI', baseURL: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+  { value: 'deepseek', label: 'DeepSeek', baseURL: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+  { value: 'siliconflow', label: t('aiSettings.presetSiliconflow'), baseURL: 'https://api.siliconflow.cn/v1', model: 'Qwen/Qwen2.5-7B-Instruct' },
+  { value: 'moonshot', label: 'Moonshot Kimi', baseURL: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k' }
+])
+const aiConfig = ref({
+  apiKey: '',
+  baseURL: 'https://api.openai.com/v1',
+  model: 'gpt-4o-mini',
+  stylePreset: 'auto' // 'auto' | 'academic' | 'lively' | 'concise' | 'xiaohongshu'
+})
 
 // 搜索相关状态
 const searchQuery = ref('') // 搜索关键词
@@ -441,12 +658,28 @@ function initializeDocuments() {
           } else {
             activeTabId.value = validTabs[0].id
           }
-          return
         }
       }
     }
   } catch (e) {
     console.warn('Failed to load documents from localStorage:', e)
+  }
+
+  // 加载 AI 配置
+  try {
+    const savedAI = localStorage.getItem('uni.aiConfig')
+    if (savedAI) {
+      const parsedAI = JSON.parse(savedAI)
+      aiConfig.value = { ...aiConfig.value, ...parsedAI }
+    }
+    const savedPreset = localStorage.getItem(AI_PRESET_KEY)
+    if (savedPreset && aiPresetOptions.some(option => option.value === savedPreset)) {
+      selectedAIPreset.value = savedPreset
+    } else {
+      syncAIPresetByConfig()
+    }
+  } catch (e) {
+    console.warn('Failed to load AI config:', e)
   }
 
   // 如果没有有效数据，创建默认文档
@@ -490,9 +723,15 @@ function getDefaultContent() {
 
 function saveToLocalStorage() {
   try {
-    localStorage.setItem('uni.allDocuments', JSON.stringify(allDocuments.value))
-    localStorage.setItem('uni.openTabs', JSON.stringify(openTabs.value))
-    localStorage.setItem('uni.activeTabId', activeTabId.value)
+    // 渲染 URL 通道的 external 文档不持久化，避免污染用户文档库
+    const persistDocs = allDocuments.value.filter(doc => !doc.external)
+    const persistTabs = openTabs.value.filter(tab => persistDocs.some(doc => doc.id === tab.id))
+    const persistActive = persistDocs.some(doc => doc.id === activeTabId.value)
+      ? activeTabId.value
+      : (persistTabs[0]?.id || '')
+    localStorage.setItem('uni.allDocuments', JSON.stringify(persistDocs))
+    localStorage.setItem('uni.openTabs', JSON.stringify(persistTabs))
+    localStorage.setItem('uni.activeTabId', persistActive)
 
     // 确保缓存版本始终是最新的
     setCacheVersion(CURRENT_CACHE_VERSION)
@@ -659,7 +898,7 @@ async function selectTab(docId) {
     }
 
     // 发送HTML更新
-    emit('update:html', vd.getHTML())
+    emitEditorHtmlUpdate()
   }
 
   saveToLocalStorage()
@@ -753,8 +992,8 @@ function cancelDelete() {
   documentToDelete.value = ''
 }
 
-function toggleDocumentManager() {
-  showDocumentManager.value = !showDocumentManager.value
+function toggleDocSidebar() {
+  docSidebarCollapsed.value = !docSidebarCollapsed.value
 }
 
 function saveCurrentDocumentState(preparedContent) {
@@ -809,13 +1048,299 @@ function getVditorLang(locale) {
   return langMap[locale] || 'en_US'
 }
 
+function createImageUid() {
+  return `img_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+}
+
+function getEditorContainerEl() {
+  return elRef.value?.parentElement || null
+}
+
+function getContentContainerEl() {
+  if (!vd?.vditor?.element) return null
+  return vd.vditor.element.querySelector('.vditor-wysiwyg, .vditor-ir')
+}
+
+function applyImageSizeToHtml(html) {
+  if (!html) return ''
+  if (!imageSizeBySrc || imageSizeBySrc.size === 0) return html
+
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  const images = doc.querySelectorAll('img')
+  images.forEach((img) => {
+    const src = img.getAttribute('src') || ''
+    if (!src) return
+    const sizeValue = imageSizeBySrc.get(src)
+    if (!sizeValue || Number.isNaN(sizeValue)) return
+    img.style.setProperty('width', `${sizeValue}%`)
+    img.style.setProperty('max-width', `${sizeValue}%`)
+    img.style.height = 'auto'
+    applyAlignToImg(img, imageAlignBySrc.get(src))
+  })
+  return doc.body.innerHTML
+}
+
+function emitHtmlUpdate(rawHtml) {
+  emit('update:html', applyImageSizeToHtml(rawHtml || ''))
+}
+
+function emitEditorHtmlUpdate() {
+  if (!vd) return
+  emitHtmlUpdate(vd.getHTML())
+}
+
+function updateImageResizeHandlePosition() {
+  if (!showImageResizeHandle.value || !selectedImageEl.value) return
+  const container = getEditorContainerEl()
+  if (!container) return
+  const imgRect = selectedImageEl.value.getBoundingClientRect()
+  const containerRect = container.getBoundingClientRect()
+  const handleSize = 12
+  const left = imgRect.right - containerRect.left - handleSize / 2
+  const top = imgRect.bottom - containerRect.top - handleSize / 2
+  imageResizeHandleStyle.value = {
+    left: `${left}px`,
+    top: `${top}px`
+  }
+}
+
+function syncImageResizeToContent() {
+  if (!vd) return
+  const html = vd.getHTML()
+  const normalizedHtml = applyImageSizeToHtml(html)
+  emitHtmlUpdate(normalizedHtml)
+  const storageContent = convertContentForStorage(normalizedHtml)
+  const activeDoc = getActiveDocument()
+  if (activeDoc && activeDoc.content !== storageContent) {
+    activeDoc.content = storageContent
+    activeDoc.updatedAt = Date.now()
+    markDocumentModified(activeDoc.id)
+    saveToLocalStorage()
+  }
+}
+
+function scheduleImageResizeSync() {
+  if (imageResizeSyncTimer) clearTimeout(imageResizeSyncTimer)
+  imageResizeSyncTimer = setTimeout(() => {
+    imageResizeSyncTimer = null
+    syncImageResizeToContent()
+  }, 120)
+}
+
+function selectImageForResize(target) {
+  if (!target) return
+  selectedImageEl.value = target
+  if (!target.dataset.uid) {
+    target.dataset.uid = createImageUid()
+    scheduleImageResizeSync()
+  }
+  showImageResizeHandle.value = true
+  updateImageResizeHandlePosition()
+}
+
+function hideImageResizeHandle() {
+  showImageResizeHandle.value = false
+  selectedImageEl.value = null
+}
+
+function setImageSize(size) {
+  if (!selectedImageEl.value) return
+  
+  selectedImageEl.value.style.setProperty('width', `${size}%`, 'important')
+  selectedImageEl.value.style.setProperty('max-width', `${size}%`, 'important')
+  selectedImageEl.value.style.height = 'auto'
+  const src = selectedImageEl.value.getAttribute('src') || ''
+  if (src) {
+    imageSizeBySrc.set(src, size)
+  }
+  currentImageSize.value = size
+  
+  updateImageResizeHandlePosition()
+  emitEditorHtmlUpdate()
+  scheduleImageResizeSync()
+}
+
+// 从 DOM 实际样式推断图片对齐（兼容从存储加载后 Map 为空的情况）
+function getAlignFromStyle(el) {
+  if (!el) return 'left'
+  const ml = el.style.marginLeft
+  const mr = el.style.marginRight
+  if (ml === 'auto' && mr === 'auto') return 'center'
+  if (ml === 'auto') return 'right'
+  if (mr === 'auto') return 'left'
+  return 'left'
+}
+
+// 根据对齐方式设置图片 margin（居中/左/右）
+function applyAlignToImg(img, align) {
+  if (!img) return
+  img.style.display = 'block'
+  if (align === 'center') {
+    img.style.marginLeft = 'auto'
+    img.style.marginRight = 'auto'
+  } else if (align === 'right') {
+    img.style.marginLeft = 'auto'
+    img.style.marginRight = '0'
+  } else {
+    img.style.marginLeft = '0'
+    img.style.marginRight = 'auto'
+  }
+}
+
+function setImageAlign(align) {
+  if (!selectedImageEl.value) return
+  applyAlignToImg(selectedImageEl.value, align)
+  const src = selectedImageEl.value.getAttribute('src') || ''
+  if (src) {
+    imageAlignBySrc.set(src, align)
+  }
+  currentImageAlign.value = align
+  emitEditorHtmlUpdate()
+  scheduleImageResizeSync()
+}
+
+function applyCustomSize() {
+  let v = Math.round(Number(customSize.value))
+  if (!v || Number.isNaN(v)) v = 100
+  v = Math.min(100, Math.max(10, v))
+  customSize.value = v
+  setImageSize(v)
+}
+
+function startImageResize(event) {
+  if (!selectedImageEl.value) return
+  isResizingImage.value = true
+  imageResizeStartX = event.clientX
+  imageResizeStartWidth = selectedImageEl.value.clientWidth || 0
+  const contentEl = getContentContainerEl()
+  imageResizeBaseWidth = contentEl?.clientWidth || selectedImageEl.value.parentElement?.clientWidth || 1
+  document.body.style.cursor = 'nwse-resize'
+  document.body.style.userSelect = 'none'
+  if (event?.target?.setPointerCapture && event.pointerId !== undefined) {
+    event.target.setPointerCapture(event.pointerId)
+  }
+  const handleMove = (moveEvent) => {
+    if (!isResizingImage.value || !selectedImageEl.value) return
+    const deltaX = moveEvent.clientX - imageResizeStartX
+    const newWidthPx = Math.max(40, imageResizeStartWidth + deltaX)
+    const percent = Math.min(100, Math.max(10, Math.round((newWidthPx / imageResizeBaseWidth) * 100)))
+    selectedImageEl.value.style.setProperty('width', `${percent}%`, 'important')
+    selectedImageEl.value.style.setProperty('max-width', `${percent}%`, 'important')
+    selectedImageEl.value.style.height = 'auto'
+    const src = selectedImageEl.value.getAttribute('src') || ''
+    if (src) {
+      imageSizeBySrc.set(src, percent)
+    }
+    updateImageResizeHandlePosition()
+    emitEditorHtmlUpdate()
+  }
+  const handleUp = (upEvent) => {
+    isResizingImage.value = false
+    document.removeEventListener('mousemove', handleMove)
+    document.removeEventListener('mouseup', handleUp)
+    document.removeEventListener('pointermove', handleMove)
+    document.removeEventListener('pointerup', handleUp)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+    
+    // Release pointer capture
+    if (upEvent?.target?.releasePointerCapture && upEvent.pointerId !== undefined) {
+      upEvent.target.releasePointerCapture(upEvent.pointerId)
+    }
+
+    scheduleImageResizeSync()
+  }
+  document.addEventListener('mousemove', handleMove)
+  document.addEventListener('mouseup', handleUp)
+  document.addEventListener('pointermove', handleMove)
+  document.addEventListener('pointerup', handleUp)
+}
+
+function bindImageResizeEvents() {
+  if (!vd?.vditor?.element) return
+  const editorEl = vd.vditor.element
+
+  // 使用全局捕获事件监听点击
+  const handleGlobalClick = (event) => {
+    const target = event.target
+    
+    // 检查点击目标是否在编辑器内
+    const isInsideEditor = editorEl.contains(target)
+    
+    // 如果点击的是编辑器内的图片
+    if (isInsideEditor && target?.tagName === 'IMG') {
+      // 阻止默认行为和传播，防止触发Vditor预览
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+      
+      selectImageForResize(target)
+      
+      // 更新当前选中尺寸状态
+      const styleWidth = target.style.width
+      if (styleWidth && styleWidth.includes('%')) {
+        currentImageSize.value = parseFloat(styleWidth)
+      } else {
+        currentImageSize.value = 100
+      }
+      // 回显对齐状态（以 DOM 实际样式为准，兼容从存储加载的场景）
+      currentImageAlign.value = getAlignFromStyle(target)
+      customSize.value = currentImageSize.value
+      return
+    }
+    
+    // 如果点击的是缩放菜单内部，不做处理
+    if (target?.closest?.('.image-resize-menu')) {
+      return
+    }
+    
+    // 点击其他区域，隐藏缩放菜单
+    hideImageResizeHandle()
+  }
+  
+  const handleEditorScroll = () => updateImageResizeHandlePosition()
+  const handleWindowResize = () => updateImageResizeHandlePosition()
+  
+  // 在 document 上使用捕获阶段绑定事件，确保最先处理
+  document.addEventListener('click', handleGlobalClick, true)
+  editorEl.addEventListener('scroll', handleEditorScroll, true)
+  window.addEventListener('resize', handleWindowResize)
+
+  scrollCleanups.push(() => {
+    document.removeEventListener('click', handleGlobalClick, true)
+    editorEl.removeEventListener('scroll', handleEditorScroll, true)
+    window.removeEventListener('resize', handleWindowResize)
+  })
+}
+
 // 初始化编辑器
 async function initVditor() {
   if (!elRef.value) return
 
-  const activeDoc = getActiveDocument()
-  const initialContent = activeDoc?.content || getDefaultContent()
-  const initialMode = activeDoc?.mode || loadCachedMode()
+  let initialContent
+  let initialMode
+  const externalMarkdown = props.initialMarkdown
+  if (externalMarkdown) {
+    // 渲染 URL 通道：外部文档作为临时文档打开（external 标记，不持久化、不污染文档库）
+    const extDoc = {
+      id: generateId(),
+      title: extractTitleFromContent(externalMarkdown) || t('editor.welcome'),
+      content: externalMarkdown,
+      mode: 'wysiwyg',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      external: true
+    }
+    allDocuments.value.push(extDoc)
+    openTabs.value.push({ id: extDoc.id })
+    activeTabId.value = extDoc.id
+    initialContent = externalMarkdown
+    initialMode = 'wysiwyg'
+  } else {
+    const activeDoc = getActiveDocument()
+    initialContent = activeDoc?.content || getDefaultContent()
+    initialMode = activeDoc?.mode || loadCachedMode()
+  }
   let editorReadyContent = await convertContentForEditor(initialContent || '')
 
   // 预处理分页符，避免初始化时的闪现
@@ -829,24 +1354,84 @@ async function initVditor() {
     lang: getVditorLang(locale.value),
     theme: getEditorTheme(props.pageTheme),
     toolbarConfig: { pin: true },
+    customWysiwygToolbar: () => '',
     toolbar: [
-      'headings', 'bold', 'italic', 'strike', '|',
-      'list', 'ordered-list', 'check', 'outdent', 'indent', 'outline', '|',
-      'upload',{
+      // 主格式组（最高频，常驻）
+      'headings', 'bold', 'italic', '|',
+      // 列表组（常驻）
+      'list', 'ordered-list', 'check', '|',
+      // 智能排版组（AI，常驻）
+      {
+        name: 'ai-format',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>',
+        tip: t('toolbar.aiFormat'),
+        tipPosition: 's',
+        click() {
+          handleAIFormat()
+        }
+      },
+      '|',
+      // 排版助手组（分页符 / 空行，常驻：卡片分页与段落留白高频）
+      {
         name: 'page-break',
-        icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        icon: `<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
           <path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v3.5a.5.5 0 0 1-1 0V3H3v3.5a.5.5 0 0 1-1 0V3z"/>
           <path d="M2 9.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5z"/>
           <path d="M10.5 9a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
           <path d="M2 13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2.5a.5.5 0 0 0-1 0V13H3v-2.5a.5.5 0 0 0-1 0V13z"/>
           <path d="M5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 8z" fill-rule="evenodd"/>
         </svg>`,
-        tip: t('editor.pageBreak'),
+        tip: t('toolbar.pageBreak'),
+        tipPosition: 's',
         click: handlePageBreak
-      },'line', 'code', 'inline-code', 'quote', 'table', 'link',  'emoji', 'insert-before', 'insert-after', '|',
-      'undo', 'redo', '|',
-      
-      'edit-mode',
+      }, {
+        name: 'empty-line',
+        icon: `<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="2" y1="4" x2="14" y2="4"/>
+          <line x1="2" y1="12" x2="14" y2="12"/>
+          <line x1="5" y1="8" x2="11" y2="8" stroke-dasharray="2 2"/>
+        </svg>`,
+        tip: t('toolbar.emptyLine'),
+        tipPosition: 's',
+        click: handleEmptyLine
+      },
+      '|',
+      // 撤销/重做（编辑刚需，常驻）
+      'undo', 'redo',
+      '|',
+      // 上传图片（高频插入，常驻）
+      'upload',
+      // 切换模式 + 大纲（视图高频，常驻：大纲可随时开合）
+      'edit-mode', 'outline',
+      '|',
+      // 「更多」折叠按钮（收纳低频 / 需选中文本的功能）
+      // 注意：不能命名为 "more"——Vditor genItem 把 "more" 当内置保留项处理，
+      // 会走 MenuItem（无 prefix 不绑事件），自定义 click 永不被调用
+      {
+        name: 'more-menu',
+        icon: '<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><circle cx="2.5" cy="8" r="1.7"/><circle cx="8" cy="8" r="1.7"/><circle cx="13.5" cy="8" r="1.7"/></svg>',
+        tip: t('toolbar.more'),
+        tipPosition: 's',
+        click() {
+          toggleMoreMenu()
+        }
+      },
+      '|',
+      // 以下为「更多」收纳项：默认渲染后由 applyToolbarLayering 隐藏，经更多菜单触发
+      // 插入组（需选中文本或光标处插入）
+      'quote', 'code', 'table', 'link',
+      // 辅助组
+      'emoji',
+      // AI 排版设置
+      {
+        name: 'ai-settings',
+        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 .99-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51.99H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+        tip: t('toolbar.aiSettings'),
+        tipPosition: 's',
+        click() {
+          handleAISettingsOpen()
+        }
+      },
     ],
     counter: { enable: true },
     upload: {
@@ -861,6 +1446,30 @@ async function initVditor() {
       },
       hljs: {
         style: getEditorTheme(props.pageTheme) === 'dark' ? 'github-dark' : 'github'
+      },
+      // 启用图片点击预览功能
+      actions: ['delete', 'download', 'edit-mode', 'both', 'preview'],
+      image: {
+        isPreview: true,
+        preview: (imgElement) => {
+          // 接管Vditor图片点击，显示自定义缩放菜单
+          selectImageForResize(imgElement)
+          
+          // 更新当前选中尺寸状态
+          const styleWidth = imgElement.style.width
+          if (styleWidth && styleWidth.includes('%')) {
+            currentImageSize.value = parseFloat(styleWidth)
+          } else {
+            currentImageSize.value = 100
+          }
+          // 回显对齐状态（以 DOM 实际样式为准）
+          currentImageAlign.value = getAlignFromStyle(imgElement)
+          customSize.value = currentImageSize.value
+          
+          // 返回true阻止默认预览行为（如果Vditor文档如此）
+          // 但根据源码分析，只要提供了preview回调，它就会被调用
+          // 这里不需要特殊返回值，只需要执行我们逻辑即可
+        }
       }
     },
     hint: { delay: 500 },
@@ -875,12 +1484,18 @@ async function initVditor() {
       // 添加模式变化监听器
       addModeChangeListener()
 
+      // 图片缩放交互
+      bindImageResizeEvents()
+
       // 立即初始化分页符显示
       nextTick(() => updatePageBreakDisplay())
 
+      // 按频率分层：隐藏收纳到「更多」菜单的低频按钮
+      nextTick(() => applyToolbarLayering())
+
       // 初始化时发送内容
       if (vd) {
-        emit('update:html', vd.getHTML())
+        emitEditorHtmlUpdate()
       }
     },
     input: (value) => {
@@ -900,12 +1515,12 @@ async function initVditor() {
         // 更新分页符显示
         setTimeout(() => updatePageBreakDisplay(), 100)
 
-        emit('update:html', vd.getHTML())
+        emitEditorHtmlUpdate()
       }
     },
     select: () => {
       if (isVditorReady) {
-        emit('update:html', vd.getHTML())
+        emitEditorHtmlUpdate()
       }
     },
     blur: () => {
@@ -927,7 +1542,7 @@ async function initVditor() {
         // 立即重新应用分页符样式（保存后可能丢失）
         nextTick(() => updatePageBreakDisplay())
 
-        emit('update:html', vd.getHTML())
+        emitEditorHtmlUpdate()
       }
     }
   })
@@ -947,16 +1562,19 @@ async function handleImageUpload(files) {
 
       const rawName = name || file.name || 'image'
       const alt = rawName.replace(/\.[^/.]+$/, '') || 'image'
-      fragments.push(`![${alt}](${url})`)
+      const uid = createImageUid()
+      // 使用HTML标签代替Markdown语法，以支持图片缩放和内联显示
+      fragments.push(`<img src="${url}" alt="${alt}" data-uid="${uid}" />`)
     } catch (error) {
       console.warn('Image upload failed:', error)
     }
   }
 
   if (fragments.length > 0 && vd) {
-    const markdown = fragments.join('\n\n') + '\n'
-    vd.insertValue(markdown)
-    emit('update:html', vd.getHTML())
+    // 使用空格连接，使多张图片默认内联排列（配合CSS的inline-block）
+    const content = fragments.join(' ')
+    vd.insertValue(content)
+    emitEditorHtmlUpdate()
   }
 }
 
@@ -984,7 +1602,16 @@ function handlePageBreak() {
   // 延迟一点时间后更新分页符显示
   setTimeout(() => {
     updatePageBreakDisplay()
-    emit('update:html', vd.getHTML())
+    emitEditorHtmlUpdate()
+  }, 100)
+}
+
+// 插入空行 —— 使用 &nbsp; 占位，防止 Markdown 折叠空行
+function handleEmptyLine() {
+  if (!vd) return
+  vd.insertValue('\u00A0\n\n')
+  setTimeout(() => {
+    emitEditorHtmlUpdate()
   }, 100)
 }
 
@@ -1295,7 +1922,7 @@ watch(locale, async (newLocale) => {
       // 立即应用分页符样式
       nextTick(() => updatePageBreakDisplay())
 
-      emit('update:html', vd.getHTML())
+      emitEditorHtmlUpdate()
     }
   }
 })
@@ -1398,7 +2025,7 @@ async function exportMarkdownFromDocument(docId) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${doc.title || '无标题文档'}.md`
+    a.download = `${doc.title || t('documents.untitled')}.md`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -1467,7 +2094,7 @@ async function performImport(docId, file) {
     if (docId === activeTabId.value && vd && isVditorReady) {
       const displayContent = await convertContentForEditor(content)
       vd.setValue(displayContent)
-      emit('update:html', vd.getHTML())
+      emitEditorHtmlUpdate()
     }
 
     // 标记文档已修改
@@ -1495,6 +2122,95 @@ function cancelImport() {
   pendingImportFile.value = null
 }
 
+// 审核通过后才进入排版：一次选择发布包 JSON、角色图和漫画。
+async function importApprovedSocialPackage() {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.json,image/png,image/jpeg,image/webp'
+  input.multiple = true
+
+  input.onchange = async (event) => {
+    const files = Array.from(event.target.files || [])
+    if (files.length === 0) return
+
+    try {
+      const jsonFiles = files.filter(file => file.name.toLowerCase().endsWith('.json'))
+      if (jsonFiles.length !== 1) {
+        throw new Error('Please select exactly 1 package JSON, plus its character and comic images')
+      }
+
+      const pkg = normalizeSocialPackage(JSON.parse(await jsonFiles[0].text()))
+      const imageFiles = new Map(
+        files
+          .filter(file => file.type.startsWith('image/'))
+          .map(file => [file.name, file])
+      )
+
+      const embeddedFiles = new Map([
+        [pkg.assets.character, embeddedAssetFile(pkg.assets.characterData, pkg.assets.character)],
+        [pkg.assets.comic, embeddedAssetFile(pkg.assets.comicData, pkg.assets.comic)],
+        ...pkg.assets.images.map((asset) => [asset.name, embeddedAssetFile(asset.data, asset.name)])
+      ].filter(([, file]) => Boolean(file)))
+
+      const missingAssets = getRequiredAssetNames(pkg).filter(name => {
+        return !imageFiles.has(name) && !embeddedFiles.has(name)
+      })
+      if (missingAssets.length > 0) {
+        throw new Error(`Missing images: ${missingAssets.join(', ')}. Select them together, or use a self-contained package.`)
+      }
+
+      const character = await saveImage(
+        imageFiles.get(pkg.assets.character) || embeddedFiles.get(pkg.assets.character)
+      )
+      const comic = await saveImage(
+        imageFiles.get(pkg.assets.comic) || embeddedFiles.get(pkg.assets.comic)
+      )
+      const inlineImages = {
+        [pkg.assets.character]: character.url,
+        [pkg.assets.comic]: comic.url
+      }
+      for (const asset of pkg.assets.images) {
+        if (!inlineImages[asset.name]) {
+          const image = await saveImage(imageFiles.get(asset.name) || embeddedFiles.get(asset.name))
+          inlineImages[asset.name] = image.url
+        }
+      }
+      const editorMarkdown = buildSocialMarkdown(pkg, {
+        character: character.url,
+        comic: comic.url,
+        images: inlineImages
+      })
+      const storedMarkdown = convertContentForStorage(editorMarkdown)
+      const now = Date.now()
+      const newDoc = {
+        id: generateId(),
+        title: createSocialDocumentTitle(pkg),
+        content: storedMarkdown,
+        mode: 'wysiwyg',
+        createdAt: now,
+        updatedAt: now,
+        socialPackage: pkg
+      }
+
+      allDocuments.value.push(newDoc)
+      saveToLocalStorage()
+      await openDocument(newDoc.id)
+
+      emit('socialPackageImported', {
+        package: pkg,
+        coverImage: character.url,
+        documentId: newDoc.id
+      })
+      success(t('documents.importSuccess', { name: pkg.identity.name, count: 4 }))
+    } catch (importError) {
+      console.error('Import approved draft failed:', importError)
+      error(importError?.message || t('documents.importFailed'))
+    }
+  }
+
+  input.click()
+}
+
 // 处理文档标签页操作
 function handleDocumentTabAction(docId) {
   if (!isTabOpen(docId)) {
@@ -1518,6 +2234,473 @@ function getTabActionTitle(docId) {
   } else {
     return t('documents.closeTabTitle')
   }
+}
+
+// AI Settings methods
+function closeAISettings() {
+  showAISettings.value = false
+}
+
+function handleAISettingsOpen() {
+  showAISettings.value = true
+}
+
+// ===== 「更多」工具栏分层逻辑 =====
+
+// 收进「更多」菜单的低频工具项（保留在 toolbar 数组中保 DOM 与事件，渲染后隐藏）
+const HIDDEN_TOOLBAR_ITEMS = ['quote', 'code', 'table', 'link', 'emoji', 'ai-settings']
+
+// 渲染完成后：隐藏低频项及其相邻分隔线，缺省工具栏只显示高频主操作
+function applyToolbarLayering() {
+  if (!vd || !vd.vditor || !vd.vditor.toolbar || !vd.vditor.toolbar.elements) return
+  const hiddenEls = new Set(
+    HIDDEN_TOOLBAR_ITEMS.map((name) => vd.vditor.toolbar.elements[name]).filter(Boolean)
+  )
+  Array.from(vd.vditor.toolbar.element.children).forEach((child) => {
+    if (!hiddenEls.has(child)) return
+    child.style.display = 'none'
+    // 隐藏低频项前后的分隔线，避免出现孤立竖线
+    ;[child.previousElementSibling, child.nextElementSibling].forEach((sibling) => {
+      let node = sibling
+      while (node && node.classList && node.classList.contains('vditor-toolbar__divider')) {
+        node.style.display = 'none'
+        node = node.nextElementSibling
+      }
+    })
+  })
+}
+
+// emoji 面板挂在按钮容器内部：触发时临时显示按钮，面板关闭后自动隐藏
+let emojiPanelWatchTimer = null
+function watchEmojiPanelHide(el) {
+  if (emojiPanelWatchTimer) clearInterval(emojiPanelWatchTimer)
+  emojiPanelWatchTimer = setInterval(() => {
+    const panel = el && el.lastElementChild
+    if (!panel || panel.style.display !== 'block') {
+      if (el) el.style.display = 'none'
+      clearInterval(emojiPanelWatchTimer)
+      emojiPanelWatchTimer = null
+    }
+  }, 150)
+}
+
+// 从「更多」菜单触发隐藏的内置工具项
+function triggerToolbarItem(name) {
+  closeMoreMenu()
+  if (!vd || !vd.vditor || !vd.vditor.toolbar || !vd.vditor.toolbar.elements) return
+  if (name === 'ai-settings') {
+    handleAISettingsOpen()
+    return
+  }
+  const el = vd.vditor.toolbar.elements[name]
+  if (!el) return
+  if (name === 'upload') {
+    const input = el.querySelector('input[type="file"]')
+    if (input) {
+      input.click()
+      return
+    }
+  }
+  if (name === 'emoji') {
+    el.style.display = 'inline-block'
+    if (el.children[0]) el.children[0].click()
+    watchEmojiPanelHide(el)
+    return
+  }
+  if (el.children[0]) el.children[0].click()
+}
+
+function toggleMoreMenu() {
+  if (showMoreMenu.value) {
+    closeMoreMenu()
+    return
+  }
+  const moreEl = vd && vd.vditor && vd.vditor.toolbar && vd.vditor.toolbar.elements && vd.vditor.toolbar.elements['more-menu']
+  if (moreEl) {
+    const rect = moreEl.getBoundingClientRect()
+    const menuWidth = 252
+    moreMenuStyle.value = {
+      top: rect.bottom + 6 + 'px',
+      left: Math.min(rect.left, window.innerWidth - menuWidth - 12) + 'px'
+    }
+  }
+  showMoreMenu.value = true
+  bindMoreMenuListeners()
+}
+
+function closeMoreMenu() {
+  if (showMoreMenu.value) showMoreMenu.value = false
+  cleanupMoreMenuListeners()
+}
+
+let moreMenuDocHandler = null
+function bindMoreMenuListeners() {
+  cleanupMoreMenuListeners()
+  moreMenuDocHandler = (e) => {
+    const menu = document.querySelector('.more-toolbar-menu')
+    const moreEl = vd && vd.vditor && vd.vditor.toolbar && vd.vditor.toolbar.elements && vd.vditor.toolbar.elements['more-menu']
+    if (
+      menu && !menu.contains(e.target) &&
+      !(moreEl && (moreEl === e.target || moreEl.contains(e.target)))
+    ) {
+      closeMoreMenu()
+    }
+  }
+  document.addEventListener('mousedown', moreMenuDocHandler, true)
+}
+
+function cleanupMoreMenuListeners() {
+  if (moreMenuDocHandler) {
+    document.removeEventListener('mousedown', moreMenuDocHandler, true)
+    moreMenuDocHandler = null
+  }
+}
+
+function resetAIDiagnostics() {
+  aiConnectionStatus.value = null
+  aiDiagnostics.value = { message: '' }
+}
+
+function syncAIPresetByConfig() {
+  const currentBase = (aiConfig.value.baseURL || '').replace(/\/$/, '')
+  const matched = aiPresetOptions.value.find(option =>
+    option.value !== 'custom' && option.baseURL.replace(/\/$/, '') === currentBase
+  )
+  selectedAIPreset.value = matched ? matched.value : 'custom'
+}
+
+function applyAIPreset() {
+  const preset = aiPresetOptions.value.find(option => option.value === selectedAIPreset.value)
+  if (!preset || preset.value === 'custom') return
+  aiConfig.value.baseURL = preset.baseURL
+  aiConfig.value.model = preset.model
+  resetAIDiagnostics()
+}
+
+function saveAISettings() {
+  if (!aiConfig.value.apiKey) {
+    warning(t('aiSettings.warnApiKey'))
+    return false
+  }
+  if (!String(aiConfig.value.baseURL || '').trim()) {
+    warning(t('aiSettings.warnBaseUrl'))
+    return false
+  }
+  if (!String(aiConfig.value.model || '').trim()) {
+    warning(t('aiSettings.warnModel'))
+    return false
+  }
+  try {
+    aiConfig.value = {
+      ...aiConfig.value,
+      apiKey: String(aiConfig.value.apiKey || '').trim(),
+      baseURL: String(aiConfig.value.baseURL || '').trim().replace(/\/$/, ''),
+      model: String(aiConfig.value.model || '').trim()
+    }
+    const normalizedBase = (aiConfig.value.baseURL || '').replace(/\/$/, '')
+    const matchedPreset = aiPresetOptions.value.find(option =>
+      option.value !== 'custom' &&
+      option.baseURL.replace(/\/$/, '') === normalizedBase &&
+      option.model === aiConfig.value.model
+    )
+    selectedAIPreset.value = matchedPreset ? matchedPreset.value : 'custom'
+
+    localStorage.setItem('uni.aiConfig', JSON.stringify(aiConfig.value))
+    localStorage.setItem(AI_PRESET_KEY, selectedAIPreset.value)
+    aiConnectionStatus.value = {
+      type: 'idle',
+      text: t('aiSettings.savedHint')
+    }
+    success(t('aiSettings.saved'))
+    return true
+  } catch (e) {
+    error(t('aiSettings.saveFailed'))
+    return false
+  }
+}
+
+async function runAIFormat() {
+  if (!vd || !isVditorReady) return
+
+  const content = vd.getValue()
+  if (!content || !content.trim()) {
+    warning(t('aiSettings.emptyDocument'))
+    return
+  }
+
+  try {
+    isAILoading.value = true
+    aiStreamingChars.value = 0
+    startAILoading('preparing')
+    aiConnectionStatus.value = {
+      type: 'loading',
+      text: t('ai.requesting')
+    }
+    setAILoadingStage('requesting')
+
+    // 两阶段流程：AI 出排版决策（方案 JSON），代码机械执行（不改字、硬配额）
+    const plan = await planLayoutWithAI(content, aiConfig.value, {
+      onDelta: (accumulated) => {
+        aiStreamingChars.value = accumulated.length
+        aiLoadingStage = 'streaming'
+        updateAILoadingText()
+      }
+    })
+    const limits = resolveStyleLimits(aiConfig.value.stylePreset)
+    const { plan: cleanPlan, issues } = validateLayoutPlan(plan, content, limits)
+    if (!cleanPlan || (!cleanPlan.headings.length && !cleanPlan.quotes.length && !cleanPlan.bolds.length && !cleanPlan.title)) {
+      // 方案完全不可用 → 本地规则排版兜底（同样会进入预览确认）
+      warning(t('ai.planUnavailable'))
+      const formattedMarkdown = deterministicFormat(content)
+      pendingAIResult.value = formattedMarkdown
+      aiPreviewBefore.value = content
+      showAIResultPreview.value = true
+      aiConnectionStatus.value = { type: 'idle', text: t('ai.localFallbackDone') }
+      return
+    }
+    if (issues.length) {
+      console.debug('Formatting plan auto-corrected:', issues)
+    }
+    const formattedMarkdown = applyLayoutPlan(content, cleanPlan)
+
+    // 不直接覆盖文档：先弹预览，确认后再应用
+    pendingAIResult.value = formattedMarkdown
+    aiPreviewBefore.value = content
+    showAIResultPreview.value = true
+    aiConnectionStatus.value = {
+      type: 'idle',
+      text: t('ai.done')
+    }
+    await nextTick()
+    renderAIResultPreview()
+  } catch (err) {
+    console.error('AI formatting failed:', err)
+    aiConnectionStatus.value = {
+      type: 'error',
+      text: t('ai.failedHint')
+    }
+    aiDiagnostics.value = {
+      message: buildAIDiagnosticMessage(err)
+    }
+    if (err.message && /API Key/i.test(err.message)) {
+      showAISettings.value = true
+    } else {
+      error(`${t('ai.formatFailed')}: ${err.message}`)
+    }
+  } finally {
+    isAILoading.value = false
+    stopAILoading()
+  }
+}
+
+// 在预览对话框中静态渲染前后对照
+async function renderAIResultPreview() {
+  const previewTheme = getEditorTheme(props.pageTheme)
+  const options = {
+    theme: { current: previewTheme, path: 'https://unpkg.com/vditor/dist/css/content-theme' },
+    hljs: { style: previewTheme === 'dark' ? 'github-dark' : 'github' }
+  }
+  try {
+    if (aiPreviewBeforeEl.value) {
+      await Vditor.preview(aiPreviewBeforeEl.value, aiPreviewBefore.value, options)
+    }
+    if (aiPreviewAfterEl.value) {
+      await Vditor.preview(aiPreviewAfterEl.value, pendingAIResult.value, options)
+    }
+  } catch (e) {
+    console.debug('AI preview render failed:', e)
+  }
+}
+
+async function applyAIResult() {
+  const formattedMarkdown = pendingAIResult.value
+  if (!formattedMarkdown || !vd) return
+  showAIResultPreview.value = false
+
+  try {
+    isAILoading.value = true
+    startAILoading('switching-mode')
+    const currentMode = typeof vd.getCurrentMode === 'function' ? vd.getCurrentMode() : 'wysiwyg'
+    if (shouldSwitchToWysiwygPreview(formattedMarkdown, currentMode)) {
+      await switchEditorMode('wysiwyg')
+    }
+    setAILoadingStage('rendering')
+    vd.setValue(formattedMarkdown, true)
+    const storageContent = convertContentForStorage(formattedMarkdown)
+    const activeDoc = getActiveDocument()
+    if (activeDoc) {
+      setAILoadingStage('saving')
+      activeDoc.content = storageContent
+      activeDoc.updatedAt = Date.now()
+      markDocumentModified(activeDoc.id)
+      updateDocumentTitle(activeDoc.id, storageContent)
+      saveToLocalStorage()
+    }
+    // setValue 同步写入 Markdown → DOM，但 Lute 渲染管道和浏览器 reflow 可能异步完成
+    // 需要等待渲染完成后 getHTML() 才能返回正确的 HTML（否则可能出现原始 ** 星号）
+    await nextTick()
+    let retryCount = 0
+    const maxRetries = 10
+    while (retryCount < maxRetries) {
+      const html = vd.getHTML()
+      // 如果 HTML 中仍包含成对的 ** 星号（未被解析为 <strong>），说明渲染未完成
+      if (!/\*\*[^*\n]+\*\*/.test(html)) break
+      await new Promise(resolve => setTimeout(resolve, 100))
+      retryCount++
+    }
+    emitEditorHtmlUpdate()
+    aiConnectionStatus.value = {
+      type: 'success',
+      text: t('ai.applied')
+    }
+    aiDiagnostics.value = { message: '' }
+    success(t('ai.applySuccess'))
+  } catch (err) {
+    console.error('Apply AI formatting failed:', err)
+    error(`${t('ai.applyFailed')}: ${err.message}`)
+  } finally {
+    isAILoading.value = false
+    stopAILoading()
+    pendingAIResult.value = ''
+  }
+}
+
+function discardAIResult() {
+  showAIResultPreview.value = false
+  pendingAIResult.value = ''
+  aiConnectionStatus.value = {
+    type: 'idle',
+    text: t('ai.discarded')
+  }
+}
+
+function startAILoading(stage) {
+  aiLoadingStartedAt = Date.now()
+  aiLoadingStage = stage
+  updateAILoadingText()
+  if (aiLoadingTimer) clearInterval(aiLoadingTimer)
+  aiLoadingTimer = setInterval(() => {
+    updateAILoadingText()
+  }, 1000)
+}
+
+function stopAILoading() {
+  if (aiLoadingTimer) {
+    clearInterval(aiLoadingTimer)
+    aiLoadingTimer = null
+  }
+  aiLoadingStartedAt = 0
+  aiLoadingStage = 'idle'
+  aiLoadingText.value = t('ai.loadingDefault')
+}
+
+function setAILoadingStage(stage) {
+  aiLoadingStage = stage
+  updateAILoadingText()
+}
+
+function updateAILoadingText() {
+  const elapsedSeconds = aiLoadingStartedAt ? Math.max(0, Math.floor((Date.now() - aiLoadingStartedAt) / 1000)) : 0
+  const elapsedText = elapsedSeconds > 0 ? t('ai.waitedSeconds', { seconds: elapsedSeconds }) : ''
+  const presetLabel = aiPresetOptions.value.find(option => option.value === selectedAIPreset.value)?.label || t('ai.currentEndpoint')
+  const stageTextMap = {
+    preparing: t('ai.stagePreparing'),
+    requesting: t('ai.stageRequesting', { preset: presetLabel, model: aiConfig.value.model || 'model' }),
+    streaming: t('ai.stageStreaming', { count: aiStreamingChars.value }),
+    'switching-mode': t('ai.stageSwitching'),
+    rendering: t('ai.stageRendering'),
+    saving: t('ai.stageSaving')
+  }
+  aiLoadingText.value = `${stageTextMap[aiLoadingStage] || t('ai.loadingDefault')}${elapsedText}`
+}
+
+function shouldSwitchToWysiwygPreview(markdown, mode) {
+  if (mode === 'wysiwyg') return false
+  const content = String(markdown || '')
+  return /^#{1,6}\s/m.test(content)
+    || /^>\s/m.test(content)
+    || /^(\d+\.\s|-\s|\*\s)/m.test(content)
+    || /\*\*[^*\n]+\*\*/.test(content)
+}
+
+async function switchEditorMode(targetMode) {
+  if (!vd || typeof vd.getCurrentMode !== 'function') return false
+  if (vd.getCurrentMode() === targetMode) return true
+
+  const editModeRoot = vd.vditor?.toolbar?.elements?.['edit-mode']
+  const targetButton = editModeRoot?.querySelector?.(`button[data-mode="${targetMode}"]`)
+  if (!(targetButton instanceof HTMLElement)) return false
+
+  targetButton.click()
+  // 模式切换需要 Vditor 重新渲染编辑器 DOM，给足够时间完成
+  await new Promise(resolve => setTimeout(resolve, 200))
+  return vd.getCurrentMode() === targetMode
+}
+
+async function saveAndFormat() {
+  const ok = saveAISettings()
+  if (!ok) return
+  await runAIFormat()
+}
+
+async function handleAIFormat() {
+  if (!String(aiConfig.value.apiKey || '').trim()) {
+    resetAIDiagnostics()
+    showAISettings.value = true
+    return
+  }
+  await runAIFormat()
+}
+
+async function handleAITest() {
+  const ok = saveAISettings()
+  if (!ok) return
+
+  try {
+    isAITesting.value = true
+    aiConnectionStatus.value = {
+      type: 'loading',
+      text: t('ai.testingConnection')
+    }
+    aiDiagnostics.value = { message: '' }
+    const result = await testAIConnection(aiConfig.value)
+    aiConnectionStatus.value = {
+      type: 'success',
+      text: t('ai.testSuccess', { model: result.model })
+    }
+    aiDiagnostics.value = {
+      message: `${t('ai.diagEndpoint', { endpoint: result.endpoint })}\n${t('ai.diagModel', { model: result.model })}\n${t('ai.testPreview')}: ${result.preview || 'OK'}`
+    }
+    success(t('ai.testSuccessToast'))
+  } catch (err) {
+    console.error('AI connection test failed:', err)
+    aiConnectionStatus.value = {
+      type: 'error',
+      text: t('ai.testFailedHint')
+    }
+    aiDiagnostics.value = {
+      message: buildAIDiagnosticMessage(err)
+    }
+    error(`${t('ai.testFailedToast')}: ${err.message}`)
+  } finally {
+    isAITesting.value = false
+  }
+}
+
+function buildAIDiagnosticMessage(err) {
+  const details = err?.aiDetails || {}
+  const lines = [
+    t('ai.diagErrorInfo', { msg: err?.message || t('ai.diagUnknownError') })
+  ]
+
+  if (details.endpoint) lines.push(t('ai.diagEndpoint', { endpoint: details.endpoint }))
+  if (details.model) lines.push(t('ai.diagModel', { model: details.model }))
+  if (details.status) lines.push(t('ai.diagStatus', { status: details.status }))
+  lines.push(t('ai.diagRequestMethod') + ': ' + (details.useProxy ? t('ai.diagViaProxy') : t('ai.diagDirect')))
+  if (details.responseText) lines.push(t('ai.diagResponseText', { text: details.responseText }))
+  if (details.causeMessage && details.causeMessage !== err?.message) lines.push(t('ai.diagCause', { cause: details.causeMessage }))
+
+  return lines.join('\n')
 }
 
 
@@ -1652,7 +2835,19 @@ onBeforeUnmount(() => {
     clearTimeout(imageCleanupTimer)
     imageCleanupTimer = null
   }
+  if (imageResizeSyncTimer) {
+    clearTimeout(imageResizeSyncTimer)
+    imageResizeSyncTimer = null
+  }
+  stopAILoading()
+  hideImageResizeHandle()
   cleanupModeChangeListener()
+  cleanupMoreMenuListeners()
+  closeMoreMenu()
+  if (emojiPanelWatchTimer) {
+    clearInterval(emojiPanelWatchTimer)
+    emojiPanelWatchTimer = null
+  }
   destroyVditor()
 })
 
@@ -1673,4 +2868,177 @@ defineExpose({
 @import '../styles/less/mixins/common.less';
 // Import the UniEditor component styles
 @import '../styles/less/components/uni-editor.less';
+
+// 「更多」工具栏浮层（墨绿·杂志工作室）
+.more-toolbar-menu {
+  position: fixed;
+  z-index: 999;
+  width: 252px;
+  max-height: 78vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow:
+    0 12px 32px rgba(30, 40, 34, 0.16),
+    0 2px 8px rgba(30, 40, 34, 0.08);
+  padding: 8px;
+  backdrop-filter: blur(8px);
+  user-select: none;
+
+  .more-menu-section + .more-menu-divider {
+    margin: 6px 4px;
+  }
+
+  .more-menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2px 4px;
+    opacity: 0.7;
+  }
+
+  .more-menu-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding: 2px 8px 6px;
+    font-family: @font-family-serif;
+  }
+
+  .more-menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .more-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--accent) 9%, transparent);
+      color: var(--accent);
+    }
+
+    &:active {
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+    }
+
+    .more-menu-icon {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      :deep(svg) {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .more-menu-label {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+      min-width: 0;
+
+      em {
+        font-style: normal;
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+// AI 排版结果预览对话框：前后对照
+.ai-result-dialog {
+  width: min(1000px, 94vw);
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+}
+
+.ai-result-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  > p {
+    margin: 0 0 10px 0;
+  }
+}
+
+.ai-result-compare {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ai-result-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ai-pane-label {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 6%, var(--panel));
+}
+
+.ai-pane-label-accent {
+  color: var(--accent);
+}
+
+.ai-result-render {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 16px;
+
+  :deep(.vditor-reset) {
+    font-size: 13px;
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .ai-result-compare {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .ai-result-pane {
+    max-height: 40vh;
+  }
+}
 </style>

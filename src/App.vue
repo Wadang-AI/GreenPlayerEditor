@@ -1,68 +1,28 @@
 <template>
   <div class="container" :class="[appThemeClass, globalColorThemeClass]">
     <header class="banner">
-      <a href="https://uni-editor.com" target="_blank" class="logo" title="访问官网">
-        <div class="logo-mark"></div>
-        <div class="logo-text">Uni Editor</div>
+      <a href="https://github.com/flzyup/uni-editor" target="_blank" class="logo" :title="$t('about.logoTitle')">
+        <div class="logo-mark">
+          <svg viewBox="0 0 32 32" width="26" height="26" fill="none" aria-hidden="true">
+            <path d="M 16 5.6 C 22.5 5 26.7 9.4 26.2 15.8 C 25.7 22.1 21 26.8 15.3 26.4 C 9.7 26 5.5 21.3 6.1 15.6 C 6.6 10.4 10.9 6.3 16 5.6" fill="none" stroke="var(--logo-stroke)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 10.6 18.2 C 11.8 20 13.6 19.6 15 15.9 C 16.3 18.6 18 21.4 20.8 22.2" fill="none" stroke="var(--logo-stroke)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="22.1" cy="22.55" r="1.55" fill="var(--logo-stroke)"/>
+          </svg>
+        </div>
+        <div class="logo-text">{{ $t('header.logo') }}</div>
       </a>
-      <div class="toolbar">
-        <div class="spacer" />
-        <a
-          href="https://github.com/flzyup/uni-editor"
-          target="_blank"
-          class="github-link"
-          :title="$t('header.github')"
-        >
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-          </svg>
-          <span>{{ $t('header.github') }}</span>
-        </a>
-        <a
-          href="https://github.com/flzyup/uni-editor/issues"
-          target="_blank"
-          class="feedback-link"
-          :title="$t('header.feedback')"
-        >
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-            <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.418-.07.749-.361 1.04-.28.281-.66.464-1.074.722C6.7 14.528 4.295 14.986 4.28 15.99H2.725c-.088-2.48 2.154-2.48 2.154-2.48-.832-.832-2.725-2.479-2.725-4.543 0-1.708.84-3.327 2.04-4.326zm11.952 0c-1.2.999-2.04 2.618-2.04 4.326 0 2.064 1.893 3.711 2.725 4.543 0 0-2.242 0-2.154 2.48h1.555c.015-1.004-2.39-1.462-2.249-2.735.114-.603.709-.795 1.286-.983.596-.193 1.179-.383 1.214-1.017.029-.517-.342-.87-.758-1.266-.08-.076-.162-.154-.242-.234-.05-.05.263-.221.743-.484 1.185-.65 3.392-1.861 3.717-3.19z"/>
-          </svg>
-          <span>{{ $t('header.feedback') }}</span>
-        </a>
-        <FeaturesHint />
-        <TodoHint />
-        <LanguageSwitch />
-        <label class="muted small-text">{{ $t('header.appearance') }}</label>
-        <select class="select" v-model="appTheme" @change="persistTheme">
-          <option value="light">{{ $t('header.appearanceLight') }}</option>
-          <option value="dark">{{ $t('header.appearanceDark') }}</option>
-        </select>
-        <label class="muted small-text">{{ $t('main.colorTheme') }}</label>
-        <select class="select" v-model="globalColorTheme" @change="persistColorTheme">
-          <option value="classic">{{ $t('colorThemes.classic') }}</option>
-          <option value="minimal">{{ $t('colorThemes.minimal') }}</option>
-          <option value="paper">{{ $t('colorThemes.paper') }}</option>
-          <option value="ocean">{{ $t('colorThemes.ocean') }}</option>
-          <option value="forest">{{ $t('colorThemes.forest') }}</option>
-          <option value="sunset">{{ $t('colorThemes.sunset') }}</option>
-          <option value="grape">{{ $t('colorThemes.grape') }}</option>
-          <option value="slate">{{ $t('colorThemes.slate') }}</option>
-          <option value="sand">{{ $t('colorThemes.sand') }}</option>
-        </select>
-      </div>
+      <div class="spacer" />
     </header>
 
     <main class="main" ref="mainRef" :style="{ gridTemplateColumns: leftPanelWidth + 'px auto ' + rightPanelWidth + 'px' }">
       <section class="panel editor-scope">
-        <div class="panel-header">
-          <div class="panel-title">{{ $t('main.editor') }}</div>
-        </div>
         <UniEditor
           ref="uniEditorRef"
           :page-theme="appThemeClass"
+          :initial-markdown="renderUrlParams?.text || ''"
           @update:html="onHtml"
           @editor-scroll="onEditorScroll"
+          @social-package-imported="onSocialPackageImported"
         />
       </section>
 
@@ -82,51 +42,60 @@
       </div>
 
       <section class="panel">
-        <div class="panel-header">
-          <div class="panel-title">{{ $t('main.preview') }}</div>
-          <div class="toolbar">
-            <!-- 左侧占位 -->
-            <div class="toolbar-left"></div>
+        <div class="panel-header preview-header">
+          <!-- 模式切换 -->
+          <div class="mode-tabs">
+            <button
+              class="mode-tab"
+              :class="{ active: previewMode === 'article' }"
+              @click="setPreviewMode('article')"
+            >
+              {{ $t('main.articleMode') }}
+            </button>
+            <button
+              class="mode-tab"
+              :class="{ active: previewMode === 'cards' }"
+              @click="setPreviewMode('cards')"
+            >
+              {{ $t('main.cardMode') }}
+            </button>
+          </div>
 
-            <!-- 模式切换（居中） -->
-            <div class="mode-tabs">
-              <button
-                class="mode-tab"
-                :class="{ active: previewMode === 'article' }"
-                @click="setPreviewMode('article')"
-              >
-                {{ $t('main.articleMode') }}
-              </button>
-              <button
-                class="mode-tab"
-                :class="{ active: previewMode === 'cards' }"
-                @click="setPreviewMode('cards')"
-              >
-                {{ $t('main.cardMode') }}
-              </button>
+          <!-- 右侧操作区：样式设置在预览这条功能组里（与复制/保存同排） -->
+          <div class="preview-actions">
+            <button
+              class="btn btn-sm dock-trigger"
+              :class="{ active: showDockPanel }"
+              @click="showDockPanel = !showDockPanel"
+              :title="$t('main.styleDock')"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span class="small-text">{{ $t('main.styleDock') }}</span>
+            </button>
+            <div v-if="previewMode === 'cards'" class="scale-control-inline">
+              <label class="muted small-text">{{ $t('main.scale') }}</label>
+              <input
+                type="range"
+                class="scale-slider"
+                v-model.number="cardScale"
+                @input="persistCardScale"
+                min="0.5"
+                max="1.0"
+                step="0.05"
+              />
+              <span class="scale-value small-text">{{ Math.round(cardScale * 100) }}%</span>
             </div>
-
-            <!-- 缩放比例和操作按钮（右侧） -->
-            <div class="toolbar-right">
-              <div v-if="previewMode === 'cards'" class="scale-control-inline">
-                <label class="muted small-text">{{ $t('main.scale') }}</label>
-                <input
-                  type="range"
-                  class="scale-slider"
-                  v-model="cardScale"
-                  @input="persistCardScale"
-                  min="0.5"
-                  max="1.0"
-                  step="0.05"
-                />
-                <span class="scale-value small-text">{{ Math.round(cardScale * 100) }}%</span>
-              </div>
-              <template v-if="previewMode === 'article'">
-                <button class="btn" @click="copyForWeChat">{{ $t('main.copyAll') }}</button>
-                <button class="btn" @click="saveArticle">{{ $t('main.saveArticle') }}</button>
-              </template>
-              <button v-if="previewMode === 'cards'" class="btn" @click="saveCards">{{ $t('main.saveCards') }}</button>
-            </div>
+            <template v-if="previewMode === 'article'">
+              <button class="btn btn-primary btn-lg" @click="copyForWeChat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>{{ $t('main.copyAll') }}</span>
+              </button>
+              <button class="btn btn-sm" @click="saveArticle">{{ $t('main.saveArticle') }}</button>
+            </template>
+            <button v-if="previewMode === 'cards'" class="btn btn-primary btn-lg" @click="saveCards">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+              <span>{{ $t('main.saveCards') }}</span>
+            </button>
           </div>
         </div>
 
@@ -135,8 +104,11 @@
           ref="articlePreviewRef"
           v-if="previewMode === 'article'"
           :html="html"
+          :doc-meta="docMeta"
           :theme="globalColorTheme"
           :page-theme="appThemeClass"
+          :style-preset="resolvedStylePreset"
+          :spacing-preset="spacingPreset"
         />
 
         <!-- 卡片模式 -->
@@ -144,19 +116,173 @@
           <CardsPreview
             ref="cardsPreviewRef"
             :html="html"
+            :doc-meta="docMeta"
             :card-theme="globalColorTheme"
             :page-theme="appThemeClass"
             :scale="cardScale"
             :show-loading="isImportingMarkdown"
+            :style-preset="resolvedStylePreset"
+            :spacing-preset="spacingPreset"
             @generated="handleCardsGenerated"
           />
         </div>
       </section>
     </main>
 
+    <!-- 设置抽屉：色彩主题（带名称）/ 排版风格 / 间距 / 文档信息 -->
+    <transition name="dock-fade">
+      <div
+        v-if="showDockPanel"
+        class="dock-overlay"
+        @click="showDockPanel = false"
+        @keydown.esc="showDockPanel = false"
+      ></div>
+    </transition>
+    <transition name="dock-slide">
+      <aside v-if="showDockPanel" class="dock-panel" role="dialog" :aria-label="$t('main.styleDock')">
+        <div class="dock-header">
+          <span class="dock-title">{{ $t('main.styleDock') }}</span>
+          <button class="dock-close" @click="showDockPanel = false" :aria-label="$t('common.close')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="dock-body">
+          <!-- 外观：明暗切换（与色彩主题同屏归并） -->
+          <section class="dock-section">
+            <h4 class="dock-section-title">{{ $t('header.appearance') }}</h4>
+            <div class="appearance-seg" role="group" :aria-label="$t('header.appearance')">
+              <button
+                class="appearance-btn"
+                :class="{ active: appTheme === 'light' }"
+                @click="setAppTheme('light')"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                <span>{{ $t('header.appearanceLight') }}</span>
+              </button>
+              <button
+                class="appearance-btn"
+                :class="{ active: appTheme === 'dark' }"
+                @click="setAppTheme('dark')"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <span>{{ $t('header.appearanceDark') }}</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="dock-section">
+            <h4 class="dock-section-title">{{ $t('main.colorTheme') }}</h4>
+            <div class="color-grid" role="group" :aria-label="$t('main.colorTheme')">
+              <button
+                v-for="t in colorThemes"
+                :key="t"
+                class="color-cell"
+                :class="{ active: globalColorTheme === t }"
+                :style="{ '--swatch': themeSwatches[t] }"
+                :title="$t(`colorThemes.${t}`)"
+                :aria-label="$t(`colorThemes.${t}`)"
+                @click="selectColorTheme(t)"
+              >
+                <span class="color-cell-dot"></span>
+                <span class="color-cell-name">{{ $t(`colorThemes.${t}`) }}</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="dock-section">
+            <h4 class="dock-section-title">{{ $t('main.stylePreset') }}</h4>
+            <p class="dock-hint">{{ $t('stylePresets.stylePresetHint') }}</p>
+            <div class="style-card-grid" role="radiogroup" :aria-label="$t('main.stylePreset')">
+              <button
+                v-for="p in stylePresetOptions"
+                :key="p.value"
+                class="style-card"
+                :class="{ active: stylePreset === p.value }"
+                role="radio"
+                :aria-checked="stylePreset === p.value"
+                @click="selectStylePreset(p.value)"
+              >
+                <span class="style-card-preview"
+                  :class="[appThemeClass, 'card-theme', globalColorTheme, `typography-${p.value}`]">
+                  <span class="style-pv-h">标题</span>
+                  <span class="style-pv-p">正文段落与<strong>强调</strong>示例文字</span>
+                  <span class="style-pv-bq">引文示例</span>
+                </span>
+                <span class="style-card-label">{{ $t(`stylePresets.${p.value}`) }}</span>
+                <span class="style-card-desc">{{ $t(`stylePresets.${p.value}Desc`) }}</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="dock-section">
+            <h4 class="dock-section-title">{{ $t('main.spacing') }}</h4>
+            <select class="select select-block" v-model="spacingPreset" @change="persistSpacingPreset">
+              <option value="compact">{{ $t('spacingPresets.compact') }}</option>
+              <option value="standard">{{ $t('spacingPresets.standard') }}</option>
+              <option value="loose">{{ $t('spacingPresets.loose') }}</option>
+            </select>
+          </section>
+
+          <section class="dock-section">
+            <h4 class="dock-section-title">{{ $t('docMeta.title') }}</h4>
+            <div class="dock-field">
+              <label class="muted small-text">{{ $t('docMeta.masthead') }}</label>
+              <input class="input input-compact" v-model="docMeta.masthead" @input="persistDocMeta" :placeholder="$t('docMeta.mastheadPlaceholder')" />
+            </div>
+            <div class="dock-field">
+              <label class="muted small-text">{{ $t('docMeta.issue') }}</label>
+              <input class="input input-compact" v-model="docMeta.issue" @input="persistDocMeta" :placeholder="$t('docMeta.issuePlaceholder')" />
+            </div>
+            <div class="dock-field">
+              <label class="muted small-text">{{ $t('docMeta.date') }}</label>
+              <input class="input input-compact" v-model="docMeta.date" @input="persistDocMeta" :placeholder="$t('docMeta.datePlaceholder')" />
+            </div>
+            <div class="dock-field">
+              <label class="muted small-text">{{ $t('docMeta.kicker') }}</label>
+              <input class="input input-compact" v-model="docMeta.kicker" @input="persistDocMeta" :placeholder="$t('docMeta.kickerPlaceholder')" />
+            </div>
+            <div class="dock-field">
+              <label class="muted small-text">{{ $t('docMeta.author') }}</label>
+              <input class="input input-compact" v-model="docMeta.author" @input="persistDocMeta" :placeholder="$t('docMeta.authorPlaceholder')" />
+            </div>
+          </section>
+        </div>
+      </aside>
+    </transition>
+
     <footer class="footer">
-      © 2025 <a href="https://uni-editor.com" target="_blank" class="footer-link">Uni Editor</a>. All rights reserved.
+      <div class="footer-inner">
+        <span class="footer-brand">{{ $t('header.logo') }}</span>
+        <span class="footer-sep">·</span>
+        <button class="about-trigger" @click="showAbout = true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>{{ $t('footer.about') }}</span>
+        </button>
+        <span class="footer-divider" aria-hidden="true"></span>
+        <LanguageSwitch />
+      </div>
     </footer>
+
+    <!-- 关于弹窗 -->
+    <transition name="dock-fade">
+      <div v-if="showAbout" class="modal-overlay" @click="showAbout = false">
+        <div class="modal-dialog" role="dialog" :aria-label="$t('footer.about')" @click.stop>
+          <div class="modal-header">
+            <h3>{{ $t('about.title') }}</h3>
+          </div>
+          <div class="modal-body">
+            <p>{{ $t('about.description') }}</p>
+            <p class="warning-text">{{ $t('about.basedOnPrefix') }}
+              <a href="https://github.com/flzyup/uni-editor" target="_blank" class="footer-link">uni-editor</a>{{ $t('about.basedOnMid') }}
+              <a href="https://github.com/TanShilongMario/WXLayoutSkill" target="_blank" class="footer-link">WXLayoutSkill</a>{{ $t('about.basedOnSuffix') }}
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" @click="showAbout = false">{{ $t('about.gotIt') }}</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -165,8 +291,6 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import UniEditor from './components/UniEditor.vue'
 import CardsPreview from './components/CardsPreview.vue'
 import ArticlePreview from './components/ArticlePreview.vue'
-import TodoHint from './components/TodoHint.vue'
-import FeaturesHint from './components/FeaturesHint.vue'
 import LanguageSwitch from './components/LanguageSwitch.vue'
 import { copyToWechat } from './utils/copy.js'
 import { useI18n } from 'vue-i18n'
@@ -198,16 +322,104 @@ const initialLeftWidth = ref(0)
 
 // 预览模式
 const previewMode = ref('article') // 'article' | 'cards'
-const colorThemes = ['classic','minimal','paper','ocean','forest','sunset','grape','slate','sand']
+const colorThemes = ['classic','minimal','paper','ocean','forest','sunset','grape','slate','sand','parchment','rose','sage','lavender','warmNeutral']
+// 色卡圆点颜色（与 cards.less 浅色模式 --card-accent 一致）
+const themeSwatches = {
+  classic: '#2f6b45',
+  minimal: '#7a9e7e',
+  paper: '#0f766e',
+  ocean: '#6b8fa6',
+  forest: '#6b8a6b',
+  sunset: '#c47e6c',
+  grape: '#9585a5',
+  slate: '#5a7080',
+  sand: '#b87d4b',
+  parchment: '#D4C4A8',
+  rose: '#C4A0A0',
+  sage: '#8A9470',
+  lavender: '#9890AD',
+  warmNeutral: '#5C5348'
+}
+
+function selectColorTheme(theme) {
+  globalColorTheme.value = theme
+  persistColorTheme()
+}
 const cardScale = ref(0.75) // 卡片模式缩放比例，范围 0.5-1.0
+
+// 设置抽屉（收纳色彩主题/排版/间距/文档信息）
+const showDockPanel = ref(false)
+
+// 关于弹窗
+const showAbout = ref(false)
 
 // App light/dark theme (default light)
 const appTheme = ref('light')
 const appThemeClass = computed(() => appTheme.value === 'dark' ? 'theme-dark' : 'theme-light')
 
+// 同步主题 class 到 body：Teleport 到 body 的浮层（如「更多」菜单）需要继承浅/深色变量
+watch(appThemeClass, (cls) => {
+  document.body.classList.remove('theme-light', 'theme-dark')
+  document.body.classList.add(cls)
+}, { immediate: true })
+
 // 全局色彩主题（唯一的色彩主题系统）
 const globalColorTheme = ref('classic')
 const globalColorThemeClass = computed(() => `global-theme-${globalColorTheme.value}`)
+
+// 排版风格预设（与色彩主题解耦）
+const stylePreset = ref('auto') // 'auto' = 跟随主题默认
+// 风格卡片选项（value 与 .typography-* 类名对应）
+const stylePresetOptions = [
+  { value: 'auto' },
+  { value: 'classic' },
+  { value: 'elegant' },
+  { value: 'playful' },
+  { value: 'minimalist' },
+  { value: 'journal' },
+  { value: 'report' }
+]
+function selectStylePreset(value) {
+  stylePreset.value = value
+  persistStylePreset()
+}
+// 每个色彩主题的默认排版预设
+const themeDefaultPreset = {
+  classic: 'classic',
+  minimal: 'minimalist',
+  paper: 'elegant',
+  ocean: 'minimalist',
+  forest: 'minimalist',
+  sunset: 'playful',
+  grape: 'playful',
+  slate: 'report',
+  sand: 'minimalist',
+  // 微信安全色主题默认排版预设
+  parchment: 'journal',
+  rose: 'elegant',
+  sage: 'minimalist',
+  lavender: 'journal',
+  warmNeutral: 'report'
+}
+// 实际生效的排版预设（auto 时取主题默认）
+const resolvedStylePreset = computed(() => {
+  if (stylePreset.value === 'auto') {
+    return themeDefaultPreset[globalColorTheme.value] || 'classic'
+  }
+  return stylePreset.value
+})
+
+// 间距预设
+const spacingPreset = ref('standard')
+
+// 文档信息（报头元数据：刊物名 / 期号 / 日期 / 栏目 / 署名）
+const docMeta = ref({
+  masthead: '',
+  issue: '',
+  date: '',
+  kicker: '',
+  author: ''
+})
 
 
 function onHtml(val) {
@@ -299,10 +511,14 @@ watch(html, () => {
 async function copyForWeChat() {
   const htmlRaw = await uniEditorRef.value?.getHTML?.()
   if (!htmlRaw) { warning($t('messages.emptyContent')); return }
-  const ok = await copyToWechat(globalColorTheme.value, appTheme.value)
+  const result = await copyToWechat(globalColorTheme.value, appTheme.value, resolvedStylePreset.value, spacingPreset.value)
   const themeName = $t(`themes.${globalColorTheme.value}`)
-  if (ok) {
-    success($t('messages.copySuccess', { theme: themeName }))
+  if (result.ok) {
+    if (result.degraded > 0) {
+      success($t('messages.copySuccess', { theme: themeName }) + ' ' + $t('messages.copyDegraded', { count: result.degraded }))
+    } else {
+      success($t('messages.copySuccess', { theme: themeName }))
+    }
   } else {
     error($t('messages.copyFailed'))
   }
@@ -313,9 +529,39 @@ async function saveCards() {
     await cardsPreviewRef.value?.exportAll?.()
     // 导出成功提示可以在CardsPreview组件内部处理
   } catch (err) {
-    console.error('导出卡片失败:', err)
+    console.error('Export cards failed:', err)
     error($t('messages.exportFailed'))
   }
+}
+
+async function onSocialPackageImported(payload) {
+  const pkg = payload?.package
+  if (!pkg) return
+
+  if (colorThemes.includes(pkg.layout.theme)) {
+    globalColorTheme.value = pkg.layout.theme
+    persistColorTheme()
+  }
+  stylePreset.value = pkg.layout.stylePreset || 'playful'
+  spacingPreset.value = pkg.layout.spacingPreset || 'loose'
+  persistStylePreset()
+  persistSpacingPreset()
+
+  docMeta.value = {
+    masthead: '职场人格图鉴',
+    issue: pkg.identity.code || '',
+    date: '',
+    kicker: pkg.identity.name,
+    author: ''
+  }
+  persistDocMeta()
+  setPreviewMode('cards')
+
+  await nextTick()
+  await cardsPreviewRef.value?.applySocialPackage?.({
+    package: pkg,
+    coverImage: payload.coverImage
+  })
 }
 
 async function saveArticle() {
@@ -326,12 +572,18 @@ async function saveArticle() {
   try {
     await articlePreviewRef.value?.exportArticle?.()
   } catch (err) {
-    console.error('导出长文失败:', err)
+    console.error('Export article failed:', err)
     error($t('messages.exportFailed'))
   }
 }
 
 
+
+function setAppTheme(theme) {
+  if (theme !== 'light' && theme !== 'dark') return
+  appTheme.value = theme
+  persistTheme()
+}
 
 function persistTheme(){
   try { localStorage.setItem('uni.appTheme', appTheme.value) } catch {}
@@ -339,6 +591,14 @@ function persistTheme(){
 
 function persistColorTheme(){
   try { localStorage.setItem('uni.globalColorTheme', globalColorTheme.value) } catch {}
+}
+
+function persistStylePreset(){
+  try { localStorage.setItem('uni.stylePreset', stylePreset.value) } catch {}
+}
+
+function persistSpacingPreset(){
+  try { localStorage.setItem('uni.spacingPreset', spacingPreset.value) } catch {}
 }
 
 function setPreviewMode(mode) {
@@ -352,6 +612,10 @@ function persistPreviewMode(){
 
 function persistCardScale(){
   try { localStorage.setItem('uni.cardScale', String(cardScale.value)) } catch {}
+}
+
+function persistDocMeta(){
+  try { localStorage.setItem('uni.docMeta', JSON.stringify(docMeta.value)) } catch {}
 }
 
 // Splitter functionality
@@ -440,6 +704,24 @@ function handleCardsGenerated() {
   }
 }
 
+// 渲染 URL 通道（P0 只读）：?text=&style=&theme=&spacing=&mode=
+// AI 工作台生成该链接，浏览器打开即按指定风格排版预览；URL 参数不持久化（无状态）
+const renderUrlParams = (() => {
+  if (typeof window === 'undefined') return null
+  const params = new URLSearchParams(window.location.search)
+  if (!params.get('text')) return null
+  return {
+    text: params.get('text'),
+    style: params.get('style'),
+    theme: params.get('theme'),
+    spacing: params.get('spacing'),
+    mode: params.get('mode')
+  }
+})()
+
+const RENDER_URL_STYLES = ['auto', 'classic', 'elegant', 'playful', 'minimalist', 'journal', 'report']
+const RENDER_URL_SPACINGS = ['compact', 'standard', 'loose']
+
 onMounted(() => {
   try {
     // Restore app theme
@@ -474,6 +756,45 @@ onMounted(() => {
       const scale = parseFloat(savedCardScale)
       if (!isNaN(scale) && scale >= 0.5 && scale <= 1.0) {
         cardScale.value = scale
+      }
+    }
+
+    // Restore style preset
+    const savedStylePreset = localStorage.getItem('uni.stylePreset')
+    if (savedStylePreset) {
+      stylePreset.value = savedStylePreset
+    }
+
+    // Restore spacing preset
+    const savedSpacingPreset = localStorage.getItem('uni.spacingPreset')
+    if (savedSpacingPreset) {
+      spacingPreset.value = savedSpacingPreset
+    }
+
+    // Restore doc meta (masthead / issue / date / kicker / author)
+    const savedDocMeta = localStorage.getItem('uni.docMeta')
+    if (savedDocMeta) {
+      try {
+        const parsed = JSON.parse(savedDocMeta)
+        if (parsed && typeof parsed === 'object') {
+          docMeta.value = { masthead: '', issue: '', date: '', kicker: '', author: '', ...parsed }
+        }
+      } catch {}
+    }
+
+    // 渲染 URL 通道：URL 参数优先于本地存储（无状态，不 persist）
+    if (renderUrlParams) {
+      if (renderUrlParams.style && RENDER_URL_STYLES.includes(renderUrlParams.style)) {
+        stylePreset.value = renderUrlParams.style
+      }
+      if (renderUrlParams.theme && colorThemes.includes(renderUrlParams.theme)) {
+        globalColorTheme.value = renderUrlParams.theme
+      }
+      if (renderUrlParams.spacing && RENDER_URL_SPACINGS.includes(renderUrlParams.spacing)) {
+        spacingPreset.value = renderUrlParams.spacing
+      }
+      if (renderUrlParams.mode === 'article' || renderUrlParams.mode === 'cards') {
+        previewMode.value = renderUrlParams.mode
       }
     }
   } catch {}
@@ -512,65 +833,44 @@ onBeforeUnmount(() => {
 .editor-scope {
   min-height: 0;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
   height: 100%;
 }
 
-.mode-tabs-center {
-  display: flex;
-  justify-content: center;
-  flex: 0 0 auto;
-}
-
-.toolbar {
+/* 预览区头部：flex 行布局，左模式切换 + 右操作按钮 */
+.preview-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  position: relative;
-}
-
-.editor-actions {
-  justify-content: flex-end;
   gap: 8px;
+  flex-wrap: nowrap;
+  /* 不能加 overflow:hidden：文档信息/排版设置的下拉面板从这里向下展开，会被裁掉 */
 }
 
-.toolbar-left {
-  flex: 1;
+.preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
-.toolbar .mode-tabs {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  flex: 0 0 auto;
+/* 紧凑型操作按钮 */
+.btn-sm {
+  padding: 4px 10px !important;
+  min-height: 26px !important;
+  font-size: 11px !important;
 }
 
 .mode-tabs {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--panel) 95%, color-mix(in srgb, var(--accent) 6%, transparent)) 0%,
-      color-mix(in srgb, var(--panel) 86%, rgba(0, 0, 0, 0.22)) 100%
-    );
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, 0.65) 18%, transparent),
-    0 8px 20px -18px color-mix(in srgb, var(--accent) 35%, transparent);
-  backdrop-filter: blur(4px);
-}
-
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  justify-content: flex-end;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  flex-shrink: 0;
 }
 
 .mode-tab {
@@ -578,66 +878,321 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 18px;
+  padding: 6px 14px;
   border: none;
-  border-radius: 999px;
+  border-radius: 6px;
   background: transparent;
-  color: color-mix(in srgb, var(--text) 75%, var(--muted));
+  color: var(--muted);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.02em;
+  white-space: nowrap;
   cursor: pointer;
-  transition: color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   outline: none;
 }
 
-.mode-tab::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  border: 1px solid transparent;
-  transition: inherit;
-}
-
 .mode-tab:hover {
-  color: color-mix(in srgb, var(--accent) 52%, var(--text));
-  transform: translateY(-1px);
-}
-
-.mode-tab:hover::after {
-  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--text);
 }
 
 .mode-tab.active {
-  color: color-mix(in srgb, var(--text) 92%, white);
-  background:
-    linear-gradient(
-      128deg,
-      color-mix(in srgb, var(--accent) 38%, var(--panel)) 0%,
-      color-mix(in srgb, var(--accent) 52%, transparent) 100%
-    );
-  box-shadow:
-    0 6px 18px -12px color-mix(in srgb, var(--accent) 48%, transparent),
-    0 2px 6px color-mix(in srgb, var(--accent) 16%, transparent);
-}
-
-.mode-tab.active::after {
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-}
-
-.mode-tab.active:hover {
-  transform: translateY(-2px);
-  color: color-mix(in srgb, var(--text) 95%, white);
-  box-shadow:
-    0 10px 22px -12px color-mix(in srgb, var(--accent) 52%, transparent),
-    0 4px 9px color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 13%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .mode-tab:focus-visible {
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--panel) 70%, transparent),
-    0 0 0 4px color-mix(in srgb, var(--accent) 32%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 32%, transparent);
+}
+
+/* 色彩主题网格（设置抽屉内） */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.color-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  text-align: left;
+}
+
+.color-cell:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.color-cell.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.color-cell-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--swatch);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.color-cell-name {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 排版风格卡片（设置抽屉内，带迷你排版预览） */
+.style-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.style-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  }
+
+  &.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 32%, transparent);
+  }
+}
+
+/* 迷你排版预览：复用 .typography-{preset} 真实样式，直观展示整体版式差异 */
+.style-card-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--card-border, var(--border));
+  background: var(--card-bg, var(--bg));
+  color: var(--card-text, var(--text));
+  overflow: hidden;
+  min-height: 74px;
+
+  .style-pv-h {
+    display: block;
+    font-size: 1.15em;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .style-pv-p {
+    display: block;
+    font-size: 0.8em;
+    line-height: 1.55;
+    color: var(--card-text, var(--text));
+  }
+
+  .style-pv-bq {
+    display: block;
+    font-size: 0.72em;
+    line-height: 1.5;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+}
+
+.style-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.style-card-desc {
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.dock-hint {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: -4px 0 10px;
+}
+
+/* 设置抽屉 */
+.dock-trigger.active {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+/* 外观明暗切换（设置抽屉内） */
+.appearance-seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.appearance-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    color: var(--text);
+  }
+
+  &.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+}
+
+.dock-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 200;
+}
+
+.dock-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  max-width: 88vw;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.18);
+  z-index: 210;
+  display: flex;
+  flex-direction: column;
+}
+
+.dock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.dock-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.dock-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dock-close:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  color: var(--text);
+}
+
+.dock-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dock-section-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dock-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.select-block {
+  width: 100%;
+}
+
+/* 抽屉动画 */
+.dock-fade-enter-active,
+.dock-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.dock-fade-enter-from,
+.dock-fade-leave-to {
+  opacity: 0;
+}
+
+.dock-slide-enter-active,
+.dock-slide-leave-active {
+  transition: transform 0.24s cubic-bezier(0.32, 0.72, 0.24, 1);
+}
+
+.dock-slide-enter-from,
+.dock-slide-leave-to {
+  transform: translateX(100%);
 }
 
 /* Logo链接样式 */
@@ -645,60 +1200,110 @@ onBeforeUnmount(() => {
   text-decoration: none;
   color: inherit;
   transition: opacity 0.2s ease;
+  flex-shrink: 0;
 }
 
 .logo:hover {
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
-.toolbar-hint {
-  color: var(--accent);
-}
-
-/* GitHub链接样式 */
-.github-link,
-.feedback-link {
-  .button-base();
-  display: inline-flex;
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  min-height: 0;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  margin-right: 12px;
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, 0.6) 16%, transparent),
-    0 6px 16px -12px color-mix(in srgb, var(--accent) 40%, transparent),
-    0 1px 3px color-mix(in srgb, var(--border) 60%, transparent);
-}
+  justify-content: center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 
-.github-link:hover,
-.feedback-link:hover {
-  transform: translateY(-2px);
-}
-
-.github-link svg,
-.feedback-link svg {
-  flex-shrink: 0;
-  transition: color 0.2s ease;
-}
-
-.github-link:hover svg,
-.feedback-link:hover svg {
-  color: color-mix(in srgb, var(--accent) 80%, var(--text));
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .github-link span,
-  .feedback-link span {
-    display: none;
+  svg {
+    display: block;
   }
 }
 
-/* 底部链接样式 */
+.logo:hover .logo-mark {
+  transform: scale(1.06);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* 紧凑型下拉选择器 */
+.select-compact {
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+}
+
+/* 紧凑型输入框（设置抽屉文档信息） */
+.input-compact {
+  width: 100%;
+  min-height: 28px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: color-mix(in srgb, var(--text) 40%, transparent);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+}
+
+/* GitHub链接样式（历史遗留，模板中已无对应元素） */
+
+/* 底部状态栏样式 */
+.footer-brand {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.footer-sep {
+  color: var(--border);
+  font-size: 13px;
+  line-height: 1;
+  margin: 0 2px;
+}
+
+.footer-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.about-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.about-trigger:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--muted) 10%, var(--panel));
+}
+
 .footer-link {
   color: var(--accent);
   text-decoration: none;
@@ -721,6 +1326,41 @@ onBeforeUnmount(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* 主要操作按钮（复制/保存）强调样式 */
+.btn-primary {
+  background: color-mix(in srgb, var(--accent) 85%, var(--panel)) !important;
+  color: white !important;
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--border)) !important;
+
+  &:hover {
+    background: color-mix(in srgb, var(--accent) 95%, black) !important;
+    color: white !important;
+    border-color: color-mix(in srgb, var(--accent) 85%, black) !important;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+
+/* 主操作大按钮：常驻预览区，唯一强调视觉 */
+.btn-lg {
+  min-height: 34px;
+  padding: 6px 18px !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 28%, transparent);
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 36%, transparent);
+  }
 }
 
 /* 工具栏内的缩放控制布局 */
@@ -791,7 +1431,6 @@ onBeforeUnmount(() => {
   background: transparent;
   cursor: col-resize;
   position: relative;
-  transition: all 0.2s ease;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -803,58 +1442,52 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 60px;
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--border) 80%, var(--panel) 20%);
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--border) 30%, transparent);
+  width: 6px;
+  height: 48px;
+  border-radius: 3px;
+  background: var(--border);
+  transition: background 0.15s ease;
 }
 
-.panel-splitter:hover .splitter-handle {
-  background: color-mix(in srgb, var(--accent) 15%, var(--panel));
-  border-color: var(--accent);
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 25%, transparent);
-}
-
+.panel-splitter:hover .splitter-handle,
 .panel-splitter.resizing .splitter-handle {
-  background: color-mix(in srgb, var(--accent) 25%, var(--panel));
-  border-color: var(--accent);
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent);
+  background: var(--accent);
 }
 
 .splitter-dots {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  align-items: center;
+  display: none;
 }
 
-.splitter-dots .dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--muted);
-  transition: all 0.2s ease;
-}
-
-.panel-splitter:hover .splitter-dots .dot {
-  background: var(--accent);
-  transform: scale(1.2);
-}
-
+.panel-splitter:hover .splitter-dots .dot,
 .panel-splitter.resizing .splitter-dots .dot {
   background: var(--accent);
-  transform: scale(1.3);
 }
 
 /* Panel layout adjustments for splitter */
 .main > .panel {
   overflow: hidden;
+}
+
+/* 响应式：中等宽度 768px-1080px */
+@media (max-width: 1080px) {
+  .mode-tab {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .btn-sm {
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+  }
+
+  .preview-header {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .preview-actions {
+    gap: 6px;
+  }
 }
 
 /* Mobile responsive - hide splitter on small screens */
@@ -864,11 +1497,21 @@ onBeforeUnmount(() => {
   }
 
   .main {
-    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr 1fr !important;
   }
 
   .main > .panel {
     width: 100% !important;
+    overflow: auto;
+  }
+
+  .banner {
+    padding: 8px 12px;
+  }
+
+  .logo-text {
+    font-size: 14px;
   }
 }
 
