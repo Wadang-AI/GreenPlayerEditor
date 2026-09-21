@@ -55,7 +55,7 @@ export default {
   about: {
     title: 'About GreenPlay Editor',
     description: 'GreenPlay Editor is a modern Markdown editor focused on WeChat article styling and Xiaohongshu card creation.',
-    logoTitle: 'Rebuilt from the open-source uni-editor project',
+    logoTitle: 'Independently maintained by GreenPlay Editor; originally based on uni-editor',
     basedOnPrefix: 'Based on the open-source project ',
     basedOnMid: ', with color inspiration from ',
     basedOnSuffix: '.',
@@ -208,7 +208,7 @@ export default {
   // Footer copyright
   footer: {
     about: 'About',
-    copyright: '© 2025 GreenPlay Editor · Based on uni-editor',
+    copyright: '© 2025 GreenPlay Editor · Independently maintained; originally based on uni-editor',
     exportCredit: 'Created with GreenPlay Editor',
     ribbonCredit: 'GreenPlay Editor',
     exportLink: 'https://github.com/rockdna/greenplay-editor',
@@ -464,7 +464,7 @@ export default {
 
 GreenPlay Editor is a modern Markdown editor designed specifically for **WeChat formatting** and **image platform publishing**.
 
-This project is based on the open-source [uni-editor](https://github.com/flzyup/uni-editor) and maintained as the independent GreenPlay Editor project.
+GreenPlay Editor is independently maintained; its early version was based on the open-source [uni-editor](https://github.com/flzyup/uni-editor).
 
 ## Core Features
 

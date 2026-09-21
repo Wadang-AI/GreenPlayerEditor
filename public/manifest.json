@@ -1,7 +1,7 @@
 {
   "name": "绿玩编辑器 - 专业自媒体编辑器",
   "short_name": "绿玩编辑器",
-  "description": "绿玩编辑器——专业自媒体编辑器，基于开源项目uni-editor二次开发。长文一键复制到公众号，卡片自动分页高清导出，AI智能排版。",
+  "description": "绿玩编辑器——独立维护的专业自媒体编辑器。长文一键复制到公众号，卡片自动分页高清导出，AI智能排版。",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#113723",

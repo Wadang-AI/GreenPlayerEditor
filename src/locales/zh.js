@@ -55,7 +55,7 @@ export default {
   about: {
     title: '关于绿玩编辑器',
     description: '绿玩编辑器是一个现代化的 Markdown 编辑器，专注于公众号长文排版与小红书卡片制作。',
-    logoTitle: '基于开源项目 uni-editor 二次开发',
+    logoTitle: '绿玩编辑器独立维护，早期基于开源项目 uni-editor',
     basedOnPrefix: '基于开源项目 ',
     basedOnMid: ' 二次开发，配色灵感来自 ',
     basedOnSuffix: '。',
@@ -208,7 +208,7 @@ export default {
   // 底部版权
   footer: {
     about: '关于',
-    copyright: '© 2025 绿玩编辑器 · 基于 uni-editor 二次开发',
+    copyright: '© 2025 绿玩编辑器 · 独立维护，早期基于 uni-editor',
     exportCredit: '使用绿玩编辑器制造',
     ribbonCredit: '绿玩编辑器',
     exportLink: 'https://github.com/rockdna/greenplay-editor',
@@ -464,7 +464,7 @@ export default {
 
 绿玩编辑器是一个现代化的 Markdown 编辑器，专为**公众号排版**和**图片类平台发布**设计。
 
-本项目基于开源项目 [uni-editor](https://github.com/flzyup/uni-editor) 二次开发，当前版本由绿玩编辑器独立维护。
+绿玩编辑器独立维护，早期版本参考并基于开源项目 [uni-editor](https://github.com/flzyup/uni-editor) 二次开发。
 
 ## 核心特性
 

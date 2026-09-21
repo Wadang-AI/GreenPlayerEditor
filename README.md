@@ -1,15 +1,13 @@
 # 绿玩编辑器
 
 [![GitHub](https://img.shields.io/badge/GitHub-rockdna%2Fgreenplay--editor-blue?logo=github)](https://github.com/rockdna/greenplay-editor)
-[![官网](https://img.shields.io/badge/官网-uni--editor.com-green?logo=web)](https://uni-editor.com)
 
 绿玩编辑器是一个本地优先的、所见即所得的 Markdown 创作与发布工具。它面向「公众号排版」与「图片类平台发布」两大场景：在左侧编辑区进行 WYSIWYG/Markdown 编写与主题预览，右侧自动将长文拆分为 4:3 样式卡片，支持多主题实时预览与高清导出，可直接用于小红书等平台发布。
 
-本项目基于开源项目 [uni-editor](https://github.com/flzyup/uni-editor) 二次开发，当前仓库是绿玩编辑器的独立版本。
+绿玩编辑器是独立维护的项目。本项目在早期参考并基于开源项目 [uni-editor](https://github.com/flzyup/uni-editor) 二次开发，现已在产品定位、界面、排版系统、卡片分页、导出和本地数据能力上形成独立实现。
 
 ## 链接
 
-- 🌐 **在线体验**：[https://uni-editor.com](https://uni-editor.com)
 - 💻 **GitHub 仓库**：[https://github.com/rockdna/greenplay-editor](https://github.com/rockdna/greenplay-editor)
 - 📚 **所有内容均缓存浏览器本地**
 
@@ -79,12 +77,6 @@
 
 - [ ] 新增更多不同样式的主题
 - [ ] 添加导出PDF功能
-
-## 体验反馈
-
-若您有更好的意见、建议或者Bug反馈，可以扫码添加如下的微信群进行沟通
-
-![绿玩编辑器体验反馈微信群](raw/wechat_group.png)
 
 ## 许可证
 本项目采用 Apache License 2.0，详见 `LICENSE`。
