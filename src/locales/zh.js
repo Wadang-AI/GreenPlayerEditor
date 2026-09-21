@@ -211,7 +211,7 @@ export default {
     copyright: '© 2025 绿玩编辑器 · 独立维护，早期基于 uni-editor',
     exportCredit: '使用绿玩编辑器制造',
     ribbonCredit: '绿玩编辑器',
-    exportLink: 'https://github.com/rockdna/greenplay-editor',
+    exportLink: 'https://github.com/Wadang-AI/GreenPlayerEditor',
     wxLayoutCredit: '配色灵感 WXLayoutSkill'
   },
 
@@ -481,7 +481,7 @@ export default {
 ### AI 智能排版
 - 一键 AI 排版，自动优化格式
 - 多种排版风格可选
-- 支持自定义 AI 排版设置
+- 填写你自己的 API 配置后即可使用
 
 ### 智能分页导出
 1. **长文模式**：一键复制为公众号格式
@@ -500,7 +500,7 @@ export default {
 
 ## 常用链接
 
-- **开源地址**：[GitHub仓库](https://github.com/rockdna/greenplay-editor)
+- **开源地址**：[GitHub仓库](https://github.com/Wadang-AI/GreenPlayerEditor)
 - **原项目**：[uni-editor](https://github.com/flzyup/uni-editor)
 
 ## 使用技巧

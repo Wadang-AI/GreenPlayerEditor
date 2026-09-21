@@ -211,7 +211,7 @@ export default {
     copyright: '© 2025 GreenPlay Editor · Independently maintained; originally based on uni-editor',
     exportCredit: 'Created with GreenPlay Editor',
     ribbonCredit: 'GreenPlay Editor',
-    exportLink: 'https://github.com/rockdna/greenplay-editor',
+    exportLink: 'https://github.com/Wadang-AI/GreenPlayerEditor',
     wxLayoutCredit: 'Color inspiration WXLayoutSkill'
   },
 
@@ -479,9 +479,9 @@ GreenPlay Editor is independently maintained; its early version was based on the
 - Real-time switching with immediate effect
 
 ### AI Smart Formatting
-- One-click AI formatting, auto-optimize layout
-- Multiple typography styles available
-- Custom AI formatting settings supported
+- One-click AI formatting to improve structure and styling
+- Multiple formatting styles available
+- Add your own API configuration to enable the feature
 
 ### Smart Pagination Export
 1. **Article Mode**: One-click copy to WeChat format
@@ -500,7 +500,7 @@ GreenPlay Editor is independently maintained; its early version was based on the
 
 ## Useful Links
 
-- **Open Source**: [GitHub Repository](https://github.com/rockdna/greenplay-editor)
+- **Open Source**: [GitHub Repository](https://github.com/Wadang-AI/GreenPlayerEditor)
 - **Original Project**: [uni-editor](https://github.com/flzyup/uni-editor)
 
 ## Usage Tips

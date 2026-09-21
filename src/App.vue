@@ -1,7 +1,7 @@
 <template>
   <div class="container" :class="[appThemeClass, globalColorThemeClass]">
     <header class="banner">
-      <a href="https://github.com/rockdna/greenplay-editor" target="_blank" class="logo" :title="$t('about.logoTitle')">
+      <a href="https://github.com/Wadang-AI/GreenPlayerEditor" target="_blank" class="logo" :title="$t('about.logoTitle')">
         <div class="logo-mark">
           <svg viewBox="0 0 32 32" width="26" height="26" fill="none" aria-hidden="true">
             <path d="M 16 5.6 C 22.5 5 26.7 9.4 26.2 15.8 C 25.7 22.1 21 26.8 15.3 26.4 C 9.7 26 5.5 21.3 6.1 15.6 C 6.6 10.4 10.9 6.3 16 5.6" fill="none" stroke="var(--logo-stroke)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -276,7 +276,7 @@
           <div class="modal-body">
             <p>{{ $t('about.description') }}</p>
             <p class="warning-text">{{ $t('about.basedOnPrefix') }}
-              <a href="https://github.com/rockdna/greenplay-editor" target="_blank" class="footer-link">绿玩编辑器</a>{{ $t('about.basedOnMid') }}
+              <a href="https://github.com/Wadang-AI/GreenPlayerEditor" target="_blank" class="footer-link">绿玩编辑器</a>{{ $t('about.basedOnMid') }}
               <a href="https://github.com/TanShilongMario/WXLayoutSkill" target="_blank" class="footer-link">WXLayoutSkill</a>{{ $t('about.basedOnSuffix') }}
             </p>
           </div>

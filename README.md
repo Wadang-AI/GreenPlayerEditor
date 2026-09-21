@@ -1,6 +1,6 @@
 # 绿玩编辑器
 
-[![GitHub](https://img.shields.io/badge/GitHub-rockdna%2Fgreenplay--editor-blue?logo=github)](https://github.com/rockdna/greenplay-editor)
+[![GitHub](https://img.shields.io/badge/GitHub-Wadang--AI%2FGreenPlayerEditor-blue?logo=github)](https://github.com/Wadang-AI/GreenPlayerEditor)
 
 绿玩编辑器是一个本地优先的、所见即所得的 Markdown 创作与发布工具。它面向「公众号排版」与「图片类平台发布」两大场景：在左侧编辑区进行 WYSIWYG/Markdown 编写与主题预览，右侧自动将长文拆分为 4:3 样式卡片，支持多主题实时预览与高清导出，可直接用于小红书等平台发布。
 
@@ -8,7 +8,7 @@
 
 ## 链接
 
-- 💻 **GitHub 仓库**：[https://github.com/rockdna/greenplay-editor](https://github.com/rockdna/greenplay-editor)
+- 💻 **GitHub 仓库**：[https://github.com/Wadang-AI/GreenPlayerEditor](https://github.com/Wadang-AI/GreenPlayerEditor)
 - 📚 **所有内容均缓存浏览器本地**
 
 ## 特性

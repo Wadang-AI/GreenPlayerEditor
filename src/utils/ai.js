@@ -614,7 +614,10 @@ function cleanResponseText(data) {
   return cleaned.trim()
 }
 
+const forceDirectAI = import.meta.env.VITE_DIRECT_AI === '1'
+
 function shouldUseProxy(url) {
+  if (forceDirectAI) return false
   try {
     const urlObj = new URL(url)
     return typeof window !== 'undefined' && urlObj.origin !== window.location.origin
