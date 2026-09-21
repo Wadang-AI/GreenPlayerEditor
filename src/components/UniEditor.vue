@@ -1493,7 +1493,10 @@ async function initVditor() {
       nextTick(() => updatePageBreakDisplay())
 
       // 按频率分层：隐藏收纳到「更多」菜单的低频按钮
-      nextTick(() => applyToolbarLayering())
+      nextTick(() => {
+        applyToolbarLayering()
+        applyToolbarButtonTitles()
+      })
 
       // 初始化时发送内容
       if (vd) {
@@ -2296,6 +2299,17 @@ function applyToolbarLayering() {
         node = node.nextElementSibling
       }
     })
+  })
+}
+
+// Vditor 的伪元素提示会被可横向滚动的工具栏裁掉。
+// 同步到原生 title，让在线版和本地版都能稳定显示按钮用途。
+function applyToolbarButtonTitles() {
+  const toolbar = vd?.vditor?.toolbar?.element
+  if (!toolbar) return
+  toolbar.querySelectorAll('button[aria-label]').forEach((button) => {
+    const label = String(button.getAttribute('aria-label') || '').trim()
+    if (label) button.setAttribute('title', label)
   })
 }
 
