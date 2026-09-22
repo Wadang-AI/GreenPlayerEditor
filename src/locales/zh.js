@@ -212,6 +212,8 @@ export default {
     exportCredit: '使用绿玩编辑器制造',
     ribbonCredit: '绿玩编辑器',
     exportLink: 'https://github.com/Wadang-AI/GreenPlayerEditor',
+    repository: '仓库',
+    deployment: '部署：Mindhall.art / Nginx 静态站点',
     wxLayoutCredit: '配色灵感 WXLayoutSkill'
   },
 

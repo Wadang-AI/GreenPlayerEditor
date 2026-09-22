@@ -264,6 +264,12 @@
         <span class="footer-divider" aria-hidden="true"></span>
         <LanguageSwitch />
       </div>
+      <div class="footer-meta">
+        <span>{{ $t('footer.repository') }}：</span>
+        <a href="https://github.com/Wadang-AI/GreenPlayerEditor" target="_blank" rel="noopener" class="footer-link">Wadang-AI/GreenPlayerEditor</a>
+        <span class="footer-meta-sep" aria-hidden="true">·</span>
+        <span>{{ $t('footer.deployment') }}</span>
+      </div>
     </footer>
 
     <!-- 关于弹窗 -->

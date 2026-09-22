@@ -10,6 +10,7 @@
   border-top: 1px solid var(--border);
   font-size: 12px;
   line-height: 1;
+  flex-wrap: wrap;
 }
 
 .footer-inner {
@@ -17,4 +18,28 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+.footer-meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.footer-meta-sep {
+  color: var(--border);
+  margin: 0 2px;
+}
+
+@media (max-width: 760px) {
+  .footer-meta {
+    white-space: normal;
+    text-align: center;
+  }
 }

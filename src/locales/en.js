@@ -212,6 +212,8 @@ export default {
     exportCredit: 'Created with GreenPlay Editor',
     ribbonCredit: 'GreenPlay Editor',
     exportLink: 'https://github.com/Wadang-AI/GreenPlayerEditor',
+    repository: 'Repository',
+    deployment: 'Deployed on Mindhall.art / Nginx static site',
     wxLayoutCredit: 'Color inspiration WXLayoutSkill'
   },
 
