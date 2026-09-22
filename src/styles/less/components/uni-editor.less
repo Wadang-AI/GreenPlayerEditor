@@ -132,8 +132,8 @@
   border-bottom: 1px solid var(--border);
   padding: 4px 8px 4px 48px;
   flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  // 下拉面板不能被工具栏自身裁掉；低频按钮已经收进“更多”菜单。
+  overflow: visible;
   scrollbar-width: thin;
   gap: 2px 0;
   align-items: center;
@@ -229,6 +229,12 @@
       height: 14px;
     }
   }
+}
+
+// Vditor 原生标题/编辑模式/表情面板需要压过文档库侧栏和右侧预览。
+:global(.vditor-toolbar .vditor-hint),
+:global(.vditor-toolbar .vditor-panel) {
+  z-index: 3000 !important;
 }
 
 // 增强 Vditor tooltip 显示

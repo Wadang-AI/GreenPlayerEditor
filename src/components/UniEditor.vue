@@ -2916,7 +2916,7 @@ defineExpose({
 // 「更多」工具栏浮层（墨绿·杂志工作室）
 .more-toolbar-menu {
   position: fixed;
-  z-index: 999;
+  z-index: 3000;
   width: 252px;
   max-height: 78vh;
   overflow-y: auto;

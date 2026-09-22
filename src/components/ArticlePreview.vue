@@ -51,6 +51,20 @@ const isExporting = ref(false)
 const loadingText = ref('')
 let scrollAnimationFrame = null
 
+// 朋友圈会对过窄的长图再次压缩。按 1080px 左右的物理宽度导出，
+// 长文过高时再根据浏览器画布上限自动降低倍率。
+function getExportPixelRatio(node) {
+  const width = Math.max(node.scrollWidth, node.getBoundingClientRect().width, 496)
+  const height = Math.max(node.scrollHeight, node.getBoundingClientRect().height, 1)
+  const targetRatio = 1080 / width
+  const maxCanvasHeight = 30000
+  const maxCanvasPixels = 80_000_000
+  const heightRatio = maxCanvasHeight / height
+  const areaRatio = Math.sqrt(maxCanvasPixels / (width * height))
+
+  return Math.max(1, Math.min(targetRatio, heightRatio, areaRatio))
+}
+
 // Apply syntax highlighting to HTML and hide page breaks in article mode
 const highlightedHtml = computed(() => {
   let processedHtml = highlightCodeBlocks(props.html)
@@ -87,9 +101,15 @@ async function exportArticle() {
   isExporting.value = true
   loadingText.value = t('loading.articlePreparing')
 
+  let original = null
+  let allElements = []
+  let elementStyles = []
+  let listItemData = []
+  let imageSources = []
+
   try {
     // 保存原始样式
-    const original = {
+    original = {
       borderRadius: articleContentRef.value.style.borderRadius,
       boxShadow: articleContentRef.value.style.boxShadow,
       width: articleContentRef.value.style.width,
@@ -98,12 +118,6 @@ async function exportArticle() {
       transform: articleContentRef.value.style.transform,
       transformOrigin: articleContentRef.value.style.transformOrigin
     }
-
-    // 声明在更大作用域中
-    let allElements = []
-    let elementStyles = []
-    let listItemData = []
-    let imageSources = []
 
     loadingText.value = t('loading.articleAdjusting')
 
@@ -207,13 +221,17 @@ async function exportArticle() {
     const computedStyle = window.getComputedStyle(articleContentRef.value)
     const cardBgColor = computedStyle.getPropertyValue('background-color') || '#ffffff'
 
-    // 使用更保守的配置来避免渲染问题
+    const pixelRatio = getExportPixelRatio(articleContentRef.value)
+
+    // 以高清尺寸输出；超长文章会自动降低倍率，避免超过浏览器 Canvas 上限。
     const dataUrl = await htmlToImage.toPng(articleContentRef.value, {
       quality: 1,
-      pixelRatio: 1,  // 降低像素比例避免渲染问题
+      pixelRatio,
       backgroundColor: cardBgColor,
       useCORS: true,
       allowTaint: false,
+      skipFonts: true,
+      fontEmbedCSS: '',
       cacheBust: true,  // 避免缓存问题
       imagePlaceholder: undefined,
       skipAutoScale: true,
@@ -233,13 +251,21 @@ async function exportArticle() {
       }
     })
 
+    console.info('Long image export ready', JSON.stringify({
+      width: Math.round(articleContentRef.value.scrollWidth * pixelRatio),
+      height: Math.round(articleContentRef.value.scrollHeight * pixelRatio),
+      pixelRatio
+    }))
+
     loadingText.value = t('loading.articleSaving')
 
     // 创建下载链接
     const link = document.createElement('a')
     link.download = `${t('article.exportPrefix')}${new Date().toISOString().slice(0, 10)}.png`
     link.href = dataUrl
+    document.body.appendChild(link)
     link.click()
+    link.remove()
 
     success(t('loading.articleSuccess'))
   } catch (err) {
@@ -278,43 +304,43 @@ async function exportArticle() {
         articleContentRef.value.querySelectorAll('.export-list-number').forEach((span) => span.remove())
 
         // 恢复原始样式，如果原始样式为空，则移除内联样式让CSS类样式生效
-        if (original.borderRadius) {
+        if (original?.borderRadius) {
           articleContentRef.value.style.borderRadius = original.borderRadius
         } else {
           articleContentRef.value.style.removeProperty('border-radius')
         }
 
-        if (original.boxShadow) {
+        if (original?.boxShadow) {
           articleContentRef.value.style.boxShadow = original.boxShadow
         } else {
           articleContentRef.value.style.removeProperty('box-shadow')
         }
 
-        if (original.width) {
+        if (original?.width) {
           articleContentRef.value.style.width = original.width
         } else {
           articleContentRef.value.style.removeProperty('width')
         }
 
-        if (original.maxWidth) {
+        if (original?.maxWidth) {
           articleContentRef.value.style.maxWidth = original.maxWidth
         } else {
           articleContentRef.value.style.removeProperty('max-width')
         }
 
-        if (original.minWidth) {
+        if (original?.minWidth) {
           articleContentRef.value.style.minWidth = original.minWidth
         } else {
           articleContentRef.value.style.removeProperty('min-width')
         }
 
-        if (original.transform) {
+        if (original?.transform) {
           articleContentRef.value.style.transform = original.transform
         } else {
           articleContentRef.value.style.removeProperty('transform')
         }
 
-        if (original.transformOrigin) {
+        if (original?.transformOrigin) {
           articleContentRef.value.style.transformOrigin = original.transformOrigin
         } else {
           articleContentRef.value.style.removeProperty('transform-origin')
