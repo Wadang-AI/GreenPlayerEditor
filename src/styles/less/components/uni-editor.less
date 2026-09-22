@@ -8,7 +8,9 @@
   .flex-row();
   .full-height();
   position: relative;
-  overflow: hidden;
+  // 工具栏的标题 / 编辑模式 / 表情下拉面板会向编辑器内容区展开，
+  // 不能被编辑器根节点裁掉；正文滚动由 editor-container / Vditor 自己负责。
+  overflow: visible;
 }
 
 // ============================================================

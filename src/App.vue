@@ -1521,6 +1521,23 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+/*
+ * 工具栏下拉菜单属于左侧编辑器面板，但会向下展开到编辑区内容上方。
+ * 让左面板形成更高的层叠上下文，并允许浮层越过面板边界；正文自身仍由
+ * Vditor 的内容区域滚动，不会因此放开整页滚动。
+ */
+.main > .panel.editor-scope {
+  position: relative;
+  z-index: 30;
+  overflow: visible;
+}
+
+.main > .panel.editor-scope + .panel-splitter,
+.main > .panel.editor-scope ~ .panel {
+  position: relative;
+  z-index: 1;
+}
+
 /* 响应式：中等宽度 768px-1080px */
 @media (max-width: 1080px) {
   .mode-tab {
