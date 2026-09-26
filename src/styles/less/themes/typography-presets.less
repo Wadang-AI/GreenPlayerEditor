@@ -81,16 +81,16 @@
     color: color-mix(in srgb, var(--card-text) 80%, var(--card-muted));
   }
 
-  // 强调：衬线加粗 + 细发丝滑线（书页下划线）
+  // 强调：衬线半粗，不给连续重点文字叠加粗线。
   strong {
     color: var(--card-accent-deep, var(--card-accent));
-    font-weight: 700;
+    font-weight: 650;
     font-family: @font-family-serif;
     background: none;
     padding: 0;
     border-radius: 0;
     box-shadow: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 60%, transparent);
+    border-bottom: 0;
   }
 
   // 引文：左右双竖线 + 宋体斜体，章节引语感
@@ -301,15 +301,15 @@
     color: var(--card-text);
   }
 
-  // 强调：accent 色加粗 + 发丝滑线
+  // 强调：accent 色半粗，保持正文节奏。
   strong {
     color: var(--card-accent-deep, var(--card-accent));
-    font-weight: 700;
+    font-weight: 650;
     background: none;
     box-shadow: none;
     padding: 0;
     border-radius: 0;
-    border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 50%, transparent);
+    border-bottom: 0;
   }
 
   // 引文 pull-quote：左侧粗 accent 条 + 超大大引号 + 宽松留白
@@ -521,13 +521,16 @@
     color: color-mix(in srgb, var(--card-text) 82%, var(--card-accent));
   }
 
-  // 强调：反色 pill（纯色表达，无阴影不抢眼；底色深化一档保证白字对比沉稳）
+  // 强调：从反色 pill 收敛为轻量标记，避免正文中出现连续色块。
   strong {
-    color: var(--card-on-accent, #fff);
-    font-weight: 700;
-    background: color-mix(in srgb, var(--card-accent) 88%, #0b0b0d);
-    padding: 2px 7px;
-    border-radius: 5px;
+    color: var(--card-accent-deep, var(--card-accent));
+    font-weight: 650;
+    background: linear-gradient(
+      transparent 62%,
+      color-mix(in srgb, var(--card-accent) 20%, transparent) 62%
+    );
+    padding: 0 1px;
+    border-radius: 0;
     border-bottom: none;
     box-shadow: none;
   }
@@ -723,15 +726,15 @@
     margin-bottom: 2.2em;
   }
 
-  // 强调：accent 深色 + 1px 发丝下划线（克制而精确）
+  // 强调：accent 深色半粗，克制而精确。
   strong {
     color: var(--card-accent-deep, var(--card-accent));
-    font-weight: 600;
+    font-weight: 650;
     background: none;
     box-shadow: none;
     padding: 0;
     border-radius: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--card-accent) 40%, transparent);
+    border-bottom: 0;
   }
 
   // 引文：大左留白 + 细竖线 + 灰调，安静有力
@@ -911,14 +914,14 @@
     border-radius: 6px;
   }
 
-  // 强调：荧光笔划重点（柔和高亮底，无阴影无药丸）
+  // 强调：柔和高亮底，不使用高饱和荧光色或药丸背景。
   strong {
-    font-weight: 700;
+    font-weight: 650;
     font-family: inherit;
     color: inherit;
     background: linear-gradient(
       transparent 30%,
-      color-mix(in srgb, var(--card-accent) 30%, transparent) 30%
+      color-mix(in srgb, var(--card-accent) 18%, transparent) 30%
     );
     background-size: 100% 1.15em;
     background-position: 0 0.1em;
@@ -974,7 +977,7 @@
     height: 1.6em;
     border-radius: 50%;
     font-size: 0.82em;
-    font-weight: 700;
+    font-weight: 650;
     line-height: 1.9em;
     text-align: center;
     box-shadow: none;
@@ -1137,7 +1140,7 @@
 
   // 强调：主题色加粗，无背景无阴影（最克制）
   strong {
-    font-weight: 700;
+    font-weight: 650;
     font-family: inherit;
     color: var(--card-accent-deep, var(--card-accent));
     background: none;

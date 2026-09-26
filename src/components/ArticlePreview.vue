@@ -417,7 +417,10 @@ defineExpose({
 }
 
 .article-content {
-  width: 496px;
+  // 677px 是公众号正文在桌面端常用的阅读宽度；窄屏由父容器自然收缩。
+  // 长图导出会在导出流程中临时使用独立的 496px 渲染宽度，不受这里影响。
+  width: min(677px, 100%);
+  max-width: 100%;
   margin: 0 auto;
   padding: @panel-padding;
   background: var(--card-bg);

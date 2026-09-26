@@ -23,15 +23,15 @@
   h5 { font-size: @font-size-h5; }
   h6 { font-size: @font-size-h6; }
 
-  // 加粗着重：深色文字 + 底部发丝滑线（杂志感；纯色+实线，微信零降级）
+  // 加粗着重：只提高字重与色彩对比，不给每段加粗文字画粗线或铺色块。
   strong {
     color: var(--card-accent-deep, var(--card-accent));
-    font-weight: 700;
+    font-weight: 650;
     background: none;
     padding: 0;
     border-radius: 0;
     box-shadow: none;
-    border-bottom: 2px solid color-mix(in srgb, var(--card-accent) 55%, transparent);
+    border-bottom: 0;
   }
 
   p {
