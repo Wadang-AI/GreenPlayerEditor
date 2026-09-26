@@ -246,9 +246,9 @@ export default {
     report: '商务报告',
     classicDesc: '宋体正文 · 首行缩进 · 居中章节标题，纸质出版感',
     elegantDesc: '无衬线大字 · 导语引路 · 发丝线收束，现代社论感',
-    playfulDesc: '圆角色块 · 箭头列表 · 反色强调，平台轻快分享感',
+    playfulDesc: '圆角色块 · 箭头列表 · 轻量强调，平台轻快分享感',
     minimalistDesc: '细字重大行距 · 留白呼吸 · 克制灰阶，安静简洁',
-    journalDesc: '楷体手写 · 荧光笔强调 · 便签贴纸，随手记录感',
+    journalDesc: '楷体手写 · 柔和标记 · 便签贴纸，随手记录感',
     reportDesc: '无衬线干练 · 双线表头 · 编号要项，理性数据报告感',
     autoDesc: '由当前主题色彩匹配一套默认排版，省心省力',
     stylePresetHint: '改变标题层级、正文节奏、引文与列表的整体版式，不只是加粗'

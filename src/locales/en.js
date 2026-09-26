@@ -246,9 +246,9 @@ export default {
     report: 'Report',
     classicDesc: 'Serif body · indented paragraphs · centered chapter headings, a printed-book feel',
     elegantDesc: 'Sans large type · standfirst lead · hairline closure, a modern editorial feel',
-    playfulDesc: 'Rounded chips · arrow lists · inverted emphasis, a light shareable feel',
+    playfulDesc: 'Rounded callouts · arrow lists · light emphasis, a shareable feel',
     minimalistDesc: 'Lighter weight · generous leading · restrained grays, quiet and clean',
-    journalDesc: 'Handwritten kai · highlighter emphasis · sticky-note quotes, a casual notebook feel',
+    journalDesc: 'Handwritten kai · soft markers · sticky-note quotes, a casual notebook feel',
     reportDesc: 'Clean sans · double-ruled tables · numbered key points, a rational report feel',
     autoDesc: 'Pick a default style that matches the current theme color',
     stylePresetHint: 'Controls the whole layout — heading hierarchy, body rhythm, quotes and lists, not just bold'
